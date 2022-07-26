@@ -1,0 +1,102 @@
+{
+  "ipcMode": null,
+  "executionRoleArn": "arn:aws:iam::704656330867:role/api-ecs-cluster-instance-role",
+  "containerDefinitions": [
+    {
+      "dnsSearchDomains": [],
+      "environmentFiles": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": [],
+        "options": {
+          "awslogs-group": "/ecs/api-ecs-service",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-create-group": "true",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "entryPoint": [],
+      "portMappings": [
+        {
+          "hostPort": 0,
+          "protocol": "tcp",
+          "containerPort": 80
+        }
+      ],
+      "command": [],
+      "linuxParameters": null,
+      "cpu": 0,
+      "environment": [
+        {
+          "name": "MYSQL_DATABASE",
+          "value": "root"
+        },
+        {
+          "name": "MYSQL_ADDR",
+          "value": "db-server-cluster.cluster-ctejvvq0ln8z.ap-northeast-1.rds.amazonaws.com:3306"
+        },
+        {
+          "name": "MYSQL_PORT",
+          "value": "3306"
+        },
+        {
+          "name": "MYSQL_USER",
+          "value": "root"
+        },
+        {
+          "name": "PORT",
+          "value": "80"
+        },
+        {
+          "name": "TZ",
+          "value": "Asia/Tokyo"
+        }
+      ],
+      "resourceRequirements": null,
+      "ulimits": [],
+      "dnsServers": [],
+      "mountPoints": [],
+      "workingDirectory": null,
+      "secrets": [
+        {
+          "valueFrom": "mysql_root_password",
+          "name": "MYSQL_PASSWORD"
+        }
+      ],
+      "dockerSecurityOptions": [],
+      "memory": 128,
+      "memoryReservation": null,
+      "volumesFrom": [],
+      "stopTimeout": null,
+      "image": "",
+      "startTimeout": null,
+      "firelensConfiguration": null,
+      "dependsOn": null,
+      "disableNetworking": null,
+      "interactive": null,
+      "healthCheck": null,
+      "essential": true,
+      "links": [],
+      "hostname": null,
+      "extraHosts": [],
+      "pseudoTerminal": null,
+      "user": null,
+      "readonlyRootFilesystem": null,
+      "dockerLabels": {},
+      "systemControls": [],
+      "privileged": null,
+      "name": "Web-Server"
+    }
+  ],
+  "placementConstraints": [],
+  "memory": null,
+  "taskRoleArn": null,
+  "family": "api-ecs-service-task",
+  "pidMode": null,
+  "requiresCompatibilities": [],
+  "networkMode": "bridge",
+  "cpu": null,
+  "inferenceAccelerators": null,
+  "proxyConfiguration": null,
+  "volumes": []
+}
