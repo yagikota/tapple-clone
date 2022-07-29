@@ -1,6 +1,6 @@
 {
   "ipcMode": null,
-  "executionRoleArn": "arn:aws:iam::704656330867:role/api-ecs-cluster-instance-role",
+  "executionRoleArn": "arn:aws:iam::911704747344:role/api-ecs-cluster-instance-role",
   "containerDefinitions": [
     {
       "dnsSearchDomains": [],
@@ -33,7 +33,7 @@
         },
         {
           "name": "MYSQL_ADDR",
-          "value": "db-server-cluster.cluster-ctejvvq0ln8z.ap-northeast-1.rds.amazonaws.com:3306"
+          "value": "db-server-cluster.cluster-ceasmrjip8jq.ap-northeast-1.rds.amazonaws.com:3306"
         },
         {
           "name": "MYSQL_PORT",
