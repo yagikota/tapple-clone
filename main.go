@@ -31,7 +31,7 @@ func main() {
 
 	// hello world api
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path); err != nil {
+		if _, err := fmt.Fprintf(w, "Hello, C Team. you've requested: %s\n", r.URL.Path); err != nil {
 			fmt.Println(err)
 		}
 	})
