@@ -8,9 +8,14 @@ help: ## 使い方
 run-db: ## DB作成
 	docker-compose up --build -d mysql
 
-.PHONY: run-go
-run-go: ## 起動
-	docker-compose up --build server
+.PHONY: run-go-amd64
+run-go-amd64: ## 起動
+	docker-compose up --build server-amd64
+
+# M1 Mac User
+.PHONY: run-go-arm64
+run-go-arm64: ## 起動
+	docker-compose up --build server-arm64
 
 .PHONY: down
 down: ## down
