@@ -1,26 +1,10 @@
 version: "3.7"
 
 services:
-  server-amd64:
+  server:
     build:
       context: .
-      dockerfile: Dockerfile.amd64
-    ports:
-      - ${PORT}:${PORT}
-    environment:
-      TZ: Asia/Tokyo
-      PORT: ${PORT}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ADDR: ${MYSQL_ADDR}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-    depends_on:
-      - mysql
-
-  server-arm64:
-    build:
-      context: .
-      dockerfile: Dockerfile.arm64
+      dockerfile: Dockerfile
     ports:
       - ${PORT}:${PORT}
     environment:
