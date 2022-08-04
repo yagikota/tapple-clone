@@ -1,5 +1,3 @@
-# Intel Macの人用
-
 # ===== build go binary =====
 FROM golang:1.18.3-alpine as go-builder
 
