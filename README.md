@@ -25,3 +25,14 @@ $ make run-go
 ```shell script
 $ make down
 ```
+
+# ブランチ名規約
+
+| ブランチ名                         | 説明                   |
+| ---------------------------------- | ---------------------- |
+| feat/xxx <br> feature/xxx          | 機能開発               |
+| fix/xxx                            | fix something          |
+| bugfix/xxx <br> hotfix/xxx         | bug fix <br> hot fix   |
+| refactor/xxx <br> refactoring/ xxx | リファクタリング       |
+| chore/xxx                          | 雑用 <br> その他       |
+| docs/xxx                           | ドキュメント更新       |
