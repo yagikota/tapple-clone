@@ -36,3 +36,7 @@ $ make down
 | refactor/xxx <br> refactoring/ xxx | リファクタリング       |
 | chore/xxx                          | 雑用 <br> その他       |
 | docs/xxx                           | ドキュメント更新       |
+
+# コミットメッセージ
+* [Conventional Commits](https://www.conventionalcommits.org/ja/v1.0.0/#%e4%bb%95%e6%a7%98)
+* [例文集](https://gist.github.com/mono0926/e6ffd032c384ee4c1cef5a2aa4f778d7#%E8%A1%A8%E7%8F%BE%E5%82%BE%E5%90%91%E3%81%A8%E3%81%BE%E3%81%A8%E3%82%81)
