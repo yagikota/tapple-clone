@@ -15,3 +15,5 @@ run-go: ## 起動
 .PHONY: down
 down: ## down
 	docker-compose down
+
+# TODO: migrationコマンド作成
