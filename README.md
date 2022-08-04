@@ -28,14 +28,16 @@ $ make down
 
 # ブランチ名規約(適宜追加してください)
 
-| ブランチ名                         | 説明                   |
-| ---------------------------------- | ---------------------- |
-| feat/xxx <br> feature/xxx          | 機能開発               |
-| fix/xxx                            | fix something          |
-| bugfix/xxx <br> hotfix/xxx         | bug fix <br> hot fix   |
-| refactor/xxx <br> refactoring/ xxx | リファクタリング       |
-| chore/xxx                          | 雑用 <br> その他       |
-| docs/xxx                           | ドキュメント更新       |
+| ブランチ名| 説明|
+| - | - |
+|feat/hoge| 新しい機能|
+|fix/hoge| バグの修正|
+|refactor/hoge| 仕様に影響がないコード改善(リファクタ)|
+|chore/hoge| ビルド、補助ツール、ライブラリ関連|
+|docs/hoge| ドキュメントのみの変更|
+|style/hoge| 空白、フォーマット、セミコロン追加など|
+|perf/hoge| パフォーマンス向上関連|
+|test/hoge| テスト関連|
 
 # コミットメッセージ(適宜追加してください)
 * 英語
@@ -46,12 +48,12 @@ $ make down
         | - | - |
         |feat:| 新しい機能|
         |fix:| バグの修正|
+        |refactor:| 仕様に影響がないコード改善(リファクタ)|
+        |chore:| ビルド、補助ツール、ライブラリ関連|
         |docs:| ドキュメントのみの変更|
         |style:| 空白、フォーマット、セミコロン追加など|
-        |refactor:| 仕様に影響がないコード改善(リファクタ)|
         |perf:| パフォーマンス向上関連|
         |test:| テスト関連|
-        |chore:| ビルド、補助ツール、ライブラリ関連|
 
 * [Qiita記事](https://qiita.com/konatsu_p/items/dfe199ebe3a7d2010b3e)
 * [Conventional Commits](https://www.conventionalcommits.org/ja/v1.0.0/#%e4%bb%95%e6%a7%98)
