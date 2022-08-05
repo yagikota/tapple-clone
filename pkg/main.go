@@ -30,7 +30,6 @@ func main() {
 	// }
 	_ = infra.NewMySQLConnector()
 
-
 	// hello world api 1
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := fmt.Fprintf(w, "Hello, C Team. you've requested: %s\n", r.URL.Path); err != nil {
