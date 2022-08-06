@@ -1,11 +1,9 @@
 # ===== build go binary =====
 FROM golang:1.18.3-alpine as go-builder
 
-WORKDIR /go/src/github.com/CyberAgentHack/2208-ace-a-server
+WORKDIR /go/src/github.com/CyberAgentHack/2208-ace-a-server/pkg
 
-COPY go.mod .
-COPY go.sum .
-COPY main.go .
+COPY pkg/ .
 
 RUN go mod download
 
@@ -16,6 +14,6 @@ FROM alpine
 
 RUN apk --no-cache add tzdata
 
-COPY --from=go-builder /go/src/github.com/CyberAgentHack/2208-ace-a-server/server server
+COPY --from=go-builder /go/src/github.com/CyberAgentHack/2208-ace-a-server/pkg/server server
 
 ENTRYPOINT ["/server"]

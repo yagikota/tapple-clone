@@ -20,10 +20,13 @@ type MysqlInfo struct {
 }
 
 func init() {
+	// ローカルでのみ必要。DockerでGo Serverを立ち上げる際はコメントアウト
+	// ここから
 	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	// ここまで
 }
 
 func LoadConfig() *appConfig {
