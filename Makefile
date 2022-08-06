@@ -20,7 +20,12 @@ down: ## down
 
 # TODO: golang-migrateのmigrationコマンド作成
 
-# generate model by sqlboiler
+# sqlboilerでmodel自動生成
 .PHONY: generate-model
 generate-model:
 	@$(GO_BIN)/sqlboiler mysql
+
+# コードを整形
+.PHONY: fmt
+fmt:
+	gofmt -l -w .
