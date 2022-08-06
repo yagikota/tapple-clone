@@ -1,0 +1,228 @@
+openapi: 3.0.2
+info:
+  title: CA Tapple API
+  description: |-
+    <b>CA Tapple API仕様</b><br>
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+tags:
+  - name: user
+    description: ユーザー関連API
+  - name: room
+    description: チャットルーム関連API
+paths:
+  /users/{user_id}/profile_images:
+    post:
+      tags:
+        - user
+      summary: プロフィール写真保存API
+      description: |
+        指定したユーザーのプロフィール写真を保存します。
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileImageCreateResponse"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content: {}
+      x-codegen-request-body-name: body
+  /users/{user_id}/rooms:
+    get:
+      tags:
+        - room
+      summary: チャットルーム一覧表示API
+      description: |
+        指定したユーザーのチャットルームの一覧を取得します。
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomListResponse"
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Rooms not found
+      x-codegen-request-body-name: body
+  /users/{user_id}/rooms/{room_id}:
+    get:
+      tags:
+        - room
+      summary: チャットルーム詳細表示API
+      description: |
+        指定したチャットルームのメッセージ内容を取得します。
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRoomGetResponse"
+        400:
+          description: Invalid ID supplied
+        404:
+          description: UserRooms not found
+      x-codegen-request-body-name: body
+  /users/{user_id}/rooms/{room_id}/messages:
+    post:
+      tags:
+        - room
+      summary: メッセージ保存API
+      description: |
+        送信メッセージを保存します。
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageCreateResponse"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content: {}
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    UserRoomGetResponse:
+      type: object
+      properties:
+        room_id:
+          type: integer
+          example: 1
+          description: ルームID
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoomUserInfo"
+          description: 同じチャットルームのユーザー
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/MessageGetResponse"
+          description: チャットルーム内のメッセージの一覧
+    MessageGetResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        content:
+          type: string
+          example: 予定いれておきます！
+          description: メッセージ内容
+        created_at:
+          type: string
+          example: "2020-01-31T23:59:59+09:00"
+          format: date-time
+          description: メッセージの送信日時
+    RoomUserInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        name:
+          type: string
+          example: かなこ
+          description: 名前
+        icon:
+          type: string
+          example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
+          description: アイコン
+    RoomUserDetailInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        name:
+          type: string
+          example: かなこ
+          description: 名前
+        age:
+          type: integer
+          example: 22
+          description: 年齢
+        location:
+          type: string
+          example: 東京都
+          description: 所在地
+        icon:
+          type: string
+          example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
+          description: アイコン
+    RoomInfo:
+      type: object
+      properties:
+        room_id:
+          type: integer
+          example: 1
+          description: ルームID
+        latest_message:
+          type: string
+          example: 最近は流行りのスイーツ探しにいいたりしています！
+          description: 最後のメッセージ
+        created_at:
+          type: string
+          example: "2020-01-31T23:59:59+09:00"
+          format: date-time
+          description: 最後のメッセージが送られた日時
+        unread:
+          type: integer
+          example: 3
+          description: 未読件数
+        user:
+          $ref: "#/components/schemas/RoomUserDetailInfo"
+    RoomListResponse:
+      type: object
+      properties:
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoomInfo"
+          description: チャットルーム一覧
+    MessageCreateResponse:
+      type: object
+      properties:
+        room_id:
+          type: integer
+          example: 1
+          description: ルームID
+        user_id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        content:
+          type: string
+          description: メッセージ内容
+    UserProfileImageCreateResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        image:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProfileImageCreateResponse"
+          description: 保存する写真の情報
+    ProfileImageCreateResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 写真ID
+        path:
+          type: string
+          description: 写真URL
