@@ -10,12 +10,13 @@ import (
 )
 
 const (
-	apiVersion  = "/v1"
-	userAPIRoot = apiVersion + "/users"
-	userIDParam = "user_id"
+	apiVersion      = "/v1"
+	healthCheckRoot = "/health_check"
+	userAPIRoot     = apiVersion + "/users"
+	userIDParam     = "user_id"
 )
 
-func Router() *gin.Engine {
+func InitRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(
 		gin.Recovery(),
@@ -23,11 +24,16 @@ func Router() *gin.Engine {
 	)
 
 	// TODO:
-	mySQLConn := infra.NewMySQLConnector()
-
 	// 別ファイルにした方がいいかも
+	mySQLConn := infra.NewMySQLConnector()
 	userRepository := mysql.NewUserRepository(mySQLConn.Conn)
 	userUsecase := usecase.NewUserUsecase(userRepository)
+
+	healthCheckGroup := router.Group(healthCheckRoot)
+	{
+		relativePath := ""
+		healthCheckGroup.GET(relativePath, healthCheck())
+	}
 
 	usersGroup := router.Group(userAPIRoot)
 	{
