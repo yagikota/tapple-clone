@@ -10,24 +10,7 @@ import (
 )
 
 func main() {
-	// // 環境変数読み込み
-	// addr := ":" + os.Getenv("PORT")
-	// mysqlUser := os.Getenv("MYSQL_USER")
-	// mysqlPassword := os.Getenv("MYSQL_PASSWORD")
-	// mysqlAddr := os.Getenv("MYSQL_ADDR")
-	// mysqlDBName := os.Getenv("MYSQL_DATABASE")
 
-	// dataSourceName := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&loc=Local", mysqlUser, mysqlPassword, mysqlAddr, mysqlDBName)
-	// mysqlDB, err := sql.Open("mysql", dataSourceName)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer mysqlDB.Close()
-
-	// // mysqlとの接続確認
-	// if err := mysqlDB.Ping(); err != nil {
-	// 	panic(err)
-	// }
 	_ = infra.NewMySQLConnector()
 
 	// hello world api 1
