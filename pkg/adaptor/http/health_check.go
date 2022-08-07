@@ -12,9 +12,11 @@ type healthCheckResponse struct {
 }
 
 // ヘルスチェック用
-// {
-//     "message": "Hello, C Team. you've requested: /health_check"
-// }
+//
+//	{
+//	    "message": "Hello, C Team. you've requested: /health_check"
+//	}
+//
 // が返ってくる
 func healthCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {

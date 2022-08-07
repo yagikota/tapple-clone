@@ -21,10 +21,11 @@ func NewUserRepository(db *sql.DB) domain.IUserRepository {
 }
 
 func (ur *userRepository) User(ctx context.Context, userID int) (*entity.User, error) {
-	whereID := fmt.Sprintf("%s = ?", entity.UserTableColumns.ID)
-	mods := qm.Where(whereID, userID)
-
-	return entity.Users(mods).One(ctx, ur.DB)
+	whereID := fmt.Sprintf("%s = ?", entity.UserColumns.ID)
+	return entity.Users(
+		qm.Where(whereID, userID),
+		qm.Load(entity.UserRels.UserProfileImages),
+	).One(ctx, ur.DB)
 }
 
 func (ur *userRepository) Users(ctx context.Context) (entity.UserSlice, error) {

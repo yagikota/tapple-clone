@@ -1,10 +1,7 @@
 package configs
 
 import (
-	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type appConfig struct {
@@ -16,18 +13,12 @@ type MysqlInfo struct {
 	MySQLUser     string
 	MySQLPassWord string
 	MySQLAddr     string
-	MySQLBDName   string
+	MySQLDBName   string
 }
 
-func init() {
-	// ローカルでのみ必要。DockerでGo Serverを立ち上げる際はコメントアウト
-	// ここから
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	// ここまで
-}
+// TODO: 必要か調べる？
+// func init() {
+// }
 
 func LoadConfig() *appConfig {
 	addr := ":" + os.Getenv("PORT")
@@ -41,7 +32,7 @@ func LoadConfig() *appConfig {
 		MySQLUser:     mysqlUser,
 		MySQLPassWord: mysqlPassword,
 		MySQLAddr:     mysqlAddr,
-		MySQLBDName:   mysqlDBName,
+		MySQLDBName:   mysqlDBName,
 	}
 
 	conf := appConfig{

@@ -26,6 +26,7 @@ func InitRouter() *gin.Engine {
 	// TODO:
 	// 別ファイルにした方がいいかも
 	mySQLConn := infra.NewMySQLConnector()
+
 	userRepository := mysql.NewUserRepository(mySQLConn.Conn)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 

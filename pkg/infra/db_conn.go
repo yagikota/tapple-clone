@@ -3,6 +3,8 @@ package infra
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/configs"
 )
@@ -22,12 +24,17 @@ func NewMySQLConnector() *MySQLConnector {
 	if err != nil {
 		panic(err)
 	}
-	defer conn.Close()
+
+	// TODO: 取り扱い調べる
+	// defer conn.Close()
 
 	// mysqlとの接続確認
 	if err := conn.Ping(); err != nil {
 		panic(err)
 	}
+
+	// 確認用
+	log.Println(dsn)
 
 	return &MySQLConnector{
 		Conn: conn,
@@ -39,7 +46,15 @@ func mysqlConnInfo(mysqlInfo configs.MysqlInfo) string {
 		mysqlInfo.MySQLUser,
 		mysqlInfo.MySQLPassWord,
 		mysqlInfo.MySQLAddr,
-		mysqlInfo.MySQLBDName)
+		mysqlInfo.MySQLDBName)
 
 	return dataSourceName
+}
+
+type User struct {
+	ID        int
+	Name      string
+	Icon      string
+	CreatedAt time.Time
+	DeletedAt sql.NullTime
 }
