@@ -9,6 +9,29 @@ https://docs.docker.com/get-docker/ <br><br>
 $ cp .env.example .env
 ```
 
+[SQLBoiler](https://github.com/volatiletech/sqlboiler#getting-started)をインストール
+```shell
+# slqboilerのインストール
+$ go install github.com/volatiletech/sqlboiler/v4@latest
+# driverのインストール(今回はMySQL)
+$ go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
+```
+
+SQLBoilerによるコード自動生成は以下のコマンドを実行
+```MakeFile
+make generate-model
+```
+
+golang-migrateをインストール
+
+https://formulae.brew.sh/formula/golang-migrate
+
+migrationは以下のコマンドを実行(cf. https://ichi-station.com/golang-migrate/)
+
+```shell
+migrate -path migration/ddl/ -database 'mysql://root:@tcp(localhost:3306)/tapple_c?parseTime=true&loc=Local' up
+```
+
 ## Usage
 
 DB起動
