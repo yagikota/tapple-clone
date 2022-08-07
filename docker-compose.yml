@@ -18,6 +18,8 @@ services:
       - mysql
 
   mysql:
+    # M1 Mac User, TODO: Makefileで設定できるようにする
+    platform: linux/x86_64
     image: mysql:5.7
     ports:
       - ${MYSQL_PORT}:${MYSQL_PORT}
