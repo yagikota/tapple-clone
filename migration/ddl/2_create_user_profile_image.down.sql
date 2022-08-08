@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS `tapple_c`.`user_profile_image`;
