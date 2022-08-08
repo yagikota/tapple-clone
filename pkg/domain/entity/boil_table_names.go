@@ -4,11 +4,13 @@
 package entity
 
 var TableNames = struct {
-	SchemaMigrations string
-	User             string
-	UserProfileImage string
+	Messages  string
+	RoomUsers string
+	Rooms     string
+	Users     string
 }{
-	SchemaMigrations: "schema_migrations",
-	User:             "user",
-	UserProfileImage: "user_profile_image",
+	Messages:  "messages",
+	RoomUsers: "room_users",
+	Rooms:     "rooms",
+	Users:     "users",
 }
