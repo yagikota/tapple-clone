@@ -16,8 +16,9 @@ import (
 
 func main() {
 	router := adaptorHTTP.InitRouter()
-	addr := configs.LoadConfig().MySQLInfo.Addr
+	addr := configs.LoadConfig().HTTPInfo.Addr
 	srv := &http.Server{
+		// TODO: 修正
 		Addr:           addr,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,

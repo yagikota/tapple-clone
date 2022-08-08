@@ -21,6 +21,7 @@ func NewUserHandler(uu usecase.IUserUsecase) *userHandler {
 func (uh *userHandler) getUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// パスパラメータ取得
+		// TODO: usecaseに渡す前にvalidation
 		userID, err := strconv.Atoi(c.Param("user_id"))
 		if err != nil {
 			c.Status(http.StatusInternalServerError)
