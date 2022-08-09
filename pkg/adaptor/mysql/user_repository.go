@@ -21,14 +21,14 @@ func NewUserRepository(db *sql.DB) domain.IUserRepository {
 	}
 }
 
-func (ur *userRepository) User(ctx context.Context, userID int) (*entity.User, error) {
+func (ur *userRepository) FindByUserID(ctx context.Context, userID int) (*entity.User, error) {
 	whereID := fmt.Sprintf("%s = ?", entity.UserColumns.ID)
 	return entity.Users(
 		qm.Where(whereID, userID),
 	).One(ctx, ur.DB)
 }
 
-func (ur *userRepository) Users(ctx context.Context) (entity.UserSlice, error) {
+func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error) {
 	boil.DebugMode = true
 	return entity.Users().All(ctx, ur.DB)
 }

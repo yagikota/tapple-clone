@@ -18,7 +18,7 @@ func NewUserHandler(uu usecase.IUserUsecase) *userHandler {
 	}
 }
 
-func (uh *userHandler) getUser() gin.HandlerFunc {
+func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// パスパラメータ取得
 		// TODO: usecaseに渡す前にvalidation
@@ -28,7 +28,7 @@ func (uh *userHandler) getUser() gin.HandlerFunc {
 			return
 		}
 
-		user, err := uh.uUsecase.User(c, userID)
+		user, err := uh.uUsecase.FindByUserID(c, userID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -38,10 +38,10 @@ func (uh *userHandler) getUser() gin.HandlerFunc {
 	}
 }
 
-func (uh *userHandler) getUsers() gin.HandlerFunc {
+func (uh *userHandler) findUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		user, err := uh.uUsecase.Users(c)
+		user, err := uh.uUsecase.FindAll(c)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return

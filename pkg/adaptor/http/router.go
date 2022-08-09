@@ -43,10 +43,10 @@ func InitRouter() *gin.Engine {
 
 		// 確認用API
 		// /users
-		usersGroup.GET(relativePath, userHandler.getUsers())
+		usersGroup.GET(relativePath, userHandler.findUsers())
 		// /users/{user_id}
 		relativePath = fmt.Sprintf("/:%s", userIDParam)
-		usersGroup.GET(relativePath, userHandler.getUser())
+		usersGroup.GET(relativePath, userHandler.findUserByUserID())
 	}
 
 	return router

@@ -7,6 +7,6 @@ import (
 )
 
 type IUserRepository interface {
-	User(ctx context.Context, userID int) (*entity.User, error) // 1ユーザー取得
-	Users(ctx context.Context) (entity.UserSlice, error)        // 全ユーザー取得
+	FindByUserID(ctx context.Context, userID int) (*entity.User, error) // 1ユーザー取得
+	FindAll(ctx context.Context) (entity.UserSlice, error)              // 全ユーザー取得
 }

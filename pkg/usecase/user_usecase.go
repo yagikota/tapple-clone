@@ -8,8 +8,8 @@ import (
 )
 
 type IUserUsecase interface {
-	User(ctx context.Context, userID int) (*model.User, error)
-	Users(ctx context.Context) (model.UserSlice, error)
+	FindByUserID(ctx context.Context, userID int) (*model.User, error)
+	FindAll(ctx context.Context) (model.UserSlice, error)
 }
 
 type userUsecase struct {
@@ -22,16 +22,16 @@ func NewUserUsecase(uService service.IUserService) IUserUsecase {
 	}
 }
 
-func (uu *userUsecase) User(ctx context.Context, userID int) (*model.User, error) {
-	entity, err := uu.userService.User(ctx, userID)
+func (uu *userUsecase) FindByUserID(ctx context.Context, userID int) (*model.User, error) {
+	entity, err := uu.userService.FindByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 	return model.UserFromEntity(entity), err
 }
 
-func (uu *userUsecase) Users(ctx context.Context) (model.UserSlice, error) {
-	entities, err := uu.userService.Users(ctx)
+func (uu *userUsecase) FindAll(ctx context.Context) (model.UserSlice, error) {
+	entities, err := uu.userService.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
