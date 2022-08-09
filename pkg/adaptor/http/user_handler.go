@@ -24,12 +24,27 @@ func (uh *userHandler) getUser() gin.HandlerFunc {
 		// TODO: usecaseに渡す前にvalidation
 		userID, err := strconv.Atoi(c.Param("user_id"))
 		if err != nil {
-			c.Status(http.StatusInternalServerError)
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
 		}
 
 		user, err := uh.uUsecase.User(c, userID)
 		if err != nil {
-			c.Status(http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, user)
+	}
+}
+
+func (uh *userHandler) getUsers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		user, err := uh.uUsecase.Users(c)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 
 		c.JSON(http.StatusOK, user)

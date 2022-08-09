@@ -36,6 +36,7 @@ func (uu *userUsecase) Users(ctx context.Context) (model.UserSlice, error) {
 		return nil, err
 	}
 
+	// メモリ確保
 	uSlice := make(model.UserSlice, 0, len(entities))
 	for _, entity := range entities {
 		uSlice = append(uSlice, model.UserFromEntity(entity))

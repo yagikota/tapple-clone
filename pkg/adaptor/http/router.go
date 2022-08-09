@@ -38,10 +38,14 @@ func InitRouter() *gin.Engine {
 
 	usersGroup := router.Group(userAPIRoot)
 	{
+		relativePath := ""
 		userHandler := NewUserHandler(userUsecase)
 
+		// 確認用API
+		// /users
+		usersGroup.GET(relativePath, userHandler.getUsers())
 		// /users/{user_id}
-		relativePath := fmt.Sprintf("/:%s", userIDParam)
+		relativePath = fmt.Sprintf("/:%s", userIDParam)
 		usersGroup.GET(relativePath, userHandler.getUser())
 	}
 

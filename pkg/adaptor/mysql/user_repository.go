@@ -7,6 +7,7 @@ import (
 
 	"github.com/CyberAgentHack/2208-ace-go-server/domain"
 	"github.com/CyberAgentHack/2208-ace-go-server/domain/entity"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
@@ -24,10 +25,10 @@ func (ur *userRepository) User(ctx context.Context, userID int) (*entity.User, e
 	whereID := fmt.Sprintf("%s = ?", entity.UserColumns.ID)
 	return entity.Users(
 		qm.Where(whereID, userID),
-		qm.Load(entity.UserRels.UserProfileImages),
 	).One(ctx, ur.DB)
 }
 
 func (ur *userRepository) Users(ctx context.Context) (entity.UserSlice, error) {
+	boil.DebugMode = true
 	return entity.Users().All(ctx, ur.DB)
 }
