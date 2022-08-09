@@ -2,7 +2,9 @@ include .env
 
 GO_BIN:=$(shell go env GOPATH)/bin
 WD:=$(shell pwd)
+MYSQL_INFO:=-h 127.0.0.1 -P 3306 -u root
 DB_NAME:=tapple_c
+DML_DIR:=./migration/dml
 
 .PHONY: help
 help: ## 使い方
@@ -28,18 +30,18 @@ migrate: ## migrate
 # ローカルデータ挿入のコマンド
 .PHONY: seed
 seed: ## seed
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_users.up.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_rooms.up.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_room_users.up.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_messages.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_users.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_rooms.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_room_users.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_messages.up.sql
 
 # ローカルデータDLETEのコマンド
 .PHONY: delete
 delete: ## delete
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_messages.down.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_room_users.down.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_rooms.down.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_users.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_messages.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_room_users.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_rooms.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_users.down.sql
 
 # sqlboilerでmodel自動生成
 .PHONY: generate-model
