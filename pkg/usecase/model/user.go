@@ -8,10 +8,12 @@ import (
 
 // domain entityとは別で定義する。
 
+type UserID int
+
 type UserSlice []*User
 
 type User struct {
-	UserID   int       `json:"user_id"`
+	ID       UserID    `json:"id"`
 	Name     string    `json:"name"`
 	Icon     string    `json:"icon"`
 	Gender   int       `json:"gender"`
@@ -21,7 +23,7 @@ type User struct {
 
 func UserFromEntity(entity *entity.User) *User {
 	u := &User{
-		UserID:   int(entity.ID),
+		ID:       UserID(entity.ID),
 		Name:     entity.Name,
 		Icon:     entity.Icon,
 		Gender:   entity.Gender,

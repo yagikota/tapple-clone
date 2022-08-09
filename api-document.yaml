@@ -93,7 +93,7 @@ components:
     UserRoomGetResponse:
       type: object
       properties:
-        room_id:
+        id:
           type: integer
           example: 1
           description: ルームID
@@ -164,7 +164,7 @@ components:
     RoomInfo:
       type: object
       properties:
-        room_id:
+        id:
           type: integer
           example: 1
           description: ルームID
@@ -194,24 +194,26 @@ components:
     MessageCreateResponse:
       type: object
       properties:
-        room_id:
-          type: integer
-          example: 1
-          description: ルームID
-        user_id:
-          type: integer
-          example: 1
-          description: ユーザーID
+        # パスパラメータに入っているからいらないかも
+        # room_id:
+        #   type: integer
+        #   example: 1
+        #   description: ルームID
+        # user_id:
+        #   type: integer
+        #   example: 1
+        #   description: ユーザーID
         content:
           type: string
           description: メッセージ内容
     UserProfileImageCreateResponse:
       type: object
       properties:
-        user_id:
-          type: integer
-          example: 1
-          description: ユーザーID
+        # パスパラメータに入っているからいらない
+        # user_id:
+        #   type: integer
+        #   example: 1
+        #   description: ユーザーID
         image:
           type: array
           items:
