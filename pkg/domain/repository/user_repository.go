@@ -3,7 +3,7 @@ package domain
 import (
 	"context"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/domain/entity"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 )
 
 type IUserRepository interface {

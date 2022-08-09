@@ -3,9 +3,9 @@ package http
 import (
 	"fmt"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/adaptor/mysql"
-	"github.com/CyberAgentHack/2208-ace-go-server/infra"
-	"github.com/CyberAgentHack/2208-ace-go-server/usecase"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/mysql"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/infra"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
 	"github.com/gin-gonic/gin"
 )
 

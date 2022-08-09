@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/configs"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/configs"
 )
 
 const driverName = "mysql"

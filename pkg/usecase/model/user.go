@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/domain/entity"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 )
 
 // domain entityとは別で定義する。

@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/domain/service"
-	"github.com/CyberAgentHack/2208-ace-go-server/usecase/model"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
 )
 
 type IUserUsecase interface {
