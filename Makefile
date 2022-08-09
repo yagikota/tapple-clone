@@ -1,6 +1,8 @@
 include .env
 
 GO_BIN:=$(shell go env GOPATH)/bin
+WD:=$(shell pwd)
+DB_NAME:=tapple_c
 
 .PHONY: help
 help: ## 使い方
@@ -18,7 +20,12 @@ run-go: ## 起動
 down: ## down
 	docker-compose down
 
-# TODO: golang-migrateのmigrationコマンド作成
+# テーブル作成
+.PHONY: migrate
+migrate: ## migrate
+	migrate -path migration/ddl/ -database 'mysql://root:@tcp(localhost:3306)/$(DB_NAME)?parseTime=true&loc=Local' up
+
+# TODO: ローカルデータ挿入のコマンド
 
 # sqlboilerでmodel自動生成
 .PHONY: generate-model
