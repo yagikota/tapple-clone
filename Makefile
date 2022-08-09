@@ -25,13 +25,21 @@ down: ## down
 migrate: ## migrate
 	migrate -path migration/ddl/ -database 'mysql://root:@tcp(localhost:3306)/$(DB_NAME)?parseTime=true&loc=Local' up
 
-# TODO: ローカルデータ挿入のコマンド
+# ローカルデータ挿入のコマンド
 .PHONY: seed
 seed: ## seed
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_users.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_rooms.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_room_users.sql
-	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_messages.sql
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_users.up.sql
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_rooms.up.sql
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_room_users.up.sql
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_messages.up.sql
+
+# ローカルデータDLETEのコマンド
+.PHONY: delete
+delete: ## delete
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_messages.down.sql
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_room_users.down.sql
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_rooms.down.sql
+	mysql -h 127.0.0.1 -P 3306 -u root tapple_c < migration/dml/dummy_users.down.sql
 
 # sqlboilerでmodel自動生成
 .PHONY: generate-model
