@@ -49,6 +49,16 @@ $ make run-go
 $ make down
 ```
 
+ダミーデータ挿入
+```shell script
+$ make seed
+```
+
+DBデータ削除
+```shell script
+$ make delete
+```
+
 # ブランチ名規約(適宜追加してください)
 
 | ブランチ名| 説明|
