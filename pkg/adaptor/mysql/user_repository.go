@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/domain"
 	"github.com/CyberAgentHack/2208-ace-go-server/domain/entity"
+	domain "github.com/CyberAgentHack/2208-ace-go-server/domain/repository"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )

@@ -6,8 +6,8 @@ package service
 import (
 	"context"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/domain"
 	"github.com/CyberAgentHack/2208-ace-go-server/domain/entity"
+	domain "github.com/CyberAgentHack/2208-ace-go-server/domain/repository"
 )
 
 type IUserService interface {
