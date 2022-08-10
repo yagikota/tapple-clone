@@ -93,7 +93,7 @@ components:
     UserRoomGetResponse:
       type: object
       properties:
-        room_id:
+        id:
           type: integer
           example: 1
           description: ルームID
@@ -154,9 +154,9 @@ components:
           example: 22
           description: 年齢
         location:
-          type: string
-          example: 東京都
-          description: 所在地
+          type: integer
+          example: 34
+          description: 都道府県コード(その他:0, 北海道:1~沖縄:47)
         icon:
           type: string
           example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
@@ -164,7 +164,7 @@ components:
     RoomInfo:
       type: object
       properties:
-        room_id:
+        id:
           type: integer
           example: 1
           description: ルームID
@@ -181,10 +181,6 @@ components:
           type: integer
           example: 3
           description: 未読件数
-        is_pinned:
-          type: boolean
-          example: true
-          description: ピン留め(0 されていない, 1 されている)
         user:
           $ref: "#/components/schemas/RoomUserDetailInfo"
     RoomListResponse:
@@ -198,24 +194,26 @@ components:
     MessageCreateResponse:
       type: object
       properties:
-        room_id:
-          type: integer
-          example: 1
-          description: ルームID
-        user_id:
-          type: integer
-          example: 1
-          description: ユーザーID
+        # パスパラメータに入っているからいらないかも
+        # room_id:
+        #   type: integer
+        #   example: 1
+        #   description: ルームID
+        # user_id:
+        #   type: integer
+        #   example: 1
+        #   description: ユーザーID
         content:
           type: string
           description: メッセージ内容
     UserProfileImageCreateResponse:
       type: object
       properties:
-        user_id:
-          type: integer
-          example: 1
-          description: ユーザーID
+        # パスパラメータに入っているからいらない
+        # user_id:
+        #   type: integer
+        #   example: 1
+        #   description: ユーザーID
         image:
           type: array
           items:
@@ -226,7 +224,9 @@ components:
       properties:
         id:
           type: integer
+          example: 1
           description: 写真ID
         path:
           type: string
+          example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
           description: 写真URL
