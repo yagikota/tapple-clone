@@ -198,37 +198,23 @@ components:
     MessageCreateResponse:
       type: object
       properties:
-        # パスパラメータに入っているからいらないかも
-        # room_id:
-        #   type: integer
-        #   example: 1
-        #   description: ルームID
-        # user_id:
-        #   type: integer
-        #   example: 1
-        #   description: ユーザーID
         content:
           type: string
           description: メッセージ内容
     UserProfileImageCreateResponse:
       type: object
       properties:
-        # パスパラメータに入っているからいらない
-        # user_id:
-        #   type: integer
-        #   example: 1
-        #   description: ユーザーID
         image:
-          type: array
-          items:
-            $ref: "#/components/schemas/ProfileImageCreateResponse"
+          $ref: "#/components/schemas/ProfileImageCreateResponse"
           description: 保存する写真の情報
     ProfileImageCreateResponse:
       type: object
       properties:
         id:
           type: integer
+          example: 1
           description: 写真ID
         path:
           type: string
+          example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
           description: 写真URL
