@@ -53,5 +53,7 @@ func RoomFromEntity(entity *entity.Room) *Room {
 		CreatedAt: entity.CreatedAt,
 	}
 
+	// u.Unread = 2 //entity.unread
+
 	return u
 }

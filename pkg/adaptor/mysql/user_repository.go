@@ -35,8 +35,10 @@ func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error)
 
 func (ur *userRepository) FindAllRooms(ctx context.Context, UserID int) (entity.RoomSlice, error) {
 	boil.DebugMode = true
-	whereUserID := fmt.Sprintf("%s = ?", entity.UserColumns.ID)
-	return entity.Rooms(
-		qm.Where(whereUserID, UserID),
-	).All(ctx, ur.DB)
+	// whereUserID := fmt.Sprintf("%s = ?", entity.MessageColumns.UserID)
+
+	// // 未読数取得
+	// fmt.Println(entity.Messages(qm.Where(whereUserID, UserID), qm.Where("is_read=?", false)).Count(ctx, ur.DB))
+
+	return entity.Rooms(qm.Load(entity.RoomRels.Messages, qm.OrderBy(entity.MessageColumns.CreatedAt+" DESC")), qm.Load(entity.RoomRels.RoomUsers, qm.And("user_id=?", 2))).All(ctx, ur.DB)
 }
