@@ -6,13 +6,13 @@ package service
 import (
 	"context"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/domain"
-	"github.com/CyberAgentHack/2208-ace-go-server/domain/entity"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	domain "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
 )
 
 type IUserService interface {
-	User(ctx context.Context, userID int) (*entity.User, error)
-	Users(ctx context.Context) (entity.UserSlice, error)
+	FindByUserID(ctx context.Context, userID int) (*entity.User, error)
+	FindAll(ctx context.Context) (entity.UserSlice, error)
 }
 
 type userService struct {
@@ -25,10 +25,10 @@ func NewUserService(ur domain.IUserRepository) IUserService {
 	}
 }
 
-func (us *userService) User(ctx context.Context, userID int) (*entity.User, error) {
-	return us.userRepository.User(ctx, userID)
+func (us *userService) FindByUserID(ctx context.Context, userID int) (*entity.User, error) {
+	return us.userRepository.FindByUserID(ctx, userID)
 }
 
-func (us *userService) Users(ctx context.Context) (entity.UserSlice, error) {
-	return us.userRepository.Users(ctx)
+func (us *userService) FindAll(ctx context.Context) (entity.UserSlice, error) {
+	return us.userRepository.FindAll(ctx)
 }

@@ -3,9 +3,9 @@ package http
 import (
 	"fmt"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/adaptor/mysql"
-	"github.com/CyberAgentHack/2208-ace-go-server/infra"
-	"github.com/CyberAgentHack/2208-ace-go-server/usecase"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/mysql"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/infra"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,11 +38,15 @@ func InitRouter() *gin.Engine {
 
 	usersGroup := router.Group(userAPIRoot)
 	{
+		relativePath := ""
 		userHandler := NewUserHandler(userUsecase)
 
+		// 確認用API
+		// /users
+		usersGroup.GET(relativePath, userHandler.findUsers())
 		// /users/{user_id}
-		relativePath := fmt.Sprintf("/:%s", userIDParam)
-		usersGroup.GET(relativePath, userHandler.getUser())
+		relativePath = fmt.Sprintf("/:%s", userIDParam)
+		usersGroup.GET(relativePath, userHandler.findUserByUserID())
 	}
 
 	return router

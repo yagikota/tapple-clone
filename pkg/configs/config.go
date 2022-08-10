@@ -5,11 +5,15 @@ import (
 )
 
 type appConfig struct {
+	HTTPInfo  *HTTPInfo
 	MySQLInfo *MysqlInfo
 }
 
+type HTTPInfo struct {
+	Addr string
+}
+
 type MysqlInfo struct {
-	Addr          string
 	MySQLUser     string
 	MySQLPassWord string
 	MySQLAddr     string
@@ -22,13 +26,17 @@ type MysqlInfo struct {
 
 func LoadConfig() *appConfig {
 	addr := ":" + os.Getenv("PORT")
+
+	httpInfo := &HTTPInfo{
+		Addr: addr,
+	}
+
 	mysqlUser := os.Getenv("MYSQL_USER")
 	mysqlPassword := os.Getenv("MYSQL_PASSWORD")
 	mysqlAddr := os.Getenv("MYSQL_ADDR")
 	mysqlDBName := os.Getenv("MYSQL_DATABASE")
 
-	dbInfo := MysqlInfo{
-		Addr:          addr,
+	dbInfo := &MysqlInfo{
 		MySQLUser:     mysqlUser,
 		MySQLPassWord: mysqlPassword,
 		MySQLAddr:     mysqlAddr,
@@ -36,7 +44,8 @@ func LoadConfig() *appConfig {
 	}
 
 	conf := appConfig{
-		MySQLInfo: &dbInfo,
+		MySQLInfo: dbInfo,
+		HTTPInfo:  httpInfo,
 	}
 
 	return &conf

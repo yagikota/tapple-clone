@@ -3,13 +3,13 @@ package usecase
 import (
 	"context"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/domain/service"
-	"github.com/CyberAgentHack/2208-ace-go-server/usecase/model"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
 )
 
 type IUserUsecase interface {
-	User(ctx context.Context, userID int) (*model.User, error)
-	Users(ctx context.Context) (model.UserSlice, error)
+	FindByUserID(ctx context.Context, userID int) (*model.User, error)
+	FindAll(ctx context.Context) (model.UserSlice, error)
 }
 
 type userUsecase struct {
@@ -22,20 +22,21 @@ func NewUserUsecase(uService service.IUserService) IUserUsecase {
 	}
 }
 
-func (uu *userUsecase) User(ctx context.Context, userID int) (*model.User, error) {
-	entity, err := uu.userService.User(ctx, userID)
+func (uu *userUsecase) FindByUserID(ctx context.Context, userID int) (*model.User, error) {
+	entity, err := uu.userService.FindByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 	return model.UserFromEntity(entity), err
 }
 
-func (uu *userUsecase) Users(ctx context.Context) (model.UserSlice, error) {
-	entities, err := uu.userService.Users(ctx)
+func (uu *userUsecase) FindAll(ctx context.Context) (model.UserSlice, error) {
+	entities, err := uu.userService.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
 
+	// メモリ確保
 	uSlice := make(model.UserSlice, 0, len(entities))
 	for _, entity := range entities {
 		uSlice = append(uSlice, model.UserFromEntity(entity))

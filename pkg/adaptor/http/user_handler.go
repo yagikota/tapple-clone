@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/usecase"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,17 +18,33 @@ func NewUserHandler(uu usecase.IUserUsecase) *userHandler {
 	}
 }
 
-func (uh *userHandler) getUser() gin.HandlerFunc {
+func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// パスパラメータ取得
+		// TODO: usecaseに渡す前にvalidation
 		userID, err := strconv.Atoi(c.Param("user_id"))
 		if err != nil {
-			c.Status(http.StatusInternalServerError)
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
 		}
 
-		user, err := uh.uUsecase.User(c, userID)
+		user, err := uh.uUsecase.FindByUserID(c, userID)
 		if err != nil {
-			c.Status(http.StatusInternalServerError)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, user)
+	}
+}
+
+func (uh *userHandler) findUsers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		user, err := uh.uUsecase.FindAll(c)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 
 		c.JSON(http.StatusOK, user)
