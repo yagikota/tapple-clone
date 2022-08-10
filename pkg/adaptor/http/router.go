@@ -12,7 +12,7 @@ import (
 const (
 	apiVersion      = "/v1"
 	healthCheckRoot = "/health_check"
-	userAPIRoot     = apiVersion + "/users"
+	usersAPIRoot    = apiVersion + "/users"
 	userIDParam     = "user_id"
 )
 
@@ -36,7 +36,7 @@ func InitRouter() *gin.Engine {
 		healthCheckGroup.GET(relativePath, healthCheck())
 	}
 
-	usersGroup := router.Group(userAPIRoot)
+	usersGroup := router.Group(usersAPIRoot)
 	{
 		relativePath := ""
 		userHandler := NewUserHandler(userUsecase)
@@ -47,6 +47,8 @@ func InitRouter() *gin.Engine {
 		// /users/{user_id}
 		relativePath = fmt.Sprintf("/:%s", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findUserByUserID())
+
+		relativePath = fmt.Sprintf("/:%s/rooms", userIDParam)
 	}
 
 	return router
