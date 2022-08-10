@@ -10,6 +10,7 @@ import (
 type IUserUsecase interface {
 	FindByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAll(ctx context.Context) (model.UserSlice, error)
+	FindAllRooms(ctx context.Context, UserID int) (model.RoomSlice, error)
 }
 
 type userUsecase struct {
@@ -43,4 +44,19 @@ func (uu *userUsecase) FindAll(ctx context.Context) (model.UserSlice, error) {
 	}
 
 	return uSlice, nil
+}
+
+func (uu *userUsecase) FindAllRooms(ctx context.Context, UserID int) (model.RoomSlice, error) {
+	entities, err := uu.userService.FindAllRooms(ctx, UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	// メモリ確保
+	rSlice := make(model.RoomSlice, 0, len(entities))
+	for _, entity := range entities {
+		rSlice = append(rSlice, model.RoomFromEntity(entity))
+	}
+
+	return rSlice, nil
 }

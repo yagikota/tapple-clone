@@ -32,3 +32,11 @@ func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error)
 	boil.DebugMode = true
 	return entity.Users().All(ctx, ur.DB)
 }
+
+func (ur *userRepository) FindAllRooms(ctx context.Context, UserID int) (entity.RoomSlice, error) {
+	boil.DebugMode = true
+	whereUserID := fmt.Sprintf("%s = ?", entity.UserColumns.ID)
+	return entity.Rooms(
+		qm.Where(whereUserID, UserID),
+	).All(ctx, ur.DB)
+}

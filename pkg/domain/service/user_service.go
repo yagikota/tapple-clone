@@ -13,6 +13,7 @@ import (
 type IUserService interface {
 	FindByUserID(ctx context.Context, userID int) (*entity.User, error)
 	FindAll(ctx context.Context) (entity.UserSlice, error)
+	FindAllRooms(ctx context.Context, UserID int) (entity.RoomSlice, error)
 }
 
 type userService struct {
@@ -31,4 +32,8 @@ func (us *userService) FindByUserID(ctx context.Context, userID int) (*entity.Us
 
 func (us *userService) FindAll(ctx context.Context) (entity.UserSlice, error) {
 	return us.userRepository.FindAll(ctx)
+}
+
+func (us *userService) FindAllRooms(ctx context.Context, UserID int) (entity.RoomSlice, error) {
+	return us.userRepository.FindAllRooms(ctx, UserID)
 }

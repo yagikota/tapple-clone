@@ -36,7 +36,7 @@ func UserFromEntity(entity *entity.User) *User {
 
 type RoomID int
 
-type RoomsSlice []*Room //
+type RoomSlice []*Room
 
 type Room struct {
 	ID            RoomID    `json:"id"`
