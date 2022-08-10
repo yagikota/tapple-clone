@@ -1,6 +1,10 @@
 include .env
 
 GO_BIN:=$(shell go env GOPATH)/bin
+WD:=$(shell pwd)
+MYSQL_INFO:=-h 127.0.0.1 -P 3306 -u root
+DB_NAME:=tapple_c
+DML_DIR:=./migration/dml
 
 .PHONY: help
 help: ## 使い方
@@ -18,7 +22,26 @@ run-go: ## 起動
 down: ## down
 	docker-compose down
 
-# TODO: golang-migrateのmigrationコマンド作成
+# テーブル作成
+.PHONY: migrate
+migrate: ## migrate
+	migrate -path migration/ddl/ -database 'mysql://root:@tcp(localhost:3306)/$(DB_NAME)?parseTime=true&loc=Local' up
+
+# ローカルデータ挿入のコマンド
+.PHONY: seed
+seed: ## seed
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_users.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_rooms.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_room_users.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_messages.up.sql
+
+# ローカルデータDLETEのコマンド
+.PHONY: delete
+delete: ## delete
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_messages.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_room_users.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_rooms.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_users.down.sql
 
 # sqlboilerでmodel自動生成
 .PHONY: generate-model
