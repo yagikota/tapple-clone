@@ -181,6 +181,10 @@ components:
           type: integer
           example: 3
           description: 未読件数
+        is_pinned:
+          type: boolean
+          example: true
+          description: ピン留め(0 されていない, 1 されている)
         user:
           $ref: "#/components/schemas/RoomUserDetailInfo"
     RoomListResponse:
