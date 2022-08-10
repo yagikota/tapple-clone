@@ -33,3 +33,25 @@ func UserFromEntity(entity *entity.User) *User {
 
 	return u
 }
+
+type RoomID int
+
+type RoomsSlice []*Room //
+
+type Room struct {
+	ID            RoomID    `json:"id"`
+	LatestMessage string    `json:"latest_message"`
+	CreatedAt     time.Time `json:"created_at"`
+	Unread        int       `json:"unread"`
+	IsPinned      bool      `json:"is_pinned"`
+	User          *User     `json:"user"`
+}
+
+func RoomFromEntity(entity *entity.Room) *Room {
+	u := &Room{
+		ID:        RoomID(entity.ID),
+		CreatedAt: entity.CreatedAt,
+	}
+
+	return u
+}
