@@ -1,33 +1,34 @@
 package model
 
-import "github.com/CyberAgentHack/2208-ace-go-server/domain/entity"
+import (
+	"time"
+
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+)
 
 // domain entityとは別で定義する。
+
+type UserID int
 
 type UserSlice []*User
 
 type User struct {
-	UserID        int                   `json:"user_id"`
-	Name          string                `json:"name"`
-	Icon          string                `json:"icon"`
-	ProfileImages UserProfileImageSlice `json:"profile_image"`
+	ID       UserID    `json:"id"`
+	Name     string    `json:"name"`
+	Icon     string    `json:"icon"`
+	Gender   int       `json:"gender"`
+	BirthDay time.Time `json:"birthday"`
+	Location int       `json:"location"`
 }
 
 func UserFromEntity(entity *entity.User) *User {
 	u := &User{
-		UserID: int(entity.ID),
-		Name:   entity.Name,
-		Icon:   entity.Icon,
-	}
-
-	if entity.R != nil {
-		if entity.R.UserProfileImages != nil {
-			imgSlice := make(UserProfileImageSlice, 0, len(entity.R.UserProfileImages))
-			for _, img := range entity.R.UserProfileImages {
-				imgSlice = append(imgSlice, UserProfileImageFromEntity(img))
-			}
-			u.ProfileImages = imgSlice
-		}
+		ID:       UserID(entity.ID),
+		Name:     entity.Name,
+		Icon:     entity.Icon,
+		Gender:   entity.Gender,
+		BirthDay: entity.Birthday,
+		Location: entity.Location,
 	}
 
 	return u

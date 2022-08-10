@@ -24,15 +24,23 @@ import (
 
 // User is an object representing the database table.
 type User struct { // ユーザーID
-	ID uint `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID int `boil:"id" json:"id" toml:"id" yaml:"id"`
 	// ユーザー名
 	Name string `boil:"name" json:"name" toml:"name" yaml:"name"`
 	// アイコンURL
 	Icon string `boil:"icon" json:"icon" toml:"icon" yaml:"icon"`
-	// 作成日時
+	// 性別（男: 0, 女: 1）
+	Gender int `boil:"gender" json:"gender" toml:"gender" yaml:"gender"`
+	// 誕生日
+	Birthday time.Time `boil:"birthday" json:"birthday" toml:"birthday" yaml:"birthday"`
+	// 所在地(0: その他, 北海道:1~沖縄: 47)
+	Location int `boil:"location" json:"location" toml:"location" yaml:"location"`
+	// ユーザー作成日時
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	// 論理削除日時
-	DeletedAt null.Time `boil:"deleted_at" json:"deleted_at,omitempty" toml:"deleted_at" yaml:"deleted_at,omitempty"`
+	// ユーザー更新日時
+	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	// ユーザー論理削除日時
+	DeteledAt null.Time `boil:"deteled_at" json:"deteled_at,omitempty" toml:"deteled_at" yaml:"deteled_at,omitempty"`
 
 	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -42,147 +50,83 @@ var UserColumns = struct {
 	ID        string
 	Name      string
 	Icon      string
+	Gender    string
+	Birthday  string
+	Location  string
 	CreatedAt string
-	DeletedAt string
+	UpdatedAt string
+	DeteledAt string
 }{
 	ID:        "id",
 	Name:      "name",
 	Icon:      "icon",
+	Gender:    "gender",
+	Birthday:  "birthday",
+	Location:  "location",
 	CreatedAt: "created_at",
-	DeletedAt: "deleted_at",
+	UpdatedAt: "updated_at",
+	DeteledAt: "deteled_at",
 }
 
 var UserTableColumns = struct {
 	ID        string
 	Name      string
 	Icon      string
+	Gender    string
+	Birthday  string
+	Location  string
 	CreatedAt string
-	DeletedAt string
+	UpdatedAt string
+	DeteledAt string
 }{
-	ID:        "user.id",
-	Name:      "user.name",
-	Icon:      "user.icon",
-	CreatedAt: "user.created_at",
-	DeletedAt: "user.deleted_at",
+	ID:        "users.id",
+	Name:      "users.name",
+	Icon:      "users.icon",
+	Gender:    "users.gender",
+	Birthday:  "users.birthday",
+	Location:  "users.location",
+	CreatedAt: "users.created_at",
+	UpdatedAt: "users.updated_at",
+	DeteledAt: "users.deteled_at",
 }
 
 // Generated where
 
-type whereHelperuint struct{ field string }
-
-func (w whereHelperuint) EQ(x uint) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperuint) NEQ(x uint) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperuint) LT(x uint) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperuint) LTE(x uint) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperuint) GT(x uint) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperuint) GTE(x uint) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperuint) IN(slice []uint) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperuint) NIN(slice []uint) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
-type whereHelperstring struct{ field string }
-
-func (w whereHelperstring) EQ(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperstring) NEQ(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperstring) LT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperstring) LTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperstring) GT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperstring) GTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperstring) IN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
-type whereHelpertime_Time struct{ field string }
-
-func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.EQ, x)
-}
-func (w whereHelpertime_Time) NEQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.NEQ, x)
-}
-func (w whereHelpertime_Time) LT(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpertime_Time) LTE(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpertime_Time) GT(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-type whereHelpernull_Time struct{ field string }
-
-func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_Time) NEQ(x null.Time) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_Time) LT(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_Time) LTE(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_Time) GT(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_Time) GTE(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-
 var UserWhere = struct {
-	ID        whereHelperuint
+	ID        whereHelperint
 	Name      whereHelperstring
 	Icon      whereHelperstring
+	Gender    whereHelperint
+	Birthday  whereHelpertime_Time
+	Location  whereHelperint
 	CreatedAt whereHelpertime_Time
-	DeletedAt whereHelpernull_Time
+	UpdatedAt whereHelpertime_Time
+	DeteledAt whereHelpernull_Time
 }{
-	ID:        whereHelperuint{field: "`user`.`id`"},
-	Name:      whereHelperstring{field: "`user`.`name`"},
-	Icon:      whereHelperstring{field: "`user`.`icon`"},
-	CreatedAt: whereHelpertime_Time{field: "`user`.`created_at`"},
-	DeletedAt: whereHelpernull_Time{field: "`user`.`deleted_at`"},
+	ID:        whereHelperint{field: "`users`.`id`"},
+	Name:      whereHelperstring{field: "`users`.`name`"},
+	Icon:      whereHelperstring{field: "`users`.`icon`"},
+	Gender:    whereHelperint{field: "`users`.`gender`"},
+	Birthday:  whereHelpertime_Time{field: "`users`.`birthday`"},
+	Location:  whereHelperint{field: "`users`.`location`"},
+	CreatedAt: whereHelpertime_Time{field: "`users`.`created_at`"},
+	UpdatedAt: whereHelpertime_Time{field: "`users`.`updated_at`"},
+	DeteledAt: whereHelpernull_Time{field: "`users`.`deteled_at`"},
 }
 
 // UserRels is where relationship names are stored.
 var UserRels = struct {
-	UserProfileImages string
+	Messages  string
+	RoomUsers string
 }{
-	UserProfileImages: "UserProfileImages",
+	Messages:  "Messages",
+	RoomUsers: "RoomUsers",
 }
 
 // userR is where relationships are stored.
 type userR struct {
-	UserProfileImages UserProfileImageSlice `boil:"UserProfileImages" json:"UserProfileImages" toml:"UserProfileImages" yaml:"UserProfileImages"`
+	Messages  MessageSlice  `boil:"Messages" json:"Messages" toml:"Messages" yaml:"Messages"`
+	RoomUsers RoomUserSlice `boil:"RoomUsers" json:"RoomUsers" toml:"RoomUsers" yaml:"RoomUsers"`
 }
 
 // NewStruct creates a new relationship struct
@@ -190,20 +134,27 @@ func (*userR) NewStruct() *userR {
 	return &userR{}
 }
 
-func (r *userR) GetUserProfileImages() UserProfileImageSlice {
+func (r *userR) GetMessages() MessageSlice {
 	if r == nil {
 		return nil
 	}
-	return r.UserProfileImages
+	return r.Messages
+}
+
+func (r *userR) GetRoomUsers() RoomUserSlice {
+	if r == nil {
+		return nil
+	}
+	return r.RoomUsers
 }
 
 // userL is where Load methods for each relationship are stored.
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"id", "name", "icon", "created_at", "deleted_at"}
-	userColumnsWithoutDefault = []string{"name", "icon", "deleted_at"}
-	userColumnsWithDefault    = []string{"id", "created_at"}
+	userAllColumns            = []string{"id", "name", "icon", "gender", "birthday", "location", "created_at", "updated_at", "deteled_at"}
+	userColumnsWithoutDefault = []string{"name", "icon", "gender", "birthday", "location", "deteled_at"}
+	userColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	userPrimaryKeyColumns     = []string{"id"}
 	userGeneratedColumns      = []string{}
 )
@@ -430,7 +381,7 @@ func (q userQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, e
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "entity: failed to execute a one query for user")
+		return nil, errors.Wrap(err, "entity: failed to execute a one query for users")
 	}
 
 	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
@@ -479,7 +430,7 @@ func (q userQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64,
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: failed to count user rows")
+		return 0, errors.Wrap(err, "entity: failed to count users rows")
 	}
 
 	return count, nil
@@ -500,29 +451,43 @@ func (q userQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool,
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return false, errors.Wrap(err, "entity: failed to check if user exists")
+		return false, errors.Wrap(err, "entity: failed to check if users exists")
 	}
 
 	return count > 0, nil
 }
 
-// UserProfileImages retrieves all the user_profile_image's UserProfileImages with an executor.
-func (o *User) UserProfileImages(mods ...qm.QueryMod) userProfileImageQuery {
+// Messages retrieves all the message's Messages with an executor.
+func (o *User) Messages(mods ...qm.QueryMod) messageQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("`user_profile_image`.`user_id`=?", o.ID),
+		qm.Where("`messages`.`user_id`=?", o.ID),
 	)
 
-	return UserProfileImages(queryMods...)
+	return Messages(queryMods...)
 }
 
-// LoadUserProfileImages allows an eager lookup of values, cached into the
+// RoomUsers retrieves all the room_user's RoomUsers with an executor.
+func (o *User) RoomUsers(mods ...qm.QueryMod) roomUserQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("`room_users`.`user_id`=?", o.ID),
+	)
+
+	return RoomUsers(queryMods...)
+}
+
+// LoadMessages allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (userL) LoadUserProfileImages(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUser interface{}, mods queries.Applicator) error {
+func (userL) LoadMessages(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUser interface{}, mods queries.Applicator) error {
 	var slice []*User
 	var object *User
 
@@ -576,8 +541,8 @@ func (userL) LoadUserProfileImages(ctx context.Context, e boil.ContextExecutor, 
 	}
 
 	query := NewQuery(
-		qm.From(`user_profile_image`),
-		qm.WhereIn(`user_profile_image.user_id in ?`, args...),
+		qm.From(`messages`),
+		qm.WhereIn(`messages.user_id in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -585,22 +550,22 @@ func (userL) LoadUserProfileImages(ctx context.Context, e boil.ContextExecutor, 
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load user_profile_image")
+		return errors.Wrap(err, "failed to eager load messages")
 	}
 
-	var resultSlice []*UserProfileImage
+	var resultSlice []*Message
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice user_profile_image")
+		return errors.Wrap(err, "failed to bind eager loaded slice messages")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on user_profile_image")
+		return errors.Wrap(err, "failed to close results in eager load on messages")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user_profile_image")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for messages")
 	}
 
-	if len(userProfileImageAfterSelectHooks) != 0 {
+	if len(messageAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -608,10 +573,10 @@ func (userL) LoadUserProfileImages(ctx context.Context, e boil.ContextExecutor, 
 		}
 	}
 	if singular {
-		object.R.UserProfileImages = resultSlice
+		object.R.Messages = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &userProfileImageR{}
+				foreign.R = &messageR{}
 			}
 			foreign.R.User = object
 		}
@@ -621,9 +586,9 @@ func (userL) LoadUserProfileImages(ctx context.Context, e boil.ContextExecutor, 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
 			if local.ID == foreign.UserID {
-				local.R.UserProfileImages = append(local.R.UserProfileImages, foreign)
+				local.R.Messages = append(local.R.Messages, foreign)
 				if foreign.R == nil {
-					foreign.R = &userProfileImageR{}
+					foreign.R = &messageR{}
 				}
 				foreign.R.User = local
 				break
@@ -634,20 +599,134 @@ func (userL) LoadUserProfileImages(ctx context.Context, e boil.ContextExecutor, 
 	return nil
 }
 
-// AddUserProfileImagesG adds the given related objects to the existing relationships
-// of the user, optionally inserting them as new records.
-// Appends related to o.R.UserProfileImages.
-// Sets related.R.User appropriately.
-// Uses the global database handle.
-func (o *User) AddUserProfileImagesG(ctx context.Context, insert bool, related ...*UserProfileImage) error {
-	return o.AddUserProfileImages(ctx, boil.GetContextDB(), insert, related...)
+// LoadRoomUsers allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (userL) LoadRoomUsers(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUser interface{}, mods queries.Applicator) error {
+	var slice []*User
+	var object *User
+
+	if singular {
+		var ok bool
+		object, ok = maybeUser.(*User)
+		if !ok {
+			object = new(User)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUser)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUser))
+			}
+		}
+	} else {
+		s, ok := maybeUser.(*[]*User)
+		if ok {
+			slice = *s
+		} else {
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUser)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUser))
+			}
+		}
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &userR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &userR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`room_users`),
+		qm.WhereIn(`room_users.user_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load room_users")
+	}
+
+	var resultSlice []*RoomUser
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice room_users")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on room_users")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for room_users")
+	}
+
+	if len(roomUserAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+	if singular {
+		object.R.RoomUsers = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &roomUserR{}
+			}
+			foreign.R.User = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.UserID {
+				local.R.RoomUsers = append(local.R.RoomUsers, foreign)
+				if foreign.R == nil {
+					foreign.R = &roomUserR{}
+				}
+				foreign.R.User = local
+				break
+			}
+		}
+	}
+
+	return nil
 }
 
-// AddUserProfileImages adds the given related objects to the existing relationships
+// AddMessagesG adds the given related objects to the existing relationships
 // of the user, optionally inserting them as new records.
-// Appends related to o.R.UserProfileImages.
+// Appends related to o.R.Messages.
 // Sets related.R.User appropriately.
-func (o *User) AddUserProfileImages(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserProfileImage) error {
+// Uses the global database handle.
+func (o *User) AddMessagesG(ctx context.Context, insert bool, related ...*Message) error {
+	return o.AddMessages(ctx, boil.GetContextDB(), insert, related...)
+}
+
+// AddMessages adds the given related objects to the existing relationships
+// of the user, optionally inserting them as new records.
+// Appends related to o.R.Messages.
+// Sets related.R.User appropriately.
+func (o *User) AddMessages(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Message) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -657,9 +736,9 @@ func (o *User) AddUserProfileImages(ctx context.Context, exec boil.ContextExecut
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE `user_profile_image` SET %s WHERE %s",
+				"UPDATE `messages` SET %s WHERE %s",
 				strmangle.SetParamNames("`", "`", 0, []string{"user_id"}),
-				strmangle.WhereClause("`", "`", 0, userProfileImagePrimaryKeyColumns),
+				strmangle.WhereClause("`", "`", 0, messagePrimaryKeyColumns),
 			)
 			values := []interface{}{o.ID, rel.ID}
 
@@ -678,15 +757,77 @@ func (o *User) AddUserProfileImages(ctx context.Context, exec boil.ContextExecut
 
 	if o.R == nil {
 		o.R = &userR{
-			UserProfileImages: related,
+			Messages: related,
 		}
 	} else {
-		o.R.UserProfileImages = append(o.R.UserProfileImages, related...)
+		o.R.Messages = append(o.R.Messages, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &userProfileImageR{
+			rel.R = &messageR{
+				User: o,
+			}
+		} else {
+			rel.R.User = o
+		}
+	}
+	return nil
+}
+
+// AddRoomUsersG adds the given related objects to the existing relationships
+// of the user, optionally inserting them as new records.
+// Appends related to o.R.RoomUsers.
+// Sets related.R.User appropriately.
+// Uses the global database handle.
+func (o *User) AddRoomUsersG(ctx context.Context, insert bool, related ...*RoomUser) error {
+	return o.AddRoomUsers(ctx, boil.GetContextDB(), insert, related...)
+}
+
+// AddRoomUsers adds the given related objects to the existing relationships
+// of the user, optionally inserting them as new records.
+// Appends related to o.R.RoomUsers.
+// Sets related.R.User appropriately.
+func (o *User) AddRoomUsers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RoomUser) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.UserID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE `room_users` SET %s WHERE %s",
+				strmangle.SetParamNames("`", "`", 0, []string{"user_id"}),
+				strmangle.WhereClause("`", "`", 0, roomUserPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.UserID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &userR{
+			RoomUsers: related,
+		}
+	} else {
+		o.R.RoomUsers = append(o.R.RoomUsers, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &roomUserR{
 				User: o,
 			}
 		} else {
@@ -698,23 +839,23 @@ func (o *User) AddUserProfileImages(ctx context.Context, exec boil.ContextExecut
 
 // Users retrieves all the records using an executor.
 func Users(mods ...qm.QueryMod) userQuery {
-	mods = append(mods, qm.From("`user`"), qmhelper.WhereIsNull("`user`.`deleted_at`"))
+	mods = append(mods, qm.From("`users`"))
 	q := NewQuery(mods...)
 	if len(queries.GetSelect(q)) == 0 {
-		queries.SetSelect(q, []string{"`user`.*"})
+		queries.SetSelect(q, []string{"`users`.*"})
 	}
 
 	return userQuery{q}
 }
 
 // FindUserG retrieves a single record by ID.
-func FindUserG(ctx context.Context, iD uint, selectCols ...string) (*User, error) {
+func FindUserG(ctx context.Context, iD int, selectCols ...string) (*User, error) {
 	return FindUser(ctx, boil.GetContextDB(), iD, selectCols...)
 }
 
 // FindUser retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindUser(ctx context.Context, exec boil.ContextExecutor, iD uint, selectCols ...string) (*User, error) {
+func FindUser(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*User, error) {
 	userObj := &User{}
 
 	sel := "*"
@@ -722,7 +863,7 @@ func FindUser(ctx context.Context, exec boil.ContextExecutor, iD uint, selectCol
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from `user` where `id`=? and `deleted_at` is null", sel,
+		"select %s from `users` where `id`=?", sel,
 	)
 
 	q := queries.Raw(query, iD)
@@ -732,7 +873,7 @@ func FindUser(ctx context.Context, exec boil.ContextExecutor, iD uint, selectCol
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "entity: unable to select from user")
+		return nil, errors.Wrap(err, "entity: unable to select from users")
 	}
 
 	if err = userObj.doAfterSelectHooks(ctx, exec); err != nil {
@@ -751,7 +892,7 @@ func (o *User) InsertG(ctx context.Context, columns boil.Columns) error {
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
 func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
-		return errors.New("entity: no user provided for insertion")
+		return errors.New("entity: no users provided for insertion")
 	}
 
 	var err error
@@ -760,6 +901,9 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
+		}
+		if o.UpdatedAt.IsZero() {
+			o.UpdatedAt = currTime
 		}
 	}
 
@@ -791,15 +935,15 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 			return err
 		}
 		if len(wl) != 0 {
-			cache.query = fmt.Sprintf("INSERT INTO `user` (`%s`) %%sVALUES (%s)%%s", strings.Join(wl, "`,`"), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
+			cache.query = fmt.Sprintf("INSERT INTO `users` (`%s`) %%sVALUES (%s)%%s", strings.Join(wl, "`,`"), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
 		} else {
-			cache.query = "INSERT INTO `user` () VALUES ()%s%s"
+			cache.query = "INSERT INTO `users` () VALUES ()%s%s"
 		}
 
 		var queryOutput, queryReturning string
 
 		if len(cache.retMapping) != 0 {
-			cache.retQuery = fmt.Sprintf("SELECT `%s` FROM `user` WHERE %s", strings.Join(returnColumns, "`,`"), strmangle.WhereClause("`", "`", 0, userPrimaryKeyColumns))
+			cache.retQuery = fmt.Sprintf("SELECT `%s` FROM `users` WHERE %s", strings.Join(returnColumns, "`,`"), strmangle.WhereClause("`", "`", 0, userPrimaryKeyColumns))
 		}
 
 		cache.query = fmt.Sprintf(cache.query, queryOutput, queryReturning)
@@ -816,7 +960,7 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 	result, err := exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
-		return errors.Wrap(err, "entity: unable to insert into user")
+		return errors.Wrap(err, "entity: unable to insert into users")
 	}
 
 	var lastID int64
@@ -831,7 +975,7 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		return ErrSyncFail
 	}
 
-	o.ID = uint(lastID)
+	o.ID = int(lastID)
 	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userMapping["id"] {
 		goto CacheNoHooks
 	}
@@ -847,7 +991,7 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 	}
 	err = exec.QueryRowContext(ctx, cache.retQuery, identifierCols...).Scan(queries.PtrsFromMapping(value, cache.retMapping)...)
 	if err != nil {
-		return errors.Wrap(err, "entity: unable to populate default values for user")
+		return errors.Wrap(err, "entity: unable to populate default values for users")
 	}
 
 CacheNoHooks:
@@ -870,6 +1014,12 @@ func (o *User) UpdateG(ctx context.Context, columns boil.Columns) (int64, error)
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		o.UpdatedAt = currTime
+	}
+
 	var err error
 	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
 		return 0, err
@@ -889,10 +1039,10 @@ func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
 		}
 		if len(wl) == 0 {
-			return 0, errors.New("entity: unable to update user, could not build whitelist")
+			return 0, errors.New("entity: unable to update users, could not build whitelist")
 		}
 
-		cache.query = fmt.Sprintf("UPDATE `user` SET %s WHERE %s",
+		cache.query = fmt.Sprintf("UPDATE `users` SET %s WHERE %s",
 			strmangle.SetParamNames("`", "`", 0, wl),
 			strmangle.WhereClause("`", "`", 0, userPrimaryKeyColumns),
 		)
@@ -912,12 +1062,12 @@ func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 	var result sql.Result
 	result, err = exec.ExecContext(ctx, cache.query, values...)
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: unable to update user row")
+		return 0, errors.Wrap(err, "entity: unable to update users row")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: failed to get rows affected by update for user")
+		return 0, errors.Wrap(err, "entity: failed to get rows affected by update for users")
 	}
 
 	if !cached {
@@ -940,12 +1090,12 @@ func (q userQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: unable to update all for user")
+		return 0, errors.Wrap(err, "entity: unable to update all for users")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: unable to retrieve rows affected for user")
+		return 0, errors.Wrap(err, "entity: unable to retrieve rows affected for users")
 	}
 
 	return rowsAff, nil
@@ -983,7 +1133,7 @@ func (o UserSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := fmt.Sprintf("UPDATE `user` SET %s WHERE %s",
+	sql := fmt.Sprintf("UPDATE `users` SET %s WHERE %s",
 		strmangle.SetParamNames("`", "`", 0, colNames),
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(o)))
 
@@ -1017,7 +1167,7 @@ var mySQLUserUniqueColumns = []string{
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
-		return errors.New("entity: no user provided for upsert")
+		return errors.New("entity: no users provided for upsert")
 	}
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
@@ -1025,6 +1175,7 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
+		o.UpdatedAt = currTime
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
@@ -1080,13 +1231,13 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 		)
 
 		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("entity: unable to upsert user, could not build update column list")
+			return errors.New("entity: unable to upsert users, could not build update column list")
 		}
 
 		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`user`", update, insert)
+		cache.query = buildUpsertQueryMySQL(dialect, "`users`", update, insert)
 		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `user` WHERE %s",
+			"SELECT %s FROM `users` WHERE %s",
 			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
 			strmangle.WhereClause("`", "`", 0, nzUniques),
 		)
@@ -1118,7 +1269,7 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 	result, err := exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
-		return errors.Wrap(err, "entity: unable to upsert for user")
+		return errors.Wrap(err, "entity: unable to upsert for users")
 	}
 
 	var lastID int64
@@ -1134,14 +1285,14 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 		return ErrSyncFail
 	}
 
-	o.ID = uint(lastID)
+	o.ID = int(lastID)
 	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userMapping["id"] {
 		goto CacheNoHooks
 	}
 
 	uniqueMap, err = queries.BindMapping(userType, userMapping, nzUniques)
 	if err != nil {
-		return errors.Wrap(err, "entity: unable to retrieve unique values for user")
+		return errors.Wrap(err, "entity: unable to retrieve unique values for users")
 	}
 	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
 
@@ -1152,7 +1303,7 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 	}
 	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
 	if err != nil {
-		return errors.Wrap(err, "entity: unable to populate default values for user")
+		return errors.Wrap(err, "entity: unable to populate default values for users")
 	}
 
 CacheNoHooks:
@@ -1167,13 +1318,13 @@ CacheNoHooks:
 
 // DeleteG deletes a single User record.
 // DeleteG will match against the primary key column to find the record to delete.
-func (o *User) DeleteG(ctx context.Context, hardDelete bool) (int64, error) {
-	return o.Delete(ctx, boil.GetContextDB(), hardDelete)
+func (o *User) DeleteG(ctx context.Context) (int64, error) {
+	return o.Delete(ctx, boil.GetContextDB())
 }
 
 // Delete deletes a single User record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (o *User) Delete(ctx context.Context, exec boil.ContextExecutor, hardDelete bool) (int64, error) {
+func (o *User) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("entity: no User provided for delete")
 	}
@@ -1182,26 +1333,8 @@ func (o *User) Delete(ctx context.Context, exec boil.ContextExecutor, hardDelete
 		return 0, err
 	}
 
-	var (
-		sql  string
-		args []interface{}
-	)
-	if hardDelete {
-		args = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), userPrimaryKeyMapping)
-		sql = "DELETE FROM `user` WHERE `id`=?"
-	} else {
-		currTime := time.Now().In(boil.GetLocation())
-		o.DeletedAt = null.TimeFrom(currTime)
-		wl := []string{"deleted_at"}
-		sql = fmt.Sprintf("UPDATE `user` SET %s WHERE `id`=?",
-			strmangle.SetParamNames("`", "`", 0, wl),
-		)
-		valueMapping, err := queries.BindMapping(userType, userMapping, append(wl, userPrimaryKeyColumns...))
-		if err != nil {
-			return 0, err
-		}
-		args = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), valueMapping)
-	}
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), userPrimaryKeyMapping)
+	sql := "DELETE FROM `users` WHERE `id`=?"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1210,12 +1343,12 @@ func (o *User) Delete(ctx context.Context, exec boil.ContextExecutor, hardDelete
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: unable to delete from user")
+		return 0, errors.Wrap(err, "entity: unable to delete from users")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: failed to get rows affected by delete for user")
+		return 0, errors.Wrap(err, "entity: failed to get rows affected by delete for users")
 	}
 
 	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
@@ -1225,43 +1358,38 @@ func (o *User) Delete(ctx context.Context, exec boil.ContextExecutor, hardDelete
 	return rowsAff, nil
 }
 
-func (q userQuery) DeleteAllG(ctx context.Context, hardDelete bool) (int64, error) {
-	return q.DeleteAll(ctx, boil.GetContextDB(), hardDelete)
+func (q userQuery) DeleteAllG(ctx context.Context) (int64, error) {
+	return q.DeleteAll(ctx, boil.GetContextDB())
 }
 
 // DeleteAll deletes all matching rows.
-func (q userQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor, hardDelete bool) (int64, error) {
+func (q userQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("entity: no userQuery provided for delete all")
 	}
 
-	if hardDelete {
-		queries.SetDelete(q.Query)
-	} else {
-		currTime := time.Now().In(boil.GetLocation())
-		queries.SetUpdate(q.Query, M{"deleted_at": currTime})
-	}
+	queries.SetDelete(q.Query)
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: unable to delete all from user")
+		return 0, errors.Wrap(err, "entity: unable to delete all from users")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: failed to get rows affected by deleteall for user")
+		return 0, errors.Wrap(err, "entity: failed to get rows affected by deleteall for users")
 	}
 
 	return rowsAff, nil
 }
 
 // DeleteAllG deletes all rows in the slice.
-func (o UserSlice) DeleteAllG(ctx context.Context, hardDelete bool) (int64, error) {
-	return o.DeleteAll(ctx, boil.GetContextDB(), hardDelete)
+func (o UserSlice) DeleteAllG(ctx context.Context) (int64, error) {
+	return o.DeleteAll(ctx, boil.GetContextDB())
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (o UserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor, hardDelete bool) (int64, error) {
+func (o UserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1274,31 +1402,14 @@ func (o UserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor, har
 		}
 	}
 
-	var (
-		sql  string
-		args []interface{}
-	)
-	if hardDelete {
-		for _, obj := range o {
-			pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
-			args = append(args, pkeyArgs...)
-		}
-		sql = "DELETE FROM `user` WHERE " +
-			strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(o))
-	} else {
-		currTime := time.Now().In(boil.GetLocation())
-		for _, obj := range o {
-			pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
-			args = append(args, pkeyArgs...)
-			obj.DeletedAt = null.TimeFrom(currTime)
-		}
-		wl := []string{"deleted_at"}
-		sql = fmt.Sprintf("UPDATE `user` SET %s WHERE "+
-			strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(o)),
-			strmangle.SetParamNames("`", "`", 0, wl),
-		)
-		args = append([]interface{}{currTime}, args...)
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
 	}
+
+	sql := "DELETE FROM `users` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(o))
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1312,7 +1423,7 @@ func (o UserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor, har
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "entity: failed to get rows affected by deleteall for user")
+		return 0, errors.Wrap(err, "entity: failed to get rows affected by deleteall for users")
 	}
 
 	if len(userAfterDeleteHooks) != 0 {
@@ -1371,9 +1482,8 @@ func (o *UserSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "SELECT `user`.* FROM `user` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(*o)) +
-		"and `deleted_at` is null"
+	sql := "SELECT `users`.* FROM `users` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(*o))
 
 	q := queries.Raw(sql, args...)
 
@@ -1388,14 +1498,14 @@ func (o *UserSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // UserExistsG checks if the User row exists.
-func UserExistsG(ctx context.Context, iD uint) (bool, error) {
+func UserExistsG(ctx context.Context, iD int) (bool, error) {
 	return UserExists(ctx, boil.GetContextDB(), iD)
 }
 
 // UserExists checks if the User row exists.
-func UserExists(ctx context.Context, exec boil.ContextExecutor, iD uint) (bool, error) {
+func UserExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from `user` where `id`=? and `deleted_at` is null limit 1)"
+	sql := "select exists(select 1 from `users` where `id`=? limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1406,7 +1516,7 @@ func UserExists(ctx context.Context, exec boil.ContextExecutor, iD uint) (bool, 
 
 	err := row.Scan(&exists)
 	if err != nil {
-		return false, errors.Wrap(err, "entity: unable to check if user exists")
+		return false, errors.Wrap(err, "entity: unable to check if users exists")
 	}
 
 	return exists, nil
