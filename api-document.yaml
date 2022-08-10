@@ -147,9 +147,10 @@ components:
           type: string
           example: かなこ
           description: 名前
-        age:
-          type: integer
-          example: 22
+        birthday:
+          type: string
+          example: "2000-08-19"
+          format: date-time
           description: 年齢
         location:
           type: integer
