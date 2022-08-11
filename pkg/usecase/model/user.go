@@ -63,6 +63,7 @@ type MessageSlice []*Message
 
 type Message struct {
 	ID        MessageID `json:"id,omitempty"`
+	UserID    int       `json:"user_id"`
 	Content   string    `json:"content"`
 	IsRead    bool      `json:"is_read"` //TODO:　一応返す　使わなかったら削除
 	CreatedAt time.Time `json:"created_at"`
@@ -70,9 +71,28 @@ type Message struct {
 
 func MessageFromEntity(entity *entity.Message) *Message {
 	m := &Message{
+		ID:        MessageID(entity.ID),
+		UserID:    entity.UserID,
 		Content:   entity.Content,
+		IsRead:    entity.IsRead,
 		CreatedAt: entity.CreatedAt,
 	}
 
 	return m
+}
+
+type RoomMessageSlice []*RoomMessage
+
+type RoomMessage struct {
+	ID       RoomID   `json:"id"`
+	Users    *User    `json:"users"`
+	Messages *Message `json:"messages"`
+}
+
+func RoomMessageFromEntity(entity *entity.Message) *RoomMessage {
+	rm := &RoomMessage{
+		ID: RoomID(entity.RoomID),
+	}
+
+	return rm
 }
