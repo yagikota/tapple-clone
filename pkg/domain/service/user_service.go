@@ -14,7 +14,7 @@ type IUserService interface {
 	FindByUserID(ctx context.Context, userID int) (*entity.User, error)
 	FindAll(ctx context.Context) (entity.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error)
-	FindAllRoomMessages(ctx context.Context, userID, roomID int) (entity.MessageSlice, error)
+	FindAllRoomMessages(ctx context.Context, userID, roomID int) (entity.RoomSlice, error)
 }
 
 type userService struct {
@@ -39,6 +39,6 @@ func (us *userService) FindAllRooms(ctx context.Context, userID int) (entity.Roo
 	return us.userRepository.FindAllRooms(ctx, userID)
 }
 
-func (us *userService) FindAllRoomMessages(ctx context.Context, userID, roomID int) (entity.MessageSlice, error) {
+func (us *userService) FindAllRoomMessages(ctx context.Context, userID, roomID int) (entity.RoomSlice, error) {
 	return us.userRepository.FindAllRoomMessages(ctx, userID, roomID)
 }

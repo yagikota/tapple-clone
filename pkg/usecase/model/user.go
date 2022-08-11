@@ -40,10 +40,11 @@ type RoomSlice []*Room
 
 type Room struct {
 	ID            RoomID   `json:"id"`
-	Unread        int      `json:"unread"`
-	IsPinned      bool     `json:"is_pinned"`
-	LatestMessage *Message `json:"latest_message"`
-	User          *User    `json:"user"`
+	Unread        int      `json:"unread,omitempty"`
+	IsPinned      bool     `json:"is_pinned,omitempty"`
+	LatestMessage *Message `json:"latest_message,omitempty"`
+	User          *User    `json:"user,omitempty"`
+	Message       *Message `json:"message,omitempty"`
 }
 
 func RoomFromEntity(entity *entity.Room) *Room {
@@ -81,18 +82,12 @@ func MessageFromEntity(entity *entity.Message) *Message {
 	return m
 }
 
-type RoomMessageSlice []*RoomMessage
-
-type RoomMessage struct {
-	ID       RoomID   `json:"id"`
-	Users    *User    `json:"users"`
-	Messages *Message `json:"messages"`
-}
-
-func RoomMessageFromEntity(entity *entity.Message) *RoomMessage {
-	rm := &RoomMessage{
-		ID: RoomID(entity.RoomID),
+func RoomMessageFromEntity(entity *entity.Room) *Room {
+	rm := &Room{
+		ID: RoomID(entity.ID),
 	}
+
+	// rm.Messages = MessageFromEntity(entity)
 
 	return rm
 }
