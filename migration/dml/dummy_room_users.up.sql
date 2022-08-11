@@ -11,7 +11,7 @@ VALUES (
         2,
         2,
         1,
-        0,
+        1,
         default,
         default,
         default
