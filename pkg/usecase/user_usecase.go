@@ -11,7 +11,8 @@ import (
 type IUserUsecase interface {
 	FindByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAll(ctx context.Context) (model.UserSlice, error)
-	FindAllRooms(ctx context.Context, UserID int) (model.RoomSlice, error)
+	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
+	FindAllRoomMessages(ctx context.Context, userID, roomID int) (model.RoomMessageSlice, error)
 }
 
 type userUsecase struct {
@@ -47,8 +48,8 @@ func (uu *userUsecase) FindAll(ctx context.Context) (model.UserSlice, error) {
 	return uSlice, nil
 }
 
-func (uu *userUsecase) FindAllRooms(ctx context.Context, UserID int) (model.RoomSlice, error) {
-	entities, err := uu.userService.FindAllRooms(ctx, UserID)
+func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error) {
+	entities, err := uu.userService.FindAllRooms(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -72,4 +73,19 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, UserID int) (model.Room
 	})
 
 	return rSlice, nil
+}
+
+func (uu *userUsecase) FindAllRoomMessages(ctx context.Context, userID, roomID int) (model.RoomMessageSlice, error) {
+	entities, err := uu.userService.FindAllRoomMessages(ctx, userID, roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	// メモリ確保
+	rmSlice := make(model.RoomMessageSlice, 0, len(entities))
+	for _, entity := range entities {
+		rmSlice = append(rmSlice, model.RoomMessageFromEntity(entity))
+	}
+
+	return rmSlice, nil
 }
