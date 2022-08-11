@@ -43,3 +43,7 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
 	).All(ctx, ur.DB)
 }
+
+func (ur *userRepository) FindAllRoomMessages(ctx context.Context, userID, roomID int) (entity.MessageSlice, error) {
+	return entity.Messages().All(ctx, ur.DB)
+}
