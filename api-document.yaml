@@ -121,6 +121,18 @@ components:
           example: "2020-01-31T23:59:59+09:00"
           format: date-time
           description: メッセージの送信日時
+    LatestMessageInfo:
+      type: object
+      properties:
+        content:
+          type: string
+          example: いつにしましょうか！
+          description: 最後のメッセージの内容
+        created_at:
+          type: string
+          example: "2020-01-31T23:59:59+09:00"
+          format: date-time
+          description: 最後のメッセージの送信日時
     RoomUserInfo:
       type: object
       properties:
@@ -167,15 +179,6 @@ components:
           type: integer
           example: 1
           description: ルームID
-        latest_message:
-          type: string
-          example: 最近は流行りのスイーツ探しにいいたりしています！
-          description: 最後のメッセージ
-        created_at:
-          type: string
-          example: "2020-01-31T23:59:59+09:00"
-          format: date-time
-          description: 最後のメッセージが送られた日時
         unread:
           type: integer
           example: 3
@@ -184,6 +187,8 @@ components:
           type: boolean
           example: true
           description: ピン留め(0 されていない, 1 されている)
+        latest_message:
+          $ref: "#/components/schemas/LatestMessageInfo"
         user:
           $ref: "#/components/schemas/RoomUserDetailInfo"
     RoomListResponse:
