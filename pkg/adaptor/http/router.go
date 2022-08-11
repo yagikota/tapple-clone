@@ -48,6 +48,7 @@ func InitRouter() *gin.Engine {
 		relativePath = fmt.Sprintf("/:%s", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findUserByUserID())
 
+		// /users/{user_id}/rooms
 		relativePath = fmt.Sprintf("/:%s/rooms", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findRooms())
 	}
