@@ -45,6 +45,7 @@ type Room struct {
 	LatestMessage *Message `json:"latest_message,omitempty"`
 	User          *User    `json:"user,omitempty"`
 	Message       *Message `json:"message,omitempty"`
+	Users         *User    `json:"users,omitempty"`
 }
 
 func RoomFromEntity(entity *entity.Room) *Room {
@@ -87,7 +88,11 @@ func RoomMessageFromEntity(entity *entity.Room) *Room {
 		ID: RoomID(entity.ID),
 	}
 
-	// rm.Messages = MessageFromEntity(entity)
+	// fmt.Println(len(entity.R.RoomUsers))
+	// uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
+	// for i := range entity.R.RoomUsers {
+	// 	uSlice = append(uSlice, UserFromEntity(entity.R.RoomUsers[i].R.User))
+	// }
 
 	return rm
 }
