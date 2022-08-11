@@ -14,6 +14,7 @@ const (
 	healthCheckRoot = "/health_check"
 	usersAPIRoot    = apiVersion + "/users"
 	userIDParam     = "user_id"
+	roomIDParam     = "room_id"
 )
 
 func InitRouter() *gin.Engine {
@@ -51,6 +52,10 @@ func InitRouter() *gin.Engine {
 		// /users/{user_id}/rooms
 		relativePath = fmt.Sprintf("/:%s/rooms", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findRooms())
+
+		// /users/{user_id}/rooms/{room_id}
+		relativePath = fmt.Sprintf("/:%s/rooms/:%s", userIDParam, roomIDParam)
+		usersGroup.GET(relativePath, userHandler.findMessages())
 	}
 
 	return router
