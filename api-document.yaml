@@ -1,8 +1,7 @@
 openapi: 3.0.2
 info:
   title: CA Tapple API
-  description: |-
-    <b>CA Tapple API仕様</b><br>
+  description: <b>CA Tapple API仕様</b><br>
   version: 1.0.0
 servers:
   - url: http://localhost:8080/
@@ -25,7 +24,7 @@ paths:
               $ref: "#/components/schemas/UserProfileImageCreateResponse"
         required: true
       responses:
-        200:
+        "200":
           description: A successful response.
           content: {}
       x-codegen-request-body-name: body
@@ -36,16 +35,22 @@ paths:
       summary: チャットルーム一覧表示API
       description: |
         指定したユーザーのチャットルームの一覧を取得します。
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
       responses:
-        200:
+        "200":
           description: A successful response.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoomListResponse"
-        400:
+                $ref: "#/components/schemas/UserRoomIndexResponse"
+        "400":
           description: Invalid ID supplied
-        404:
+        "404":
           description: Rooms not found
       x-codegen-request-body-name: body
   /users/{user_id}/rooms/{room_id}:
@@ -55,16 +60,27 @@ paths:
       summary: チャットルーム詳細表示API
       description: |
         指定したチャットルームのメッセージ内容を取得します。
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: room_id
+          schema:
+            type: string
+          required: true
       responses:
-        200:
+        "200":
           description: A successful response.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserRoomGetResponse"
-        400:
+                $ref: "#/components/schemas/UserRoomShowResponse"
+        "400":
           description: Invalid ID supplied
-        404:
+        "404":
           description: UserRooms not found
       x-codegen-request-body-name: body
   /users/{user_id}/rooms/{room_id}/messages:
@@ -74,6 +90,17 @@ paths:
       summary: メッセージ保存API
       description: |
         送信メッセージを保存します。
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: room_id
+          schema:
+            type: string
+          required: true
       requestBody:
         description: Request Body
         content:
@@ -82,13 +109,21 @@ paths:
               $ref: "#/components/schemas/MessageCreateResponse"
         required: true
       responses:
-        200:
+        "200":
           description: A successful response.
           content: {}
       x-codegen-request-body-name: body
 components:
   schemas:
-    UserRoomGetResponse:
+    UserRoomIndexResponse:
+      type: object
+      properties:
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoomInfo"
+          description: チャットルーム一覧
+    UserRoomShowResponse:
       type: object
       properties:
         id:
@@ -98,57 +133,33 @@ components:
         users:
           type: array
           items:
-            $ref: "#/components/schemas/RoomUserInfo"
+            $ref: "#/components/schemas/UserInfo"
           description: 同じチャットルームのユーザー
         messages:
           type: array
           items:
-            $ref: "#/components/schemas/MessageGetResponse"
+            $ref: "#/components/schemas/MessageInfo"
           description: チャットルーム内のメッセージの一覧
-    MessageGetResponse:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          example: 1
-          description: ユーザーID
-        content:
-          type: string
-          example: 予定いれておきます！
-          description: メッセージ内容
-        created_at:
-          type: string
-          example: "2020-01-31T23:59:59+09:00"
-          format: date-time
-          description: メッセージの送信日時
-    LatestMessageInfo:
-      type: object
-      properties:
-        content:
-          type: string
-          example: いつにしましょうか！
-          description: 最後のメッセージの内容
-        created_at:
-          type: string
-          example: "2020-01-31T23:59:59+09:00"
-          format: date-time
-          description: 最後のメッセージの送信日時
-    RoomUserInfo:
+    RoomInfo:
       type: object
       properties:
         id:
           type: integer
           example: 1
-          description: ユーザーID
-        name:
-          type: string
-          example: かなこ
-          description: 名前
-        icon:
-          type: string
-          example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
-          description: アイコン
-    RoomUserDetailInfo:
+          description: ルームID
+        unread:
+          type: integer
+          example: 3
+          description: 未読件数
+        is_pinned:
+          type: boolean
+          example: true
+          description: ピン留め(0 されていない, 1 されている)
+        latest_message:
+          $ref: "#/components/schemas/MessageInfo"
+        user:
+          $ref: "#/components/schemas/UserInfo"
+    UserInfo:
       type: object
       properties:
         id:
@@ -168,37 +179,38 @@ components:
           type: integer
           example: 34
           description: 都道府県コード(その他:0, 北海道:1~沖縄:47)
+        gender:
+          type: integer
+          example: 1
+          description: 性別(男性:1, 女性:2)
         icon:
           type: string
           example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
           description: アイコン
-    RoomInfo:
+    MessageInfo:
       type: object
       properties:
         id:
+          type: string
+          example: hoge
+          description: メッセージID
+        user_id:
           type: integer
           example: 1
-          description: ルームID
-        unread:
-          type: integer
-          example: 3
-          description: 未読件数
-        is_pinned:
+          description: ユーザーID
+        content:
+          type: string
+          example: 予定いれておきます！
+          description: メッセージ内容
+        is_read:
           type: boolean
-          example: true
-          description: ピン留め(0 されていない, 1 されている)
-        latest_message:
-          $ref: "#/components/schemas/LatestMessageInfo"
-        user:
-          $ref: "#/components/schemas/RoomUserDetailInfo"
-    RoomListResponse:
-      type: object
-      properties:
-        rooms:
-          type: array
-          items:
-            $ref: "#/components/schemas/RoomInfo"
-          description: チャットルーム一覧
+          example: false
+          description: 既読 | 未読
+        created_at:
+          type: string
+          example: "2020-01-31T23:59:59+09:00"
+          format: date-time
+          description: メッセージの送信日時
     MessageCreateResponse:
       type: object
       properties:
