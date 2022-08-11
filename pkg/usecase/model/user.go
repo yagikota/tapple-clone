@@ -39,21 +39,40 @@ type RoomID int
 type RoomSlice []*Room
 
 type Room struct {
-	ID            RoomID    `json:"id"`
-	LatestMessage string    `json:"latest_message"`
-	CreatedAt     time.Time `json:"created_at"`
-	Unread        int       `json:"unread"`
-	IsPinned      bool      `json:"is_pinned"`
-	User          *User     `json:"user"`
+	ID            RoomID   `json:"id"`
+	Unread        int      `json:"unread"`
+	IsPinned      bool     `json:"is_pinned"`
+	LatestMessage *Message `json:"latest_message"`
+	User          *User    `json:"user"`
 }
 
 func RoomFromEntity(entity *entity.Room) *Room {
-	u := &Room{
-		ID:        RoomID(entity.ID),
+	r := &Room{
+		ID: RoomID(entity.ID),
+	}
+	r.IsPinned = entity.R.RoomUsers[0].IsPinned
+	r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
+	r.User = UserFromEntity(entity.R.RoomUsers[0].R.User)
+
+	return r
+}
+
+type MessageID int
+
+type MessageSlice []*Message
+
+type Message struct {
+	ID        MessageID `json:"id,omitempty"`
+	Content   string    `json:"content"`
+	IsRead    bool      `json:"is_read"` //TODO:　一応返す　使わなかったら削除
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func MessageFromEntity(entity *entity.Message) *Message {
+	m := &Message{
+		Content:   entity.Content,
 		CreatedAt: entity.CreatedAt,
 	}
 
-	// u.Unread = 2 //entity.unread
-
-	return u
+	return m
 }

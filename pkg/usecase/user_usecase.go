@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"sort"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
@@ -57,6 +58,18 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, UserID int) (model.Room
 	for _, entity := range entities {
 		rSlice = append(rSlice, model.RoomFromEntity(entity))
 	}
+
+	sort.Slice(rSlice, func(i, j int) bool {
+		//is_pinnedがtrueを優先
+		if rSlice[i].IsPinned && !rSlice[j].IsPinned {
+			return true
+		} else if !rSlice[i].IsPinned && rSlice[j].IsPinned {
+			return false
+		}
+
+		//LatestMessageの降順
+		return rSlice[i].LatestMessage.CreatedAt.After(rSlice[j].LatestMessage.CreatedAt)
+	})
 
 	return rSlice, nil
 }
