@@ -47,5 +47,8 @@ func (ur *userRepository) FindAllRoomMessages(ctx context.Context, userID, roomI
 	whereRoomID := fmt.Sprintf("%s = ?", entity.RoomColumns.ID)
 	return entity.Rooms(
 		qm.Where(whereRoomID, roomID),
+		qm.Load(entity.RoomRels.RoomUsers),
+		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
+		qm.Load(entity.RoomRels.Messages),
 	).All(ctx, ur.DB)
 }
