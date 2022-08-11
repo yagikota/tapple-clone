@@ -33,12 +33,17 @@ func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error)
 	return entity.Users().All(ctx, ur.DB)
 }
 
-func (ur *userRepository) FindAllRooms(ctx context.Context, UserID int) (entity.RoomSlice, error) {
+func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) {
 	boil.DebugMode = true
-	// whereUserID := fmt.Sprintf("%s = ?", entity.MessageColumns.UserID)
 
-	// // 未読数取得
-	// fmt.Println(entity.Messages(qm.Where(whereUserID, UserID), qm.Where("is_read=?", false)).Count(ctx, ur.DB))
+	whereRoomID := fmt.Sprintf("%s = ?)", "rooms.id in (select room_id from room_users where user_id")
+	wherePartnerID := fmt.Sprintf("%s <> ?", entity.RoomUserColumns.UserID)
+	orderBy := fmt.Sprintf("%s DESC", entity.MessageColumns.CreatedAt)
 
-	return entity.Rooms(qm.Load(entity.RoomRels.Messages, qm.OrderBy(entity.MessageColumns.CreatedAt+" DESC")), qm.Load(entity.RoomRels.RoomUsers, qm.And("user_id=?", 2))).All(ctx, ur.DB)
+	return entity.Rooms(
+		qm.Where(whereRoomID, userID),
+		qm.Load(entity.RoomRels.Messages, qm.OrderBy(orderBy)),
+		qm.Load(entity.RoomRels.RoomUsers, qm.Where(wherePartnerID, userID)),
+		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
+	).All(ctx, ur.DB)
 }
