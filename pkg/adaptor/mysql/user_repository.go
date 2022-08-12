@@ -43,12 +43,12 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 	).All(ctx, ur.DB)
 }
 
-func (ur *userRepository) FindAllRoomMessages(ctx context.Context, userID, roomID int) (entity.RoomSlice, error) {
+func (ur *userRepository) FindAllRoomMessages(ctx context.Context, userID, roomID int) (*entity.Room, error) {
 	whereRoomID := fmt.Sprintf("%s = ?", entity.RoomColumns.ID)
 	return entity.Rooms(
 		qm.Where(whereRoomID, roomID),
 		qm.Load(entity.RoomRels.RoomUsers),
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
 		qm.Load(entity.RoomRels.Messages),
-	).All(ctx, ur.DB)
+	).One(ctx, ur.DB)
 }

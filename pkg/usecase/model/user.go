@@ -113,11 +113,5 @@ func RoomMessageFromEntity(entity *entity.Room) *Room {
 	}
 	rm.Messages = mSlice
 
-	// fmt.Println(len(entity.R.RoomUsers))
-	// uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
-	// for i := range entity.R.RoomUsers {
-	// 	uSlice = append(uSlice, UserFromEntity(entity.R.RoomUsers[i].R.User))
-	// }
-
 	return rm
 }

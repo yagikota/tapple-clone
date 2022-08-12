@@ -12,7 +12,7 @@ type IUserUsecase interface {
 	FindByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAll(ctx context.Context) (model.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
-	FindAllRoomMessages(ctx context.Context, userID, roomID int) (model.RoomSlice, error)
+	FindAllRoomMessages(ctx context.Context, userID, roomID int) (*model.Room, error)
 }
 
 type userUsecase struct {
@@ -75,17 +75,11 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (model.Room
 	return rSlice, nil
 }
 
-func (uu *userUsecase) FindAllRoomMessages(ctx context.Context, userID, roomID int) (model.RoomSlice, error) {
-	entities, err := uu.userService.FindAllRoomMessages(ctx, userID, roomID)
+func (uu *userUsecase) FindAllRoomMessages(ctx context.Context, userID, roomID int) (*model.Room, error) {
+	entity, err := uu.userService.FindAllRoomMessages(ctx, userID, roomID)
 	if err != nil {
 		return nil, err
 	}
 
-	// メモリ確保
-	mSlice := make(model.RoomSlice, 0, len(entities))
-	for _, entity := range entities {
-		mSlice = append(mSlice, model.RoomMessageFromEntity(entity))
-	}
-
-	return mSlice, nil
+	return model.RoomMessageFromEntity(entity), nil
 }
