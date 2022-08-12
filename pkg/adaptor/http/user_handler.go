@@ -68,3 +68,27 @@ func (uh *userHandler) findRooms() gin.HandlerFunc {
 		c.JSON(http.StatusOK, rooms)
 	}
 }
+
+func (uh *userHandler) findMessages() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		userID, err := strconv.Atoi(c.Param("user_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		roomID, err := strconv.Atoi(c.Param("room_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		messages, err := uh.uUsecase.FindAllRoomMessages(c, userID, roomID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, messages)
+	}
+}
