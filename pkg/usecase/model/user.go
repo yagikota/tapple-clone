@@ -95,18 +95,12 @@ func MessageFromEntity(entity *entity.Message) *Message {
 	return m
 }
 
-type RoomMessageSlice []*RoomMessage
-
-type RoomMessage struct {
-	ID       RoomID   `json:"id"`
-	Users    *User    `json:"users"`
-	Messages *Message `json:"messages"`
-}
-
-func RoomMessageFromEntity(entity *entity.Message) *RoomMessage {
-	rm := &RoomMessage{
-		ID: RoomID(entity.RoomID),
+func RoomMessageFromEntity(entity *entity.Room) *Room {
+	rm := &Room{
+		ID: RoomID(entity.ID),
 	}
+
+	// rm.Messages = MessageFromEntity(entity)
 
 	return rm
 }
