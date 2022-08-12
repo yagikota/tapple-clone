@@ -189,8 +189,10 @@ components:
           description: ピン留め(0 されていない, 1 されている)
         latest_message:
           $ref: "#/components/schemas/LatestMessageInfo"
-        user:
-          $ref: "#/components/schemas/RoomUserDetailInfo"
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoomUserDetailInfo"
     RoomListResponse:
       type: object
       properties:
