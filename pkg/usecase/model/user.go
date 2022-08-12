@@ -39,20 +39,34 @@ type RoomID int
 type RoomSlice []*Room
 
 type Room struct {
-	ID            RoomID   `json:"id"`
-	Unread        int      `json:"unread"`
-	IsPinned      bool     `json:"is_pinned"`
-	LatestMessage *Message `json:"latest_message"`
-	User          *User    `json:"user"`
+	ID            RoomID    `json:"id"`
+	Unread        int       `json:"unread"`
+	IsPinned      bool      `json:"is_pinned"`
+	LatestMessage *Message  `json:"latest_message"`
+	Users         UserSlice `json:"users"`
 }
 
 func RoomFromEntity(entity *entity.Room) *Room {
 	r := &Room{
 		ID: RoomID(entity.ID),
 	}
-	r.IsPinned = entity.R.RoomUsers[0].IsPinned
-	r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
-	r.User = UserFromEntity(entity.R.RoomUsers[0].R.User)
+	if entity.R != nil {
+		if len(entity.R.RoomUsers) != 0 {
+			r.IsPinned = entity.R.RoomUsers[0].IsPinned
+		}
+		if len(entity.R.Messages) != 0 {
+			r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
+		}
+		if len(entity.R.RoomUsers) != 0 {
+			if entity.R.RoomUsers != nil {
+				uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
+				for i := range entity.R.RoomUsers {
+					uSlice = append(uSlice, UserFromEntity(entity.R.RoomUsers[i].R.User))
+				}
+				r.Users = uSlice
+			}
+		}
+	}
 
 	return r
 }

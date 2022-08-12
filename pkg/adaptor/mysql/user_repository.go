@@ -33,13 +33,12 @@ func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error)
 
 func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) {
 	whereRoomID := fmt.Sprintf("%s = ?)", "rooms.id in (select room_id from room_users where user_id")
-	wherePartnerID := fmt.Sprintf("%s <> ?", entity.RoomUserColumns.UserID)
 	orderBy := fmt.Sprintf("%s DESC", entity.MessageColumns.CreatedAt)
 
 	return entity.Rooms(
 		qm.Where(whereRoomID, userID),
 		qm.Load(entity.RoomRels.Messages, qm.OrderBy(orderBy)),
-		qm.Load(entity.RoomRels.RoomUsers, qm.Where(wherePartnerID, userID)),
+		qm.Load(entity.RoomRels.RoomUsers),
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
 	).All(ctx, ur.DB)
 }
