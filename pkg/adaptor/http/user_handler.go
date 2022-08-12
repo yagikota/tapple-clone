@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -48,5 +49,34 @@ func (uh *userHandler) findUsers() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, user)
+	}
+}
+
+func (uh *userHandler) sendMessage() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, err := strconv.Atoi(c.Param("user_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		roomID, err := strconv.Atoi(c.Param("room_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		// リクエストボディーを取り出す
+		var newMessage model.NewMessage
+		if err := c.ShouldBindJSON(&newMessage); err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		if err := uh.uUsecase.SendMessage(c, userID, roomID, &newMessage); err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, )
 	}
 }
