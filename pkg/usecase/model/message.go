@@ -8,7 +8,6 @@ import (
 
 // https://github.com/gin-gonic/gin#model-binding-and-validation
 
-
 type MessageID int
 
 type MessageSlice []*Message
