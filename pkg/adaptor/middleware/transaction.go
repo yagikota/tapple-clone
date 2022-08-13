@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/mysql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,10 +14,6 @@ import (
 // トランザクションのベストプラクティス聞く。
 // commit rollbackのタイミングあっているか
 // panicはいつするのか
-
-const (
-	txKey = "transaction"
-)
 
 // トランザクション開始
 func beginTxAndSetToContext(c *gin.Context, conn *sql.DB) (*sql.Tx, error) {
@@ -55,7 +52,12 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 			}
 		}()
 
-		c.Set(txKey, tx)
+		// TODO; 依存関係が怪しい
+		if err := mysql.SetTxToContext(c, tx); err != nil {
+			log.Println("can not set transaction to gin context")
+			panic(err)
+		}
+
 		c.Next() // ハンドラーが実行される
 
 		wantStatusCodes := []int{http.StatusOK, http.StatusCreated}
@@ -72,18 +74,3 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 		}
 	}
 }
-
-// func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
-// 	ginContext := ctx.Value("GinContextKey")
-// 	if ginContext == nil {
-// 		err := fmt.Errorf("could not retrieve gin.Context")
-// 		return nil, err
-// 	}
-
-// 	gc, ok := ginContext.(*gin.Context)
-// 	if !ok {
-// 		err := fmt.Errorf("gin.Context has wrong type")
-// 		return nil, err
-// 	}
-// 	return gc, nil
-// }
