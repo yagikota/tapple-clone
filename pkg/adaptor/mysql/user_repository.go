@@ -56,6 +56,5 @@ func (ur *userRepository) FindAllRoomMessages(ctx context.Context, userID, roomI
 }
 
 func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) error {
-	boil.DebugMode = true
 	return m.Insert(ctx, ur.DB, boil.Infer())
 }
