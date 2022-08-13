@@ -7,6 +7,7 @@ import (
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 	domain "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
@@ -52,4 +53,8 @@ func (ur *userRepository) FindAllRoomMessages(ctx context.Context, userID, roomI
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
 		qm.Load(entity.RoomRels.Messages),
 	).One(ctx, ur.DB)
+}
+
+func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) error {
+	return m.Insert(ctx, ur.DB, boil.Infer())
 }

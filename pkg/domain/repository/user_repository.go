@@ -11,4 +11,5 @@ type IUserRepository interface {
 	FindAll(ctx context.Context) (entity.UserSlice, error)                  // 全ユーザー取得
 	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) // 任意ユーザーの全ルーム取得
 	FindAllRoomMessages(ctx context.Context, userID, roomID int) (*entity.Room, error)
+	SendMessage(ctx context.Context, m *entity.Message) error // メッセージ送信
 }

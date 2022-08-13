@@ -13,6 +13,7 @@ type IUserUsecase interface {
 	FindAll(ctx context.Context) (model.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
 	FindAllRoomMessages(ctx context.Context, userID, roomID int) (*model.Room, error)
+	SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error
 }
 
 type userUsecase struct {
@@ -82,4 +83,8 @@ func (uu *userUsecase) FindAllRoomMessages(ctx context.Context, userID, roomID i
 	}
 
 	return model.RoomMessageFromEntity(entity), nil
+}
+
+func (uu *userUsecase) SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error {
+	return uu.userService.SendMessage(ctx, model.MessageToEntity(m, userID, roomID))
 }
