@@ -77,6 +77,6 @@ func (uh *userHandler) sendMessage() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, )
+		c.JSON(http.StatusOK, newMessage)
 	}
 }

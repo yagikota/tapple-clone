@@ -21,7 +21,7 @@ type NewMessage struct {
 	Content string `json:"content" binding:"required"`
 }
 
-// TODO: メソッドにする
+// TODO: メソッドにする?
 func MessageToEntity(m *NewMessage, userID int, roomID int) *entity.Message {
 	return &entity.Message{
 		UserID:  userID,

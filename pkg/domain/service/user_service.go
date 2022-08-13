@@ -13,7 +13,7 @@ import (
 type IUserService interface {
 	FindByUserID(ctx context.Context, userID int) (*entity.User, error)
 	FindAll(ctx context.Context) (entity.UserSlice, error)
-	SendMessage(ctx context.Context, userID int, roomID int, m *entity.Message) (*entity.Message, error)
+	SendMessage(ctx context.Context, m *entity.Message) error
 }
 
 type userService struct {
@@ -34,6 +34,6 @@ func (us *userService) FindAll(ctx context.Context) (entity.UserSlice, error) {
 	return us.userRepository.FindAll(ctx)
 }
 
-func (us *userService) SendMessage(ctx context.Context, userID int, roomID int, m *entity.Message) (*entity.Message, error) {
-	return us.userRepository.SendMessage(ctx, userID, roomID, m)
+func (us *userService) SendMessage(ctx context.Context, m *entity.Message) error {
+	return us.userRepository.SendMessage(ctx, m)
 }

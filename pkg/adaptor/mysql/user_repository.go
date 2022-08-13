@@ -29,14 +29,10 @@ func (ur *userRepository) FindByUserID(ctx context.Context, userID int) (*entity
 }
 
 func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error) {
-	boil.DebugMode = true
 	return entity.Users().All(ctx, ur.DB)
 }
 
-func (ur *userRepository) SendMessage(ctx context.Context, userID int, roomID int, m *entity.Message) (*entity.Message, error) {
+func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) error {
 	boil.DebugMode = true
-	if err := m.Insert(ctx, ur.DB, boil.Infer()); err != nil {
-		return nil, err
-	}
-
+	return  m.Insert(ctx, ur.DB, boil.Infer())
 }
