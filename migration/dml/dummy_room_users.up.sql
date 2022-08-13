@@ -11,7 +11,7 @@ VALUES (
         2,
         2,
         1,
-        0,
+        1,
         default,
         default,
         default
@@ -51,7 +51,7 @@ VALUES (
         7,
         1,
         4,
-        1,
+        0,
         default,
         default,
         default
@@ -59,7 +59,7 @@ VALUES (
         8,
         5,
         4,
-        0,
+        1,
         default,
         default,
         default

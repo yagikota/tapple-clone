@@ -42,13 +42,55 @@ func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 func (uh *userHandler) findUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		user, err := uh.uUsecase.FindAll(c)
+		users, err := uh.uUsecase.FindAll(c)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, user)
+		c.JSON(http.StatusOK, users)
+	}
+}
+
+func (uh *userHandler) findRooms() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		userID, err := strconv.Atoi(c.Param("user_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		rooms, err := uh.uUsecase.FindAllRooms(c, userID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, rooms)
+	}
+}
+
+func (uh *userHandler) findMessages() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		userID, err := strconv.Atoi(c.Param("user_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		roomID, err := strconv.Atoi(c.Param("room_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		messages, err := uh.uUsecase.FindAllRoomMessages(c, userID, roomID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, messages)
 	}
 }
 
@@ -77,6 +119,8 @@ func (uh *userHandler) sendMessage() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, newMessage)
+		// c.JSON(http.StatusOK, newMessage)
+		// TODO: 現状ではレスポンス返さないが、これで良いか？
+		c.JSON(http.StatusOK, nil)
 	}
 }

@@ -12,8 +12,9 @@ import (
 const (
 	apiVersion      = "/v1"
 	healthCheckRoot = "/health_check"
-	userAPIRoot     = apiVersion + "/users"
+	usersAPIRoot    = apiVersion + "/users"
 	userIDParam     = "user_id"
+	roomIDParam     = "room_id"
 )
 
 func InitRouter() *gin.Engine {
@@ -36,7 +37,7 @@ func InitRouter() *gin.Engine {
 		healthCheckGroup.GET(relativePath, healthCheck())
 	}
 
-	usersGroup := router.Group(userAPIRoot)
+	usersGroup := router.Group(usersAPIRoot)
 	{
 		relativePath := ""
 		userHandler := NewUserHandler(userUsecase)
@@ -47,8 +48,14 @@ func InitRouter() *gin.Engine {
 		// /users/{user_id}
 		relativePath = fmt.Sprintf("/:%s", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findUserByUserID())
-		// /users/{user_id}/messages
-		relativePath = fmt.Sprintf("/:%s/messages", userIDParam)
+		// /users/{user_id}/rooms
+		relativePath = fmt.Sprintf("/:%s/rooms", userIDParam)
+		usersGroup.GET(relativePath, userHandler.findRooms())
+		// /users/{user_id}/rooms/{room_id}
+		relativePath = fmt.Sprintf("/:%s/rooms/:%s", userIDParam, roomIDParam)
+		usersGroup.GET(relativePath, userHandler.findMessages())
+		// /users/{user_id}/rooms/{room_id}/messages
+		relativePath = fmt.Sprintf("/:%s/rooms/:%s/messages", userIDParam, roomIDParam)
 		usersGroup.POST(relativePath, userHandler.sendMessage())
 	}
 
