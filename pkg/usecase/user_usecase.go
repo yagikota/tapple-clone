@@ -10,9 +10,9 @@ import (
 
 type IUserUsecase interface {
 	FindByUserID(ctx context.Context, userID int) (*model.User, error)
-	FindAll(ctx context.Context) (model.UserSlice, error)
+	FindAllUsers(ctx context.Context) (model.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
-	FindAllRoomMessages(ctx context.Context, userID, roomID int) (*model.Room, error)
+	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.Room, error) // TODO: 引数の型を省略すべきかどうか調べる
 	SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error
 }
 
@@ -34,8 +34,8 @@ func (uu *userUsecase) FindByUserID(ctx context.Context, userID int) (*model.Use
 	return model.UserFromEntity(entity), err
 }
 
-func (uu *userUsecase) FindAll(ctx context.Context) (model.UserSlice, error) {
-	entities, err := uu.userService.FindAll(ctx)
+func (uu *userUsecase) FindAllUsers(ctx context.Context) (model.UserSlice, error) {
+	entities, err := uu.userService.FindAllUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -76,13 +76,13 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (model.Room
 	return rSlice, nil
 }
 
-func (uu *userUsecase) FindAllRoomMessages(ctx context.Context, userID, roomID int) (*model.Room, error) {
-	entity, err := uu.userService.FindAllRoomMessages(ctx, userID, roomID)
+func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.Room, error) {
+	entity, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID)
 	if err != nil {
 		return nil, err
 	}
 
-	return model.RoomMessageFromEntity(entity), nil
+	return model.RoomDetailFromEntity(entity), nil
 }
 
 func (uu *userUsecase) SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error {

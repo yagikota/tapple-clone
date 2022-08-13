@@ -17,6 +17,7 @@ type Room struct {
 	Messages      MessageSlice `json:"messages,omitempty"`
 }
 
+// ルーム一覧で使用
 func RoomFromEntity(entity *entity.Room) *Room {
 	r := &Room{
 		ID: RoomID(entity.ID),
@@ -47,7 +48,8 @@ func RoomFromEntity(entity *entity.Room) *Room {
 	return r
 }
 
-func RoomMessageFromEntity(entity *entity.Room) *Room {
+// ルーム詳細で使用
+func RoomDetailFromEntity(entity *entity.Room) *Room {
 	rm := &Room{
 		ID: RoomID(entity.ID),
 	}

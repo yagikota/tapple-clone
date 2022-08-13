@@ -28,7 +28,7 @@ func (ur *userRepository) FindByUserID(ctx context.Context, userID int) (*entity
 	).One(ctx, ur.DB)
 }
 
-func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error) {
+func (ur *userRepository) FindAllUsers(ctx context.Context) (entity.UserSlice, error) {
 	return entity.Users().All(ctx, ur.DB)
 }
 
@@ -45,7 +45,7 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 	).All(ctx, ur.DB)
 }
 
-func (ur *userRepository) FindAllRoomMessages(ctx context.Context, userID, roomID int) (*entity.Room, error) {
+func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
 	whereRoomID := fmt.Sprintf("%s = ?", entity.RoomColumns.ID)
 	return entity.Rooms(
 		qm.Where(whereRoomID, roomID),
