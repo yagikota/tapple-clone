@@ -9,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO:
+// トランザクションのベストプラクティス聞く。
+// commit rollbackのタイミングあっているか
+// panicはいつするのか
+
 const (
 	txKey = "transaction"
 )
@@ -57,9 +62,10 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 		if statusInList(c.Writer.Status(), wantStatusCodes) {
 			log.Println("committing transactions")
 			if commitErr := tx.Commit(); commitErr != nil {
-				log.Println("trx commit error: ", commitErr)
+				log.Println("transactions commit error: ", commitErr)
 				panic(commitErr)
 			}
+			log.Println("transactions successful committed")
 		} else {
 			log.Println("invalid status code: ", c.Writer.Status())
 			panic(fmt.Sprintf("invalid status code: %d", c.Writer.Status()))

@@ -16,7 +16,7 @@ type Message struct {
 	ID        MessageID `json:"id,omitempty"`
 	UserID    int       `json:"user_id"`
 	Content   string    `json:"content"`
-	IsRead    bool      `json:"is_read"` //TODO:　一応返す　使わなかったら削除
+	IsRead    bool      `json:"is_read"` //TODO: 一応返す 使わなかったら削除
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -36,8 +36,8 @@ type NewMessage struct {
 	Content string `json:"content" binding:"required"`
 }
 
-// TODO: メソッドにする?
-func MessageToEntity(m *NewMessage, userID int, roomID int) *entity.Message {
+// TODO: メソッドと関数の使い分け
+func (m *NewMessage) ToEntity(userID int, roomID int) *entity.Message {
 	return &entity.Message{
 		UserID:  userID,
 		RoomID:  roomID,

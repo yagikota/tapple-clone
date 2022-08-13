@@ -22,28 +22,26 @@ func RoomFromEntity(entity *entity.Room) *Room {
 	r := &Room{
 		ID: RoomID(entity.ID),
 	}
-	r.IsPinned = entity.R.RoomUsers[0].IsPinned
-	r.Name = UserFromEntity(entity.R.RoomUsers[0].R.User).Name
-	r.Icon = UserFromEntity(entity.R.RoomUsers[0].R.User).Icon
-	r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
 
-	// if entity.R != nil {
-	// 	if len(entity.R.RoomUsers) != 0 {
-	// 		r.IsPinned = entity.R.RoomUsers[0].IsPinned
-	// 	}
-	// 	if len(entity.R.Messages) != 0 {
-	// 		r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
-	// 	}
-	// 	if len(entity.R.RoomUsers) != 0 {
-	// 		if entity.R.RoomUsers != nil {
-	// 			uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
-	// 			for i := range entity.R.RoomUsers {
-	// 				uSlice = append(uSlice, UserFromEntity(entity.R.RoomUsers[i].R.User))
-	// 			}
-	// 			r.Users = uSlice
-	// 		}
-	// 	}
-	// }
+	// TODO: これでもいいのか？
+	// r.IsPinned = entity.R.RoomUsers[0].IsPinned
+	// r.Name = UserFromEntity(entity.R.RoomUsers[0].R.User).Name
+	// r.Icon = UserFromEntity(entity.R.RoomUsers[0].R.User).Icon
+	// r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
+
+	if entity.R != nil {
+		if entity.R.RoomUsers != nil {
+			roomUser := entity.R.RoomUsers[0]
+			r.IsPinned = roomUser.IsPinned
+			if roomUser.R != nil && roomUser.R.User != nil {
+				r.Name = UserFromEntity(roomUser.R.User).Name
+				r.Icon = UserFromEntity(roomUser.R.User).Icon
+			}
+		}
+		if entity.R.Messages != nil {
+			r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
+		}
+	}
 
 	return r
 }
@@ -54,17 +52,22 @@ func RoomDetailFromEntity(entity *entity.Room) *Room {
 		ID: RoomID(entity.ID),
 	}
 
-	uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
-	for i := range entity.R.RoomUsers {
-		uSlice = append(uSlice, UserFromEntity(entity.R.RoomUsers[i].R.User))
+	if entity.R != nil {
+		if entity.R.RoomUsers != nil {
+			uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
+			for _, roomUser := range entity.R.RoomUsers {
+				uSlice = append(uSlice, UserFromEntity(roomUser.R.User))
+			}
+			rm.Users = uSlice
+		}
+		if entity.R.Messages != nil {
+			mSlice := make(MessageSlice, 0, len(entity.R.Messages))
+			for _, message := range entity.R.Messages {
+				mSlice = append(mSlice, MessageFromEntity(message))
+			}
+			rm.Messages = mSlice
+		}
 	}
-	rm.Users = uSlice
-
-	mSlice := make(MessageSlice, 0, len(entity.R.Messages))
-	for i := range entity.R.Messages {
-		mSlice = append(mSlice, MessageFromEntity(entity.R.Messages[i]))
-	}
-	rm.Messages = mSlice
 
 	return rm
 }

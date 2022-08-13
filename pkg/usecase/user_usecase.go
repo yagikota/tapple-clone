@@ -86,5 +86,5 @@ func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomI
 }
 
 func (uu *userUsecase) SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error {
-	return uu.userService.SendMessage(ctx, model.MessageToEntity(m, userID, roomID))
+	return uu.userService.SendMessage(ctx, m.ToEntity(userID, roomID))
 }

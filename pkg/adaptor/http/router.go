@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/middleware"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/mysql"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/infra"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
@@ -38,6 +39,8 @@ func InitRouter() *gin.Engine {
 	}
 
 	usersGroup := router.Group(usersAPIRoot)
+	// TODO: 引数が正しく無い気がする
+	usersGroup.Use(middleware.TransactMiddleware(mySQLConn.Conn))
 	{
 		relativePath := ""
 		userHandler := NewUserHandler(userUsecase)
