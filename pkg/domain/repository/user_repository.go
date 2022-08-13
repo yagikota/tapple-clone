@@ -7,7 +7,7 @@ import (
 )
 
 type IUserRepository interface {
-	FindByUserID(ctx context.Context, userID int) (*entity.User, error)                                  // 1ユーザー取得
-	FindAll(ctx context.Context) (entity.UserSlice, error)                                               // 全ユーザー取得
-	SendMessage(ctx context.Context, m *entity.Message) error // メッセージ送信
+	FindByUserID(ctx context.Context, userID int) (*entity.User, error) // 1ユーザー取得
+	FindAll(ctx context.Context) (entity.UserSlice, error)              // 全ユーザー取得
+	SendMessage(ctx context.Context, m *entity.Message) error           // メッセージ送信
 }

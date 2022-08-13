@@ -34,5 +34,5 @@ func (ur *userRepository) FindAll(ctx context.Context) (entity.UserSlice, error)
 
 func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) error {
 	boil.DebugMode = true
-	return  m.Insert(ctx, ur.DB, boil.Infer())
+	return m.Insert(ctx, ur.DB, boil.Infer())
 }
