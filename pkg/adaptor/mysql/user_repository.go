@@ -60,13 +60,17 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 	).All(ctx, tx)
 }
 
-func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
+// TODO: 例えば、localhost:8080/v1/users/2/rooms/３でもアクセスできてしまうので、改善が必要
+// 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
+func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*entity.Room, error) {
+	boil.DebugMode = true
 	tx, err := TxFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	whereRoomID := fmt.Sprintf("%s = ?", entity.RoomColumns.ID)
+	// whereUserID := fmt.Sprintf("%s = ?", entity.RoomRels.RoomUsers)
 	return entity.Rooms(
 		qm.Where(whereRoomID, roomID),
 		qm.Load(entity.RoomRels.RoomUsers),
@@ -75,6 +79,8 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	).One(ctx, tx)
 }
 
+// TODO: 自身が所属しているルームにのみ送信できるようにする 現状localhost:8080/v1/users/2/rooms/3でも送信できてしまう
+// 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
 func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) error {
 	tx, err := TxFromContext(ctx)
 	if err != nil {

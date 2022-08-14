@@ -12,7 +12,7 @@ type IUserUsecase interface {
 	FindByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAllUsers(ctx context.Context) (model.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
-	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.Room, error) // TODO: 引数の型を省略すべきかどうか調べる
+	FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*model.Room, error) // TODO: 引数の型を省略すべきかどうか調べる
 	SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error
 }
 
@@ -76,7 +76,7 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (model.Room
 	return rSlice, nil
 }
 
-func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.Room, error) {
+func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*model.Room, error) {
 	entity, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID)
 	if err != nil {
 		return nil, err
