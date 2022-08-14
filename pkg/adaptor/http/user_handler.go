@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +29,7 @@ func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 			return
 		}
 
-		user, err := uh.uUsecase.FindByUserID(c, userID)
+		user, err := uh.uUsecase.FindUserByUserID(c, userID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -41,7 +42,7 @@ func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 func (uh *userHandler) findUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		users, err := uh.uUsecase.FindAll(c)
+		users, err := uh.uUsecase.FindAllUsers(c)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -69,7 +70,7 @@ func (uh *userHandler) findRooms() gin.HandlerFunc {
 	}
 }
 
-func (uh *userHandler) findMessages() gin.HandlerFunc {
+func (uh *userHandler) findRoomDetailByRoomID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		userID, err := strconv.Atoi(c.Param("user_id"))
@@ -83,12 +84,43 @@ func (uh *userHandler) findMessages() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		messages, err := uh.uUsecase.FindAllRoomMessages(c, userID, roomID)
+		room, err := uh.uUsecase.FindRoomDetailByRoomID(c, userID, roomID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, messages)
+		c.JSON(http.StatusOK, room)
+	}
+}
+
+func (uh *userHandler) sendMessage() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, err := strconv.Atoi(c.Param("user_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		roomID, err := strconv.Atoi(c.Param("room_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		// リクエストボディーを取り出す
+		var newMessage model.NewMessage
+		if err := c.ShouldBindJSON(&newMessage); err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		if err := uh.uUsecase.SendMessage(c, userID, roomID, &newMessage); err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		// c.JSON(http.StatusOK, newMessage)
+		// TODO: 現状ではレスポンス返さないが、これで良いか？
+		c.JSON(http.StatusOK, nil)
 	}
 }

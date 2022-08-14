@@ -3,8 +3,6 @@ package infra
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/configs"
 )
@@ -34,7 +32,7 @@ func NewMySQLConnector() *MySQLConnector {
 	}
 
 	// 確認用
-	log.Println(dsn)
+	// log.Println(dsn)
 
 	return &MySQLConnector{
 		Conn: conn,
@@ -49,12 +47,4 @@ func mysqlConnInfo(mysqlInfo configs.MysqlInfo) string {
 		mysqlInfo.MySQLDBName)
 
 	return dataSourceName
-}
-
-type User struct {
-	ID        int
-	Name      string
-	Icon      string
-	CreatedAt time.Time
-	DeletedAt sql.NullTime
 }

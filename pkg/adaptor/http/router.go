@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/middleware"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/mysql"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/infra"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
@@ -38,24 +39,27 @@ func InitRouter() *gin.Engine {
 	}
 
 	usersGroup := router.Group(usersAPIRoot)
+	// TODO: 引数が正しく無い気がする
+	usersGroup.Use(middleware.TransactMiddleware(mySQLConn.Conn))
 	{
 		relativePath := ""
 		userHandler := NewUserHandler(userUsecase)
 
 		// 確認用API
-		// /users
+		// v1/users
 		usersGroup.GET(relativePath, userHandler.findUsers())
-		// /users/{user_id}
+		// v1/users/{user_id}
 		relativePath = fmt.Sprintf("/:%s", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findUserByUserID())
-
-		// /users/{user_id}/rooms
+		// v1/users/{user_id}/rooms
 		relativePath = fmt.Sprintf("/:%s/rooms", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findRooms())
-
-		// /users/{user_id}/rooms/{room_id}
+		// v1/users/{user_id}/rooms/{room_id}
 		relativePath = fmt.Sprintf("/:%s/rooms/:%s", userIDParam, roomIDParam)
-		usersGroup.GET(relativePath, userHandler.findMessages())
+		usersGroup.GET(relativePath, userHandler.findRoomDetailByRoomID())
+		// v1/users/{user_id}/rooms/{room_id}/messages
+		relativePath = fmt.Sprintf("/:%s/rooms/:%s/messages", userIDParam, roomIDParam)
+		usersGroup.POST(relativePath, userHandler.sendMessage())
 	}
 
 	return router
