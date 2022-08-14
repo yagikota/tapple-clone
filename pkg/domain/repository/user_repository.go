@@ -7,9 +7,9 @@ import (
 )
 
 type IUserRepository interface {
-	FindByUserID(ctx context.Context, userID int) (*entity.User, error)     // 1ユーザー取得
-	FindAll(ctx context.Context) (entity.UserSlice, error)                  // 全ユーザー取得
-	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) // 任意ユーザーの全ルーム取得
-	FindAllRoomMessages(ctx context.Context, userID, roomID int) (*entity.Room, error)
-	SendMessage(ctx context.Context, m *entity.Message) error // メッセージ送信
+	FindUserByUserID(ctx context.Context, userID int) (*entity.User, error)
+	FindAllUsers(ctx context.Context) (entity.UserSlice, error)
+	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error)
+	FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*entity.Room, error)
+	SendMessage(ctx context.Context, m *entity.Message) error
 }

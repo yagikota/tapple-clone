@@ -11,10 +11,10 @@ import (
 )
 
 type IUserService interface {
-	FindByUserID(ctx context.Context, userID int) (*entity.User, error)
-	FindAll(ctx context.Context) (entity.UserSlice, error)
+	FindUserByUserID(ctx context.Context, userID int) (*entity.User, error)
+	FindAllUsers(ctx context.Context) (entity.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error)
-	FindAllRoomMessages(ctx context.Context, userID, roomID int) (*entity.Room, error)
+	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error)
 	SendMessage(ctx context.Context, m *entity.Message) error
 }
 
@@ -28,20 +28,20 @@ func NewUserService(ur domain.IUserRepository) IUserService {
 	}
 }
 
-func (us *userService) FindByUserID(ctx context.Context, userID int) (*entity.User, error) {
-	return us.userRepository.FindByUserID(ctx, userID)
+func (us *userService) FindUserByUserID(ctx context.Context, userID int) (*entity.User, error) {
+	return us.userRepository.FindUserByUserID(ctx, userID)
 }
 
-func (us *userService) FindAll(ctx context.Context) (entity.UserSlice, error) {
-	return us.userRepository.FindAll(ctx)
+func (us *userService) FindAllUsers(ctx context.Context) (entity.UserSlice, error) {
+	return us.userRepository.FindAllUsers(ctx)
 }
 
 func (us *userService) FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) {
 	return us.userRepository.FindAllRooms(ctx, userID)
 }
 
-func (us *userService) FindAllRoomMessages(ctx context.Context, userID, roomID int) (*entity.Room, error) {
-	return us.userRepository.FindAllRoomMessages(ctx, userID, roomID)
+func (us *userService) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
+	return us.userRepository.FindRoomDetailByRoomID(ctx, userID, roomID)
 }
 
 func (us *userService) SendMessage(ctx context.Context, m *entity.Message) error {

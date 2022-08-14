@@ -29,7 +29,7 @@ func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 			return
 		}
 
-		user, err := uh.uUsecase.FindByUserID(c, userID)
+		user, err := uh.uUsecase.FindUserByUserID(c, userID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -42,7 +42,7 @@ func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 func (uh *userHandler) findUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		users, err := uh.uUsecase.FindAll(c)
+		users, err := uh.uUsecase.FindAllUsers(c)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -70,7 +70,7 @@ func (uh *userHandler) findRooms() gin.HandlerFunc {
 	}
 }
 
-func (uh *userHandler) findMessages() gin.HandlerFunc {
+func (uh *userHandler) findRoomDetailByRoomID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		userID, err := strconv.Atoi(c.Param("user_id"))
@@ -84,13 +84,13 @@ func (uh *userHandler) findMessages() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		messages, err := uh.uUsecase.FindAllRoomMessages(c, userID, roomID)
+		room, err := uh.uUsecase.FindRoomDetailByRoomID(c, userID, roomID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, messages)
+		c.JSON(http.StatusOK, room)
 	}
 }
 
