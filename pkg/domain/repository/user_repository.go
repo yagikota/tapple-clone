@@ -7,7 +7,7 @@ import (
 )
 
 type IUserRepository interface {
-	FindByUserID(ctx context.Context, userID int) (*entity.User, error)
+	FindUserByUserID(ctx context.Context, userID int) (*entity.User, error)
 	FindAllUsers(ctx context.Context) (entity.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error)
 	FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*entity.Room, error)

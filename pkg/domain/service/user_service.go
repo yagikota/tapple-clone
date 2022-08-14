@@ -11,7 +11,7 @@ import (
 )
 
 type IUserService interface {
-	FindByUserID(ctx context.Context, userID int) (*entity.User, error)
+	FindUserByUserID(ctx context.Context, userID int) (*entity.User, error)
 	FindAllUsers(ctx context.Context) (entity.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error)
 	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error)
@@ -28,8 +28,8 @@ func NewUserService(ur domain.IUserRepository) IUserService {
 	}
 }
 
-func (us *userService) FindByUserID(ctx context.Context, userID int) (*entity.User, error) {
-	return us.userRepository.FindByUserID(ctx, userID)
+func (us *userService) FindUserByUserID(ctx context.Context, userID int) (*entity.User, error) {
+	return us.userRepository.FindUserByUserID(ctx, userID)
 }
 
 func (us *userService) FindAllUsers(ctx context.Context) (entity.UserSlice, error) {

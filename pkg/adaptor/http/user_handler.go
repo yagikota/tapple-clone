@@ -29,7 +29,7 @@ func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 			return
 		}
 
-		user, err := uh.uUsecase.FindByUserID(c, userID)
+		user, err := uh.uUsecase.FindUserByUserID(c, userID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return

@@ -9,7 +9,7 @@ import (
 )
 
 type IUserUsecase interface {
-	FindByUserID(ctx context.Context, userID int) (*model.User, error)
+	FindUserByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAllUsers(ctx context.Context) (model.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
 	FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*model.Room, error) // TODO: 引数の型を省略すべきかどうか調べる
@@ -26,8 +26,8 @@ func NewUserUsecase(uService service.IUserService) IUserUsecase {
 	}
 }
 
-func (uu *userUsecase) FindByUserID(ctx context.Context, userID int) (*model.User, error) {
-	entity, err := uu.userService.FindByUserID(ctx, userID)
+func (uu *userUsecase) FindUserByUserID(ctx context.Context, userID int) (*model.User, error) {
+	entity, err := uu.userService.FindUserByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

@@ -21,7 +21,7 @@ func NewUserRepository(db *sql.DB) domain.IUserRepository {
 	}
 }
 
-func (ur *userRepository) FindByUserID(ctx context.Context, userID int) (*entity.User, error) {
+func (ur *userRepository) FindUserByUserID(ctx context.Context, userID int) (*entity.User, error) {
 	tx, err := TxFromContext(ctx)
 	if err != nil {
 		return nil, err
