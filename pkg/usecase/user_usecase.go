@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"sort"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
@@ -26,6 +27,7 @@ func NewUserUsecase(uService service.IUserService) IUserUsecase {
 }
 
 func (uu *userUsecase) FindByUserID(ctx context.Context, userID int) (*model.User, error) {
+	fmt.Println(ctx)
 	entity, err := uu.userService.FindByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
