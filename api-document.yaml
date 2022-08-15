@@ -95,6 +95,14 @@ components:
           type: integer
           example: 1
           description: ルームID
+        name:
+          type: string
+          example: かな
+          description: ルームの名前
+        icon:
+          type: string
+          example: "female/n000009/main_0001_01.jpg"
+          description: ルームアイコン
         users:
           type: array
           items:
