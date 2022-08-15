@@ -6,7 +6,10 @@ import (
 	"testing"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
+	mock "github.com/CyberAgentHack/2208-ace-go-server/pkg/mock/service"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
+	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
 )
 
 func TestNewUserUsecase(t *testing.T) {
@@ -38,19 +41,34 @@ func Test_userUsecase_FindUserByUserID(t *testing.T) {
 		userID int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *model.User
-		wantErr bool
+		name          string
+		prepareMockFn func(m *mock.MockIUserService)
+		fields        fields
+		args          args
+		want          *model.User
+		wantErr       bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "sccess response",
+			prepareMockFn: func(m *mock.MockIUserService) {
+				args := args{
+					ctx:    &gin.Context{},
+					userID: 1,
+				}
+				m.EXPECT().FindUserByUserID(gomock.Any(), args.userID).Return(&model.User{}, nil)
+			},
+			want: &model.User{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := &userUsecase{
-				userService: tt.fields.userService,
-			}
+			gin.SetMode(gin.TestMode)
+			//mock登録
+			controller := gomock.NewController(t)
+			defer controller.Finish()
+			mock := mock.NewMockIUserService(controller)
+			tt.prepareMockFn(mock)
+			uu := NewUserUsecase(mock)
 			got, err := uu.FindUserByUserID(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("userUsecase.FindUserByUserID() error = %v, wantErr %v", err, tt.wantErr)
