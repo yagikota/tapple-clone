@@ -8,13 +8,17 @@ type RoomSlice []*Room
 
 type Room struct {
 	ID            RoomID       `json:"id"`
-	Unread        int          `json:"unread,omitempty"`
+	Unread        *int         `json:"unread,omitempty"`
 	IsPinned      bool         `json:"is_pinned,omitempty"`
 	Name          string       `json:"name,omitempty"`
 	Icon          string       `json:"icon,omitempty"`
 	LatestMessage *Message     `json:"latest_message,omitempty"`
 	Users         UserSlice    `json:"users,omitempty"`
 	Messages      MessageSlice `json:"messages,omitempty"`
+}
+
+type Rooms struct {
+	Rooms RoomSlice `json:"rooms"`
 }
 
 // ルーム一覧で使用
@@ -40,9 +44,9 @@ func RoomFromEntity(entity *entity.Room) *Room {
 		}
 		if entity.R.Messages != nil {
 			r.LatestMessage = MessageFromEntity(entity.R.Messages[0])
+			r.Unread = new(int)
 		}
 	}
-
 	return r
 }
 
