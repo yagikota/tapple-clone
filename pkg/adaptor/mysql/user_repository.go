@@ -62,7 +62,7 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 
 // TODO: 例えば、localhost:8080/v1/users/2/rooms/３でもアクセスできてしまうので、改善が必要
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
-func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*entity.Room, error) {
+func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
 	boil.DebugMode = true
 	tx, err := TxFromContext(ctx)
 	if err != nil {
@@ -70,10 +70,11 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID int
 	}
 
 	whereRoomID := fmt.Sprintf("%s = ?", entity.RoomColumns.ID)
-	// whereUserID := fmt.Sprintf("%s = ?", entity.RoomRels.RoomUsers)
+	// 自分が2番目にくるようにsort←チャットルームのNameとIconを[0]で取得するため
+	orderBy := fmt.Sprintf("%s = ?", entity.RoomUserColumns.UserID)
 	return entity.Rooms(
 		qm.Where(whereRoomID, roomID),
-		qm.Load(entity.RoomRels.RoomUsers),
+		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
 		qm.Load(entity.RoomRels.Messages),
 	).One(ctx, tx)

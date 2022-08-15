@@ -22,7 +22,7 @@ type User struct {
 }
 
 func UserFromEntity(entity *entity.User) *User {
-	u := &User{
+	return &User{
 		ID:       UserID(entity.ID),
 		Name:     entity.Name,
 		Icon:     entity.Icon,
@@ -30,6 +30,4 @@ func UserFromEntity(entity *entity.User) *User {
 		BirthDay: entity.Birthday,
 		Location: entity.Location,
 	}
-
-	return u
 }
