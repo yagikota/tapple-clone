@@ -39,7 +39,6 @@ var (
 		ID:        1,
 		UserID:    1,
 		Content:   "content1",
-		IsRead:    true,
 		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 	}
 	messages1 = model.MessageSlice{message11}
@@ -51,8 +50,6 @@ var (
 		Name:          "name1",
 		Icon:          "/icon1",
 		LatestMessage: message11,
-		Users:         users1,
-		Messages:      messages1,
 	}
 	rooms = model.RoomSlice{room1}
 )

@@ -36,10 +36,10 @@ func (m *MockIUserUsecase) EXPECT() *MockIUserUsecaseMockRecorder {
 }
 
 // FindAllRooms mocks base method.
-func (m *MockIUserUsecase) FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error) {
+func (m *MockIUserUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAllRooms", ctx, userID)
-	ret0, _ := ret[0].(model.RoomSlice)
+	ret0, _ := ret[0].(*model.Rooms)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,10 +66,10 @@ func (mr *MockIUserUsecaseMockRecorder) FindAllUsers(ctx interface{}) *gomock.Ca
 }
 
 // FindRoomDetailByRoomID mocks base method.
-func (m *MockIUserUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.Room, error) {
+func (m *MockIUserUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.RoomDetail, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindRoomDetailByRoomID", ctx, userID, roomID)
-	ret0, _ := ret[0].(*model.Room)
+	ret0, _ := ret[0].(*model.RoomDetail)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

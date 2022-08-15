@@ -35,36 +35,6 @@ func (m *MockIUserRepository) EXPECT() *MockIUserRepositoryMockRecorder {
 	return m.recorder
 }
 
-// FindAll mocks base method.
-func (m *MockIUserRepository) FindAll(ctx context.Context) (entity.UserSlice, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll", ctx)
-	ret0, _ := ret[0].(entity.UserSlice)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAll indicates an expected call of FindAll.
-func (mr *MockIUserRepositoryMockRecorder) FindAll(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockIUserRepository)(nil).FindAll), ctx)
-}
-
-// FindAllRoomMessages mocks base method.
-func (m *MockIUserRepository) FindAllRoomMessages(ctx context.Context, userID, roomID int) (*entity.Room, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAllRoomMessages", ctx, userID, roomID)
-	ret0, _ := ret[0].(*entity.Room)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAllRoomMessages indicates an expected call of FindAllRoomMessages.
-func (mr *MockIUserRepositoryMockRecorder) FindAllRoomMessages(ctx, userID, roomID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllRoomMessages", reflect.TypeOf((*MockIUserRepository)(nil).FindAllRoomMessages), ctx, userID, roomID)
-}
-
 // FindAllRooms mocks base method.
 func (m *MockIUserRepository) FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) {
 	m.ctrl.T.Helper()
@@ -80,17 +50,61 @@ func (mr *MockIUserRepositoryMockRecorder) FindAllRooms(ctx, userID interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllRooms", reflect.TypeOf((*MockIUserRepository)(nil).FindAllRooms), ctx, userID)
 }
 
-// FindByUserID mocks base method.
-func (m *MockIUserRepository) FindByUserID(ctx context.Context, userID int) (*entity.User, error) {
+// FindAllUsers mocks base method.
+func (m *MockIUserRepository) FindAllUsers(ctx context.Context) (entity.UserSlice, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByUserID", ctx, userID)
+	ret := m.ctrl.Call(m, "FindAllUsers", ctx)
+	ret0, _ := ret[0].(entity.UserSlice)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllUsers indicates an expected call of FindAllUsers.
+func (mr *MockIUserRepositoryMockRecorder) FindAllUsers(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllUsers", reflect.TypeOf((*MockIUserRepository)(nil).FindAllUsers), ctx)
+}
+
+// FindRoomDetailByRoomID mocks base method.
+func (m *MockIUserRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindRoomDetailByRoomID", ctx, userID, roomID)
+	ret0, _ := ret[0].(*entity.Room)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindRoomDetailByRoomID indicates an expected call of FindRoomDetailByRoomID.
+func (mr *MockIUserRepositoryMockRecorder) FindRoomDetailByRoomID(ctx, userID, roomID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRoomDetailByRoomID", reflect.TypeOf((*MockIUserRepository)(nil).FindRoomDetailByRoomID), ctx, userID, roomID)
+}
+
+// FindUserByUserID mocks base method.
+func (m *MockIUserRepository) FindUserByUserID(ctx context.Context, userID int) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindUserByUserID", ctx, userID)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByUserID indicates an expected call of FindByUserID.
-func (mr *MockIUserRepositoryMockRecorder) FindByUserID(ctx, userID interface{}) *gomock.Call {
+// FindUserByUserID indicates an expected call of FindUserByUserID.
+func (mr *MockIUserRepositoryMockRecorder) FindUserByUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUserID", reflect.TypeOf((*MockIUserRepository)(nil).FindByUserID), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserByUserID", reflect.TypeOf((*MockIUserRepository)(nil).FindUserByUserID), ctx, userID)
+}
+
+// SendMessage mocks base method.
+func (m_2 *MockIUserRepository) SendMessage(ctx context.Context, m *entity.Message) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "SendMessage", ctx, m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMessage indicates an expected call of SendMessage.
+func (mr *MockIUserRepositoryMockRecorder) SendMessage(ctx, m interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockIUserRepository)(nil).SendMessage), ctx, m)
 }
