@@ -11,9 +11,9 @@ import (
 type IUserUsecase interface {
 	FindUserByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAllUsers(ctx context.Context) (model.UserSlice, error)
-	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
-	FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*model.Room, error) // TODO: 引数の型を省略すべきかどうか調べる
-	SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error
+	FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error)
+	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.RoomDetail, error)
+	SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) error
 }
 
 type userUsecase struct {
@@ -49,7 +49,7 @@ func (uu *userUsecase) FindAllUsers(ctx context.Context) (model.UserSlice, error
 	return uSlice, nil
 }
 
-func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error) {
+func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error) {
 	entities, err := uu.userService.FindAllRooms(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -73,10 +73,10 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (model.Room
 		return rSlice[i].LatestMessage.CreatedAt.After(rSlice[j].LatestMessage.CreatedAt)
 	})
 
-	return rSlice, nil
+	return &model.Rooms{Rooms: rSlice}, nil
 }
 
-func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID int, roomID int) (*model.Room, error) {
+func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.RoomDetail, error) {
 	entity, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID)
 	if err != nil {
 		return nil, err
@@ -85,6 +85,6 @@ func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID int, r
 	return model.RoomDetailFromEntity(entity), nil
 }
 
-func (uu *userUsecase) SendMessage(ctx context.Context, userID int, roomID int, m *model.NewMessage) error {
+func (uu *userUsecase) SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) error {
 	return uu.userService.SendMessage(ctx, m.ToEntity(userID, roomID))
 }
