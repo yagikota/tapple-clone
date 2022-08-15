@@ -128,10 +128,6 @@ components:
           type: string
           example: 予定いれておきます！
           description: メッセージ内容
-        is_read:
-          type: boolean
-          example: true
-          description: 0(false) 未読 | 1(ture) 既読
         created_at:
           type: string
           example: "2020-01-31T23:59:59+09:00"
@@ -148,10 +144,6 @@ components:
           type: integer
           example: 2
           description: ユーザーID
-        is_read:
-          type: boolean
-          example: true
-          description: 0(false) 未読 | 1(ture) 既読
         content:
           type: string
           example: いつにしましょうか！
