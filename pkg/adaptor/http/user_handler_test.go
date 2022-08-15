@@ -75,7 +75,7 @@ func Test_userHandler_findUserByUserID_200(t *testing.T) {
 			defer controller.Finish()
 			mock := mock.NewMockIUserUsecase(controller)
 			tt.prepareMockFn(mock)
-			// user handler 初期化
+			// user handler 初期化(内部にmock)
 			uh := NewUserHandler(mock)
 
 			// エンドポイントを登録
