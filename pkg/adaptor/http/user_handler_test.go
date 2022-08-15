@@ -15,7 +15,9 @@ import (
 
 // テストデータ
 var (
-	user1 = &model.User{
+	userID = 1
+
+	user11 = &model.User{
 		ID:       1,
 		Name:     "name1",
 		Icon:     "/icon1",
@@ -23,7 +25,7 @@ var (
 		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 		Location: 1,
 	}
-	user2 = &model.User{
+	user12 = &model.User{
 		ID:       2,
 		Name:     "name2",
 		Icon:     "/icon2",
@@ -31,8 +33,28 @@ var (
 		BirthDay: time.Date(2022, 2, 2, 0, 0, 0, 0, time.Local),
 		Location: 2,
 	}
+	users1 = model.UserSlice{user11, user12}
 
-	users = model.UserSlice{user1, user2}
+	message11 = &model.Message{
+		ID:        1,
+		UserID:    1,
+		Content:   "content1",
+		IsRead:    true,
+		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
+	}
+	messages1 = model.MessageSlice{message11}
+
+	room1 = &model.Room{
+		ID:            1,
+		Unread:        1,
+		IsPinned:      true,
+		Name:          "name1",
+		Icon:          "/icon1",
+		LatestMessage: message11,
+		Users:         users1,
+		Messages:      messages1,
+	}
+	rooms = model.RoomSlice{room1}
 )
 
 //  1.SetupSuite
@@ -66,9 +88,9 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 	// v1/users
 	suite.router.GET(usersAPIRoot, suite.handler.findUsers())
 	// v1/users/{user_id}
-	suite.router.GET(usersAPIRoot+"/:user_id", func(c *gin.Context) { c.Set("user_id", 1) }, suite.handler.findUserByUserID())
-
-	// suite.router.GET(usersAPIRoot+"/:user_id", func(c *gin.Context) { c.Set("user_id", 1) }, suite.handler.findUserByUserID())
+	suite.router.GET(usersAPIRoot+roomIDParam, func(c *gin.Context) { c.Set("user_id", 1) }, suite.handler.findUserByUserID())
+	// v1/users/{user_id}/rooms
+	suite.router.GET(usersAPIRoot+"/rooms", suite.handler.findRooms())
 }
 
 func (suite *UserHandlerTestSuite) SetupTest() {
@@ -81,7 +103,7 @@ func TestUserHandlerSuite(t *testing.T) {
 }
 
 func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
-	suite.mock.EXPECT().FindUserByUserID(gomock.Any(), 1).Return(user1, nil)
+	suite.mock.EXPECT().FindUserByUserID(gomock.Any(), userID).Return(user11, nil)
 	// レスポンスを受け止める*httptest.ResponseRecorder
 	rec := suite.rec
 	// テストで送信するリクエスト
@@ -104,7 +126,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
 }
 
 func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_200() {
-	suite.mock.EXPECT().FindAllUsers(gomock.Any()).Return(users, nil)
+	suite.mock.EXPECT().FindAllUsers(gomock.Any()).Return(users1, nil)
 	rec := suite.rec
 	req := httptest.NewRequest(http.MethodGet, usersAPIRoot, nil)
 	suite.router.ServeHTTP(rec, req)
@@ -133,28 +155,45 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_200() {
 	)
 }
 
-// func Test_userHandler_findRooms(t *testing.T) {
-// 	type fields struct {
-// 		uUsecase usecase.IUserUsecase
-// 	}
-// 	tests := []struct {
-// 		name   string
-// 		fields fields
-// 		// buildStubs func(store *mock.Mo)
-// 		want gin.HandlerFunc
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			uh := &userHandler{
-// 				uUsecase: tt.fields.uUsecase,
+// func (suite *UserHandlerTestSuite) Test_userHandler_findRooms() {
+// 	suite.mock.EXPECT().FindAllRooms(gomock.Any(), userID).Return(rooms, nil)
+// 	rec := suite.rec
+// 	req := httptest.NewRequest(http.MethodGet, usersAPIRoot+"/rooms", nil)
+// 	suite.router.ServeHTTP(rec, req)
+// 	suite.Equal(http.StatusOK, rec.Code)
+// 	suite.JSONEq(
+// 		`
+// 		[
+// 			{
+// 				"id": 1,
+// 				"is_pinned": true,
+// 				"name": "name1",
+// 				"icon": "/icon1",
+// 				"latest_message": {
+// 					"id": 1,
+// 					"user_id": 1,
+// 					"content": "content1",
+// 					"is_read": true,
+// 					"created_at": "2022-01-01T00:00:00+09:00",
+// 				}
+// 			},
+// 			{
+// 				"id": 4,
+// 				"is_pinned": true,
+// 				"name": "チサキ",
+// 				"icon": "female/n000284/main_0001_02.jpg",
+// 				"latest_message": {
+// 					"id": 12,
+// 					"user_id": 4,
+// 					"content": "いつ行きましょうか！",
+// 					"is_read": false,
+// 					"created_at": "2022-07-08T00:00:00+09:00",
+// 				}
 // 			}
-// 			if got := uh.findRooms(); !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("userHandler.findRooms() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
+// 		]
+// 		`,
+// 		rec.Body.String(),
+// 	)
 // }
 
 // func Test_userHandler_findRoomDetailByRoomID(t *testing.T) {
