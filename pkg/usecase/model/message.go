@@ -20,14 +20,12 @@ type Message struct {
 }
 
 func MessageFromEntity(entity *entity.Message) *Message {
-	m := &Message{
+	return &Message{
 		ID:        MessageID(entity.ID),
 		UserID:    entity.UserID,
 		Content:   entity.Content,
 		CreatedAt: entity.CreatedAt,
 	}
-
-	return m
 }
 
 type NewMessage struct {
