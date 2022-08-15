@@ -59,6 +59,12 @@ func RoomDetailFromEntity(entity *entity.Room) *Room {
 				uSlice = append(uSlice, UserFromEntity(roomUser.R.User))
 			}
 			rm.Users = uSlice
+			// ルームの人数が2人の場合、ルームネーム＝相手の名前、ルームアイコン＝相手のアイコン
+			const defaultRoomUsersNumber int = 2
+			if len(entity.R.RoomUsers) == defaultRoomUsersNumber {
+				rm.Name = entity.R.RoomUsers[0].R.User.Name
+				rm.Icon = entity.R.RoomUsers[0].R.User.Icon
+			}
 		}
 		if entity.R.Messages != nil {
 			mSlice := make(MessageSlice, 0, len(entity.R.Messages))

@@ -70,10 +70,11 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID int
 	}
 
 	whereRoomID := fmt.Sprintf("%s = ?", entity.RoomColumns.ID)
-	// whereUserID := fmt.Sprintf("%s = ?", entity.RoomRels.RoomUsers)
+	// 自分が2番目にくるようにsort←チャットルームのNameとIconを[0]で取得するため
+	orderBy := fmt.Sprintf("%s = ?", entity.RoomUserColumns.UserID)
 	return entity.Rooms(
 		qm.Where(whereRoomID, roomID),
-		qm.Load(entity.RoomRels.RoomUsers),
+		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
 		qm.Load(entity.RoomRels.Messages),
 	).One(ctx, tx)

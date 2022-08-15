@@ -16,7 +16,6 @@ type Message struct {
 	ID        MessageID `json:"id,omitempty"`
 	UserID    int       `json:"user_id"`
 	Content   string    `json:"content"`
-	IsRead    bool      `json:"is_read"` //TODO: 一応返す 使わなかったら削除
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -25,7 +24,6 @@ func MessageFromEntity(entity *entity.Message) *Message {
 		ID:        MessageID(entity.ID),
 		UserID:    entity.UserID,
 		Content:   entity.Content,
-		IsRead:    entity.IsRead,
 		CreatedAt: entity.CreatedAt,
 	}
 
