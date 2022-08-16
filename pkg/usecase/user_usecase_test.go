@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 	"github.com/golang/mock/gomock"
+	"github.com/volatiletech/null/v8"
 )
 
 // テストデータ
@@ -56,24 +57,71 @@ var (
 
 	users1Entity = entity.UserSlice{user11Entity, user12Entity}
 
-	message11 = &model.Message{
+	message1 = &model.Message{
 		ID:        1,
 		UserID:    1,
 		Content:   "content1",
 		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
 	}
-	messages1 = model.MessageSlice{message11}
+	messageSlice1 = model.MessageSlice{message1}
 
-	room1 = &model.Room{
-		ID:            1,
+	message11Entity = &entity.Message{
+		ID:        1,
+		UserID:    1,
+		Content:   "content1",
+		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
+	}
+	messageEntitySlice1 = entity.MessageSlice{message11Entity}
+
+	roomID = 1
+	room1  = &model.Room{
+		ID:            model.RoomID(roomID),
 		Unread:        1,
 		IsPinned:      true,
 		Name:          "name1",
 		Icon:          "/icon1",
-		LatestMessage: message11,
+		LatestMessage: message1,
 	}
-	rooms = model.RoomSlice{room1}
+	roomSlice = model.RoomSlice{room1}
+	rooms1    = &model.Rooms{Rooms: roomSlice}
+
+	// roomR1Entity = &entity.
+
+	room1Entity = &entity.Room{
+		ID:        0,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+		DeteledAt: null.Time{
+			Time:  time.Time{},
+			Valid: false,
+		},
+		// R: &entity.roomR{
+		// 	Messages:  []*entity.Message{},
+		// 	RoomUsers: []*entity.RoomUser{},
+		// },
+		// L: entity.roomL{},
+	}
 )
+
+// type UserUsecaseTestSuite struct {
+// 	suite.Suite
+// 	router  *gin.Engine
+// 	mock    *mock.MockIUserService
+// 	usecase *userUsecase
+// }
+
+// func (suite *UserUsecaseTestSuite) SetupSuite() {
+// 	gin.SetMode(gin.TestMode)
+
+// 	suite.router = gin.Default()
+// 	mockCtl := gomock.NewController(suite.T())
+// 	defer mockCtl.Finish()
+// 	suite.mock = mock.NewMockIUserService(mockCtl)
+// }
+
+// func TestUserHandlerSuite(t *testing.T) {
+// 	suite.Run(t, new(UserUsecaseTestSuite))
+// }
 
 func Test_userUsecase_FindUserByUserID(t *testing.T) {
 	type fields struct {
@@ -98,22 +146,9 @@ func Test_userUsecase_FindUserByUserID(t *testing.T) {
 				userID: 1,
 			},
 			prepareMockFn: func(m *mock.MockIUserService) {
-				m.EXPECT().FindUserByUserID(gomock.Any(), 1).Return(&entity.User{
-					ID:       1,
-					Name:     "name1",
-					Icon:     "/icon1",
-					Gender:   0,
-					Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
-					Location: 1,
-				}, nil)
+				m.EXPECT().FindUserByUserID(gomock.Any(), userID).Return(user11Entity, nil)
 			},
-			want: &model.User{
-				ID:       1,
-				Name:     "name1",
-				Icon:     "/icon1",
-				Gender:   0,
-				BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
-				Location: 1},
+			want:    user11,
 			wantErr: nil,
 		},
 	}
@@ -187,13 +222,23 @@ func Test_userUsecase_FindAllRooms(t *testing.T) {
 		userID int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    model.RoomSlice
-		wantErr bool
+		name          string
+		prepareMockFn func(m *mock.MockIUserService)
+		fields        fields
+		args          args
+		want          model.RoomSlice
+		wantErr       bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "usecase FindAllRooms success response",
+			args: args{
+				ctx: &gin.Context{},
+			},
+			prepareMockFn: func(m *mock.MockIUserService) {
+				m.EXPECT().FindAllRooms(gomock.Any(), userID).Return(rooms1, nil)
+			},
+			want: rooms1.Rooms,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
