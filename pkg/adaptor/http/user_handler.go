@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
@@ -110,6 +111,7 @@ func (uh *userHandler) sendMessage() gin.HandlerFunc {
 		// リクエストボディーを取り出す
 		var newMessage model.NewMessage
 		newMessage.UserID = userID
+		newMessage.CreatedAt = time.Now() // これでは厳密には時間が異なるからダメなきがする
 		if err := c.ShouldBindJSON(&newMessage); err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
