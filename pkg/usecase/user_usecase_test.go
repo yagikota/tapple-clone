@@ -15,25 +15,65 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestNewUserUsecase(t *testing.T) {
-	type args struct {
-		uService service.IUserService
+// テストデータ
+var (
+	userID = 1
+
+	user11 = &model.User{
+		ID:       1,
+		Name:     "name1",
+		Icon:     "/icon1",
+		Gender:   1,
+		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
+		Location: 1,
 	}
-	tests := []struct {
-		name string
-		args args
-		want IUserUsecase
-	}{
-		// TODO: Add test cases.
+	user12 = &model.User{
+		ID:       2,
+		Name:     "name2",
+		Icon:     "/icon2",
+		Gender:   2,
+		BirthDay: time.Date(2022, 2, 2, 0, 0, 0, 0, time.Local),
+		Location: 2,
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewUserUsecase(tt.args.uService); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewUserUsecase() = %v, want %v", got, tt.want)
-			}
-		})
+	users1 = model.UserSlice{user11, user12}
+
+	user11Entity = &entity.User{
+		ID:       1,
+		Name:     "name1",
+		Icon:     "/icon1",
+		Gender:   1,
+		Birthday: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
+		Location: 1,
 	}
-}
+	user12Entity = &entity.User{
+		ID:       2,
+		Name:     "name2",
+		Icon:     "/icon2",
+		Gender:   2,
+		Birthday: time.Date(2022, 2, 2, 0, 0, 0, 0, time.Local),
+		Location: 2,
+	}
+
+	users1Entity = entity.UserSlice{user11Entity, user12Entity}
+
+	message11 = &model.Message{
+		ID:        1,
+		UserID:    1,
+		Content:   "content1",
+		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
+	}
+	messages1 = model.MessageSlice{message11}
+
+	room1 = &model.Room{
+		ID:            1,
+		Unread:        1,
+		IsPinned:      true,
+		Name:          "name1",
+		Icon:          "/icon1",
+		LatestMessage: message11,
+	}
+	rooms = model.RoomSlice{room1}
+)
 
 func Test_userUsecase_FindUserByUserID(t *testing.T) {
 	type fields struct {
@@ -102,27 +142,38 @@ func Test_userUsecase_FindAllUsers(t *testing.T) {
 		ctx context.Context
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    model.UserSlice
-		wantErr bool
+		name          string
+		prepareMockFn func(m *mock.MockIUserService)
+		fields        fields
+		args          args
+		want          model.UserSlice
+		wantErr       error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "usecase FindAllUsers suceess response",
+			args: args{
+				ctx: &gin.Context{},
+			},
+			prepareMockFn: func(m *mock.MockIUserService) {
+				m.EXPECT().FindAllUsers(gomock.Any()).Return(users1Entity, nil)
+			},
+			want:    users1,
+			wantErr: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := &userUsecase{
-				userService: tt.fields.userService,
-			}
-			got, err := uu.FindAllUsers(tt.args.ctx)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userUsecase.FindAllUsers() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userUsecase.FindAllUsers() = %v, want %v", got, tt.want)
-			}
+			gin.SetMode(gin.TestMode)
+			//mock登録
+			controller := gomock.NewController(t)
+			defer controller.Finish()
+
+			mock := mock.NewMockIUserService(controller)
+			tt.prepareMockFn(mock)
+			uu := NewUserUsecase(mock)
+			res, err := uu.FindAllUsers(tt.args.ctx)
+			assert.Equal(t, res, tt.want)
+			assert.Equal(t, err, tt.wantErr)
 		})
 	}
 }
