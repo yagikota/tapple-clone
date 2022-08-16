@@ -192,7 +192,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRooms_200() {
 	)
 }
 
-func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID() {
+func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200() {
 	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID).Return(roomDetail, nil)
 	rec := suite.rec
 	path := fmt.Sprintf("%s/%d/rooms/%d", usersAPIRoot, userID, roomID)
