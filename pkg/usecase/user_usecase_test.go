@@ -4,11 +4,14 @@ import (
 	"context"
 	"reflect"
 	"testing"
+	"time"
 
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
 	mock "github.com/CyberAgentHack/2208-ace-go-server/pkg/mock/service"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/assert/v2"
 	"github.com/golang/mock/gomock"
 )
 
@@ -46,18 +49,32 @@ func Test_userUsecase_FindUserByUserID(t *testing.T) {
 		fields        fields
 		args          args
 		want          *model.User
-		wantErr       bool
+		wantErr       error
 	}{
 		{
-			name: "sccess response",
-			prepareMockFn: func(m *mock.MockIUserService) {
-				args := args{
-					ctx:    &gin.Context{},
-					userID: 1,
-				}
-				m.EXPECT().FindUserByUserID(gomock.Any(), args.userID).Return(&model.User{}, nil)
+			name: "usecase FindUserByUserID success response",
+			args: args{
+				ctx:    &gin.Context{},
+				userID: 1,
 			},
-			want: &model.User{},
+			prepareMockFn: func(m *mock.MockIUserService) {
+				m.EXPECT().FindUserByUserID(gomock.Any(), 1).Return(&entity.User{
+					ID:       1,
+					Name:     "name1",
+					Icon:     "/icon1",
+					Gender:   0,
+					Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+					Location: 1,
+				}, nil)
+			},
+			want: &model.User{
+				ID:       1,
+				Name:     "name1",
+				Icon:     "/icon1",
+				Gender:   0,
+				BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+				Location: 1},
+			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
@@ -66,17 +83,13 @@ func Test_userUsecase_FindUserByUserID(t *testing.T) {
 			//mock登録
 			controller := gomock.NewController(t)
 			defer controller.Finish()
+
 			mock := mock.NewMockIUserService(controller)
 			tt.prepareMockFn(mock)
 			uu := NewUserUsecase(mock)
-			got, err := uu.FindUserByUserID(tt.args.ctx, tt.args.userID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userUsecase.FindUserByUserID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userUsecase.FindUserByUserID() = %v, want %v", got, tt.want)
-			}
+			res, err := uu.FindUserByUserID(tt.args.ctx, tt.args.userID)
+			assert.Equal(t, res, tt.want)
+			assert.Equal(t, err, tt.wantErr)
 		})
 	}
 }
