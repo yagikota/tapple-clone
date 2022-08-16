@@ -109,6 +109,7 @@ func (uh *userHandler) sendMessage() gin.HandlerFunc {
 
 		// リクエストボディーを取り出す
 		var newMessage model.NewMessage
+		newMessage.UserID = userID
 		if err := c.ShouldBindJSON(&newMessage); err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
@@ -121,6 +122,6 @@ func (uh *userHandler) sendMessage() gin.HandlerFunc {
 
 		// c.JSON(http.StatusOK, newMessage)
 		// TODO: 現状ではレスポンス返さないが、これで良いか？
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, newMessage)
 	}
 }
