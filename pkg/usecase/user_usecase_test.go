@@ -53,6 +53,24 @@ var (
 func TestMain(m *testing.M) {
 	println("before all...")
 
+	user11Entity = &entity.User{
+		ID:       1,
+		Name:     "name",
+		Icon:     "icon",
+		Gender:   0,
+		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Location: 0,
+	}
+
+	user11 = &model.User{
+		ID:       1,
+		Name:     "name",
+		Icon:     "icon",
+		Gender:   0,
+		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Location: 0,
+	}
+
 	room1 = &model.Room{
 		ID:       1,
 		Unread:   0,
