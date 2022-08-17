@@ -25,10 +25,18 @@ paths:
               $ref: "#/components/schemas/UserProfileImageCreateResponse"
         required: true
       responses:
-        200:
-          description: A successful response.
-          content: {}
-      x-codegen-request-body-name: body
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
   /users/{user_id}/rooms:
     get:
       tags:
@@ -44,9 +52,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/RoomListResponse"
         400:
-          description: Invalid ID supplied
-        404:
-          description: Rooms not found
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
       x-codegen-request-body-name: body
   /users/{user_id}/rooms/{room_id}:
     get:
@@ -63,9 +79,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserRoomGetResponse"
         400:
-          description: Invalid ID supplied
-        404:
-          description: UserRooms not found
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
       x-codegen-request-body-name: body
   /users/{user_id}/rooms/{room_id}/messages:
     post:
@@ -88,7 +112,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MessageCreateResponse"
-      x-codegen-request-body-name: body
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
 components:
   schemas:
     UserRoomGetResponse:
@@ -261,3 +296,26 @@ components:
           type: string
           example: https://pbs.twimg.com/media/EbtbZwdU8AU_6DW.jpg:small
           description: 写真URL
+    ErrorResponseBadRequest:
+      title: ErrorResponseBadRequest
+      type: object
+      description: BadRequest時のエラーレスポンス
+      properties:
+        message:
+          type: string
+          description: エラーメッセージサンプル
+          example: リクエストが不正です
+      required:
+        - code
+        - message
+    ErrorResponseInternalServerError:
+      title: ErrorResponseInternalServerError
+      type: object
+      description: サーバーエラー時のエラーレスポンス
+      properties:
+        message:
+          type: string
+          description: エラーメッセージサンプル
+          example: サーバーエラーが発生しました
+      required:
+        - message
