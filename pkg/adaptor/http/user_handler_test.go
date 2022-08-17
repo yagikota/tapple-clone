@@ -228,7 +228,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200()
 }
 
 func (suite *UserHandlerTestSuite) Test_userHandler_sendMessage_200() {
-	suite.mock.EXPECT().SendMessage(gomock.Any(), userID, roomID, newMessage1).Return(nil)
+	suite.mock.EXPECT().SendMessage(gomock.Any(), userID, roomID, newMessage1).Return(message1, nil)
 	rec := suite.rec
 	path := fmt.Sprintf("%s/%d/rooms/%d/messages", usersAPIRoot, userID, roomID)
 	jsonStr := []byte(
@@ -239,5 +239,13 @@ func (suite *UserHandlerTestSuite) Test_userHandler_sendMessage_200() {
 	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(jsonStr))
 	suite.router.ServeHTTP(rec, req)
 	suite.Equal(http.StatusOK, rec.Code)
-	suite.JSONEq("null", rec.Body.String())
+	suite.JSONEq(
+		`{
+			"id": 1,
+			"user_id": 1,
+			"content": "content1",
+			"created_at": "2022-01-01T00:00:00+09:00"
+		}`,
+		rec.Body.String(),
+	)
 }
