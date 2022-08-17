@@ -1,4 +1,4 @@
-package middleware
+package http
 
 import (
 	"database/sql"
@@ -48,6 +48,7 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 				if rbErr := tx.Rollback(); rbErr != nil {
 					log.Println("rollback error: ", rbErr)
 				}
+				log.Println("successful rollback")
 				panic(r)
 			}
 		}()
@@ -61,7 +62,8 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 		c.Next() // ハンドラーが実行される
 
 		wantStatusCodes := []int{http.StatusOK, http.StatusCreated}
-		if statusInList(c.Writer.Status(), wantStatusCodes) {
+		httpStatus := c.Writer.Status()
+		if statusInList(httpStatus, wantStatusCodes) {
 			log.Println("committing transactions")
 			if commitErr := tx.Commit(); commitErr != nil {
 				log.Println("transactions commit error: ", commitErr)
@@ -69,6 +71,13 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 			}
 			log.Println("transactions successful committed")
 		} else {
+			var responseCode int
+			if httpStatus == http.StatusBadRequest {
+				responseCode = http.StatusBadRequest
+			} else {
+				responseCode = http.StatusInternalServerError
+			}
+			c.JSON(responseCode, CreateErrorResponse(responseCode))
 			log.Println("invalid status code: ", c.Writer.Status())
 			panic(fmt.Sprintf("invalid status code: %d", c.Writer.Status()))
 		}
