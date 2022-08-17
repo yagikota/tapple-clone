@@ -96,11 +96,12 @@ func (mr *MockIUserUsecaseMockRecorder) FindUserByUserID(ctx, userID interface{}
 }
 
 // SendMessage mocks base method.
-func (m_2 *MockIUserUsecase) SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) error {
+func (m_2 *MockIUserUsecase) SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error) {
 	m_2.ctrl.T.Helper()
 	ret := m_2.ctrl.Call(m_2, "SendMessage", ctx, userID, roomID, m)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*model.Message)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // SendMessage indicates an expected call of SendMessage.

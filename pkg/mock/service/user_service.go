@@ -96,11 +96,12 @@ func (mr *MockIUserServiceMockRecorder) FindUserByUserID(ctx, userID interface{}
 }
 
 // SendMessage mocks base method.
-func (m_2 *MockIUserService) SendMessage(ctx context.Context, m *entity.Message) error {
+func (m_2 *MockIUserService) SendMessage(ctx context.Context, m *entity.Message) (*entity.Message, error) {
 	m_2.ctrl.T.Helper()
 	ret := m_2.ctrl.Call(m_2, "SendMessage", ctx, m)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*entity.Message)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // SendMessage indicates an expected call of SendMessage.
