@@ -39,7 +39,8 @@ var (
 
 	messagesEntity1Slice entity.MessageSlice
 
-	room1 *model.Room
+	roomID = 1
+	room1  *model.Room
 
 	roomSlice model.RoomSlice
 	rooms1    *model.Rooms
@@ -48,6 +49,10 @@ var (
 	room1EntitySlice entity.RoomSlice
 
 	roomUser1Entity *entity.RoomUser
+
+	roomDetail1       *model.RoomDetail
+	roomDetailUsers1  *model.UserSlice
+	roomDetail1Entity *entity.Room
 )
 
 func TestMain(m *testing.M) {
@@ -66,7 +71,7 @@ func TestMain(m *testing.M) {
 		ID:       2,
 		Name:     "name2",
 		Icon:     "icon2",
-		Gender:   0,
+		Gender:   1,
 		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
 		Location: 1,
 	}
@@ -86,7 +91,7 @@ func TestMain(m *testing.M) {
 		ID:       2,
 		Name:     "name2",
 		Icon:     "icon2",
-		Gender:   0,
+		Gender:   1,
 		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
 		Location: 1,
 	}
@@ -111,7 +116,6 @@ func TestMain(m *testing.M) {
 		Rooms: []*model.Room{room1},
 	}
 
-	// fmt.Println(room1Entity)
 	room1Entity = new(entity.Room)
 	room1Entity = &entity.Room{
 		ID: 1,
@@ -149,6 +153,68 @@ func TestMain(m *testing.M) {
 	}
 
 	room1EntitySlice = entity.RoomSlice{room1Entity}
+
+	roomDetail1Entity = new(entity.Room)
+	roomDetail1Entity = &entity.Room{
+		ID: 1,
+	}
+	roomDetail1Entity.R = roomDetail1Entity.R.NewStruct()
+	roomDetail1Entity.R.RoomUsers = entity.RoomUserSlice{
+		{
+			ID:       1,
+			UserID:   1,
+			RoomID:   1,
+			IsPinned: false,
+		},
+		{
+			ID:       2,
+			UserID:   2,
+			RoomID:   1,
+			IsPinned: false,
+		},
+	}
+	roomDetail1Entity.R.RoomUsers[0].R = roomDetail1Entity.R.RoomUsers[0].R.NewStruct()
+	roomDetail1Entity.R.RoomUsers[1].R = roomDetail1Entity.R.RoomUsers[0].R.NewStruct()
+	roomDetail1Entity.R.RoomUsers[0].R.User = &entity.User{
+		ID:       2,
+		Name:     "name2",
+		Icon:     "icon2",
+		Gender:   1,
+		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Location: 1,
+	}
+	roomDetail1Entity.R.RoomUsers[1].R.User = &entity.User{
+		ID:       1,
+		Name:     "name1",
+		Icon:     "icon1",
+		Gender:   0,
+		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Location: 0,
+	}
+
+	roomDetail1Entity.R.Messages = entity.MessageSlice{
+		{
+			ID:        1,
+			UserID:    1,
+			Content:   "content",
+			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		},
+	}
+
+	message11 = &model.Message{
+		ID:        1,
+		UserID:    1,
+		Content:   "content",
+		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+	}
+
+	roomDetail1 = &model.RoomDetail{
+		ID:       1,
+		Name:     "name2",
+		Icon:     "icon2",
+		Users:    []*model.User{user12, user11},
+		Messages: []*model.Message{message11},
+	}
 
 	code := m.Run()
 
@@ -272,7 +338,8 @@ func Test_userUsecase_FindAllRooms(t *testing.T) {
 			prepareMockFn: func(m *mock.MockIUserService) {
 				m.EXPECT().FindAllRooms(gomock.Any(), userID).Return(room1EntitySlice, nil)
 			},
-			want: rooms1,
+			want:    rooms1,
+			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
@@ -303,27 +370,39 @@ func Test_userUsecase_FindRoomDetailByRoomID(t *testing.T) {
 		roomID int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *model.RoomDetail
-		wantErr bool
+		name          string
+		prepareMockFn func(m *mock.MockIUserService)
+		fields        fields
+		args          args
+		want          *model.RoomDetail
+		wantErr       error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "usecase FindRoomDetailByRoomID success reponse",
+			args: args{
+				ctx: &gin.Context{},
+			},
+			prepareMockFn: func(m *mock.MockIUserService) {
+				m.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID).Return(roomDetail1Entity, nil)
+			},
+			want:    roomDetail1,
+			wantErr: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := &userUsecase{
-				userService: tt.fields.userService,
-			}
-			got, err := uu.FindRoomDetailByRoomID(tt.args.ctx, tt.args.userID, tt.args.roomID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userUsecase.FindRoomDetailByRoomID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userUsecase.FindRoomDetailByRoomID() = %v, want %v", got, tt.want)
-			}
+			gin.SetMode(gin.TestMode)
+			//mock登録
+			controller := gomock.NewController(t)
+			defer controller.Finish()
+
+			mock := mock.NewMockIUserService(controller)
+			tt.prepareMockFn(mock)
+			uu := NewUserUsecase(mock)
+
+			res, err := uu.FindRoomDetailByRoomID(tt.args.ctx, userID, roomID)
+			assert.Equal(t, res, tt.want)
+			assert.Equal(t, err, tt.wantErr)
 		})
 	}
 }
