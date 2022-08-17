@@ -29,16 +29,12 @@ func MessageFromEntity(entity *entity.Message) *Message {
 }
 
 type NewMessage struct {
-	ID        int       `json:"id"`
-	UserID    int       `json:"user_id"`
-	Content   string    `json:"content" binding:"required"`
-	CreatedAt time.Time `json:"created_at"`
+	Content string `json:"content" binding:"required"`
 }
 
 // TODO: メソッドと関数の使い分け
 func (m *NewMessage) ToEntity(userID, roomID int) *entity.Message {
 	return &entity.Message{
-		ID:      int64(m.ID),
 		UserID:  userID,
 		RoomID:  roomID,
 		Content: m.Content,
