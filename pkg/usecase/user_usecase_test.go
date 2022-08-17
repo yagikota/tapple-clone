@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"os"
-	"reflect"
 	"testing"
 	"time"
 
@@ -32,6 +31,8 @@ var (
 	message11 *model.Message
 	message12 *model.Message
 
+	postMessage *entity.Message
+
 	messages1Slice model.MessageSlice
 
 	message11Entity *entity.Message
@@ -53,6 +54,8 @@ var (
 	roomDetail1       *model.RoomDetail
 	roomDetailUsers1  *model.UserSlice
 	roomDetail1Entity *entity.Room
+
+	newMessage *model.NewMessage
 )
 
 func TestMain(m *testing.M) {
@@ -214,6 +217,16 @@ func TestMain(m *testing.M) {
 		Icon:     "icon2",
 		Users:    []*model.User{user12, user11},
 		Messages: []*model.Message{message11},
+	}
+
+	postMessage = &entity.Message{
+		UserID:  1,
+		RoomID:  1,
+		Content: "content",
+	}
+
+	newMessage = &model.NewMessage{
+		Content: "content",
 	}
 
 	code := m.Run()
@@ -418,27 +431,36 @@ func Test_userUsecase_SendMessage(t *testing.T) {
 		m      *model.NewMessage
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *model.Message
-		wantErr bool
+		name          string
+		prepareMockFn func(m *mock.MockIUserService)
+		fields        fields
+		args          args
+		want          *model.Message
+		wantErr       bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "usecase SendMessage success response",
+			args: args{
+				ctx: &gin.Context{},
+			},
+			prepareMockFn: func(m *mock.MockIUserService) {
+				m.EXPECT().SendMessage(gomock.Any(), postMessage).Return(postMessage, nil)
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uu := &userUsecase{
-				userService: tt.fields.userService,
-			}
-			got, err := uu.SendMessage(tt.args.ctx, tt.args.userID, tt.args.roomID, tt.args.m)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userUsecase.SendMessage() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userUsecase.SendMessage() = %v, want %v", got, tt.want)
-			}
+			gin.SetMode(gin.TestMode)
+			//mock登録
+			controller := gomock.NewController(t)
+			defer controller.Finish()
+
+			mock := mock.NewMockIUserService(controller)
+			tt.prepareMockFn(mock)
+			uu := NewUserUsecase(mock)
+			res, err := uu.SendMessage(tt.args.ctx, userID, roomID, newMessage)
+			assert.Equal(t, res, tt.want)
+			assert.Equal(t, err, tt.wantErr)
 		})
 	}
 }
