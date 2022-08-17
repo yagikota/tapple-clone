@@ -1,8 +1,7 @@
-package middleware
+package http
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -25,15 +24,6 @@ func beginTxAndSetToContext(c *gin.Context, conn *sql.DB) (*sql.Tx, error) {
 	return tx, nil
 }
 
-func statusInList(status int, statusCodeList []int) bool {
-	for _, code := range statusCodeList {
-		if code == status {
-			return true
-		}
-	}
-	return false
-}
-
 // トランザクション用のmiddleware
 func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -43,12 +33,39 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 			return
 		}
 
+		// TODO: 処理が汚いので整理する
+		// Rollbackのあとエラーハンドリングするのか？
+		// panic起こしていいのか
 		defer func() {
+
+			httpStatus := c.Writer.Status()
+			if httpStatus == http.StatusOK || httpStatus == http.StatusCreated {
+				log.Println("committing transactions")
+				if commitErr := tx.Commit(); commitErr != nil {
+					log.Println("transactions commit error: ", commitErr)
+					panic(commitErr)
+				}
+				log.Println("transactions successful committed")
+			} else {
+				var responseCode int
+				if httpStatus == http.StatusBadRequest {
+					responseCode = http.StatusBadRequest
+				} else {
+					responseCode = http.StatusInternalServerError
+				}
+				c.JSON(responseCode, CreateErrorResponse(responseCode))
+				if rbErr := tx.Rollback(); rbErr != nil {
+					log.Println("rollback error: ", rbErr)
+				}
+				log.Println("successful rollback")
+			}
+
+			// panicした場合
 			if r := recover(); r != nil {
 				if rbErr := tx.Rollback(); rbErr != nil {
 					log.Println("rollback error: ", rbErr)
 				}
-				panic(r)
+				log.Println("successful rollback")
 			}
 		}()
 
@@ -60,17 +77,5 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 
 		c.Next() // ハンドラーが実行される
 
-		wantStatusCodes := []int{http.StatusOK, http.StatusCreated}
-		if statusInList(c.Writer.Status(), wantStatusCodes) {
-			log.Println("committing transactions")
-			if commitErr := tx.Commit(); commitErr != nil {
-				log.Println("transactions commit error: ", commitErr)
-				panic(commitErr)
-			}
-			log.Println("transactions successful committed")
-		} else {
-			log.Println("invalid status code: ", c.Writer.Status())
-			panic(fmt.Sprintf("invalid status code: %d", c.Writer.Status()))
-		}
 	}
 }

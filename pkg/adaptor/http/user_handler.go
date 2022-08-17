@@ -34,7 +34,6 @@ func (uh *userHandler) findUserByUserID() gin.HandlerFunc {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-
 		c.JSON(http.StatusOK, user)
 	}
 }
