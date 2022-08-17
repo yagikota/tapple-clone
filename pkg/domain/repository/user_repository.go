@@ -11,5 +11,5 @@ type IUserRepository interface {
 	FindAllUsers(ctx context.Context) (entity.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error)
 	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error)
-	SendMessage(ctx context.Context, m *entity.Message) error
+	SendMessage(ctx context.Context, m *entity.Message) (*entity.Message, error)
 }
