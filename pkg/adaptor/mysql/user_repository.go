@@ -22,7 +22,7 @@ func NewUserRepository(db *sql.DB) domain.IUserRepository {
 }
 
 func (ur *userRepository) FindUserByUserID(ctx context.Context, userID int) (*entity.User, error) {
-	tx, err := TxFromContext(ctx)
+	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (ur *userRepository) FindUserByUserID(ctx context.Context, userID int) (*en
 }
 
 func (ur *userRepository) FindAllUsers(ctx context.Context) (entity.UserSlice, error) {
-	tx, err := TxFromContext(ctx)
+	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (ur *userRepository) FindAllUsers(ctx context.Context) (entity.UserSlice, e
 }
 
 func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) {
-	tx, err := TxFromContext(ctx)
+	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
 func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
 	boil.DebugMode = true
-	tx, err := TxFromContext(ctx)
+	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 // TODO: 自身が所属しているルームにのみ送信できるようにする 現状localhost:8080/v1/users/2/rooms/3でも送信できてしまう
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
 func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) (*entity.Message, error) {
-	tx, err := TxFromContext(ctx)
+	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
