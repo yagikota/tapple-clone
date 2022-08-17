@@ -82,11 +82,15 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 
 // TODO: 自身が所属しているルームにのみ送信できるようにする 現状localhost:8080/v1/users/2/rooms/3でも送信できてしまう
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
-func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) error {
+func (ur *userRepository) SendMessage(ctx context.Context, m *entity.Message) (*entity.Message, error) {
 	tx, err := TxFromContext(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return m.Insert(ctx, tx, boil.Infer())
+	err = m.Insert(ctx, tx, boil.Infer())
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
 }
