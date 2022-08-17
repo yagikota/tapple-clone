@@ -27,7 +27,7 @@ func SetTxToContext(c context.Context, tx *sql.Tx) error {
 }
 
 // ginのコンテキストからトランザクションを抽出
-func TxFromContext(c context.Context) (*sql.Tx, error) {
+func txFromContext(c context.Context) (*sql.Tx, error) {
 	gc, err := ginContextFromContext(c)
 	if err != nil {
 		return nil, err
