@@ -114,13 +114,12 @@ func (uh *userHandler) sendMessage() gin.HandlerFunc {
 			return
 		}
 
-		if err := uh.uUsecase.SendMessage(c, userID, roomID, &newMessage); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		message, err := uh.uUsecase.SendMessage(c, userID, roomID, &newMessage)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		// c.JSON(http.StatusOK, newMessage)
-		// TODO: 現状ではレスポンス返さないが、これで良いか？
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, message)
 	}
 }
