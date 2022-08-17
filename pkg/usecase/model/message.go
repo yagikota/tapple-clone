@@ -38,6 +38,7 @@ type NewMessage struct {
 // TODO: メソッドと関数の使い分け
 func (m *NewMessage) ToEntity(userID, roomID int) *entity.Message {
 	return &entity.Message{
+		ID:      int64(m.ID),
 		UserID:  userID,
 		RoomID:  roomID,
 		Content: m.Content,
