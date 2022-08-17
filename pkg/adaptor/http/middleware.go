@@ -33,15 +33,39 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 			return
 		}
 
+		// TODO: 処理が汚いので整理する
 		// Rollbackのあとエラーハンドリングするのか？
 		// panic起こしていいのか
 		defer func() {
+
+			httpStatus := c.Writer.Status()
+			if httpStatus == http.StatusOK || httpStatus == http.StatusCreated {
+				log.Println("committing transactions")
+				if commitErr := tx.Commit(); commitErr != nil {
+					log.Println("transactions commit error: ", commitErr)
+					panic(commitErr)
+				}
+				log.Println("transactions successful committed")
+			} else {
+				var responseCode int
+				if httpStatus == http.StatusBadRequest {
+					responseCode = http.StatusBadRequest
+				} else {
+					responseCode = http.StatusInternalServerError
+				}
+				c.JSON(responseCode, CreateErrorResponse(responseCode))
+				if rbErr := tx.Rollback(); rbErr != nil {
+					log.Println("rollback error: ", rbErr)
+				}
+				log.Println("successful rollback")
+			}
+
+			// panicした場合
 			if r := recover(); r != nil {
 				if rbErr := tx.Rollback(); rbErr != nil {
 					log.Println("rollback error: ", rbErr)
 				}
 				log.Println("successful rollback")
-				panic(r)
 			}
 		}()
 
@@ -53,23 +77,5 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 
 		c.Next() // ハンドラーが実行される
 
-		// TODO: 処理が汚いので整理する
-		httpStatus := c.Writer.Status()
-		if httpStatus == http.StatusOK || httpStatus == http.StatusCreated {
-			log.Println("committing transactions")
-			if commitErr := tx.Commit(); commitErr != nil {
-				log.Println("transactions commit error: ", commitErr)
-				panic(commitErr)
-			}
-			log.Println("transactions successful committed")
-		} else {
-			var responseCode int
-			if httpStatus == http.StatusBadRequest {
-				responseCode = http.StatusBadRequest
-			} else {
-				responseCode = http.StatusInternalServerError
-			}
-			c.JSON(responseCode, CreateErrorResponse(responseCode))
-		}
 	}
 }
