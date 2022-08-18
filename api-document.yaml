@@ -124,6 +124,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseInternalServerError"
+    delete:
+      tags:
+        - user
+      summary: メッセージ削除API
+      description: |
+        メッセージを削除します。
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageDeleteRequest"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageDeleteResponse"
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
 components:
   schemas:
     UserRoomGetResponse:
@@ -279,6 +311,31 @@ components:
           example: "2020-01-31T23:59:59+09:00"
           format: date-time
           description: 最後のメッセージの送信日時
+    MessageDeleteResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: メッセージID
+        user_id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        room_id:
+          type: integer
+          example: 1
+        deleted_at:
+          type: string
+          example: "2020-01-31T23:59:59+09:00"
+          description: メッセージが削除された日時
+    MessageDeleteRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: メッセージID
     UserProfileImageCreateResponse:
       type: object
       properties:
