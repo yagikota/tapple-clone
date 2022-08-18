@@ -52,6 +52,7 @@ func RoomFromEntity(entity *entity.Room) *Room {
 		LatestMessage: MessageFromEntity(entity.R.Messages[0]),
 	}
 
+	// 年齢計算
 	age, err := calcAge(UserFromEntity(entity.R.RoomUsers[0].R.User).BirthDay)
 	if err != nil {
 		return nil
@@ -65,6 +66,16 @@ func RoomFromEntity(entity *entity.Room) *Room {
 	} else {
 		r.SubName = strconv.Itoa(age) + "歳・" + prefInfo.KanjiShort()
 	}
+
+	// 未読数計算
+	unread := 0
+	partnerID := UserFromEntity(entity.R.RoomUsers[0].R.User).ID
+	for _, message := range entity.R.Messages {
+		if message.UserID == int(partnerID) && !message.IsRead {
+			unread += 1
+		}
+	}
+	r.Unread = unread
 
 	return r
 }
