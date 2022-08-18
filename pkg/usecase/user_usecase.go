@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"sort"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
@@ -31,6 +32,7 @@ func (uu *userUsecase) FindUserByUserID(ctx context.Context, userID int) (*model
 	if err != nil {
 		return nil, err
 	}
+	log.Println(model.UserFromEntity(entity))
 	return model.UserFromEntity(entity), err
 }
 
