@@ -64,8 +64,9 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 			if r := recover(); r != nil {
 				if rbErr := tx.Rollback(); rbErr != nil {
 					log.Println("rollback error: ", rbErr)
+				} else {
+					log.Println("successful rollback")
 				}
-				log.Println("successful rollback")
 			}
 		}()
 
