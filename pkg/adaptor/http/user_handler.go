@@ -83,13 +83,13 @@ func (uh *userHandler) findRoomDetailByRoomID() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		room, err := uh.uUsecase.FindRoomDetailByRoomID(c, userID, roomID)
+		roomDetail, err := uh.uUsecase.FindRoomDetailByRoomID(c, userID, roomID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, room)
+		c.JSON(http.StatusOK, roomDetail)
 	}
 }
 

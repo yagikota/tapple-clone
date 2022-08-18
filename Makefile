@@ -54,3 +54,13 @@ generate-model:
 .PHONY: fmt
 fmt:
 	gofmt -l -w .
+
+# mock作成
+# usecase
+# serivice
+# repository
+.PHONY: generate-mock
+generate-mock:
+	@$(GO_BIN)/mockgen -source pkg/usecase/user_usecase.go -destination pkg/mock/usecase/user_usecase.go -package mock
+	@$(GO_BIN)/mockgen -source pkg/domain/service/user_service.go -destination pkg/mock/service/user_service.go -package mock
+	@$(GO_BIN)/mockgen -source pkg/domain/repository/user_repository.go -destination pkg/mock/repository/user_repository.go -package mock
