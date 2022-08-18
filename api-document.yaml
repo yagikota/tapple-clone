@@ -242,6 +242,10 @@ components:
           type: string
           example: "female/n000009/main_0001_01.jpg"
           description: アイコン（2人の場合、相手のアイコン）
+        sub_name:
+          type: string
+          example: "23歳・神奈川"
+          description: 相手の年齢・所在地
         latest_message:
           $ref: "#/components/schemas/LatestMessageInfo"
     RoomListResponse:
