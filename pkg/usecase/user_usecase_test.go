@@ -55,7 +55,8 @@ var (
 	roomDetailUsers1  *model.UserSlice
 	roomDetail1Entity *entity.Room
 
-	newMessage *model.NewMessage
+	newMessage     *model.NewMessage
+	createdMessage *entity.Message
 )
 
 func TestMain(m *testing.M) {
@@ -223,6 +224,14 @@ func TestMain(m *testing.M) {
 		UserID:  1,
 		RoomID:  1,
 		Content: "content",
+	}
+
+	createdMessage = &entity.Message{
+		ID:        1,
+		UserID:    1,
+		RoomID:    1,
+		Content:   "content",
+		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
 	}
 
 	newMessage = &model.NewMessage{
@@ -436,7 +445,7 @@ func Test_userUsecase_SendMessage(t *testing.T) {
 		fields        fields
 		args          args
 		want          *model.Message
-		wantErr       bool
+		wantErr       error
 	}{
 		{
 			name: "usecase SendMessage success response",
@@ -444,8 +453,10 @@ func Test_userUsecase_SendMessage(t *testing.T) {
 				ctx: &gin.Context{},
 			},
 			prepareMockFn: func(m *mock.MockIUserService) {
-				m.EXPECT().SendMessage(gomock.Any(), postMessage).Return(postMessage, nil)
+				m.EXPECT().SendMessage(gomock.Any(), postMessage).Return(createdMessage, nil)
 			},
+			want:    message11,
+			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
