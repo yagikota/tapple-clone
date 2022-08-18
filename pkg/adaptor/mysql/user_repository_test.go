@@ -3,199 +3,74 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"reflect"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
-	domain "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/infra"
+	"github.com/google/go-cmp/cmp"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-func TestNewUserRepository(t *testing.T) {
-	type args struct {
-		db *sql.DB
+var (
+	userID = 1
+)
+
+// テスト用に DB接続(テスト用のデータベースつく)
+func NewMySQLConnectorForTest(t *testing.T) *infra.MySQLConnector {
+	t.Helper()
+
+	driverName := "mysql"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&loc=Local",
+		"root",
+		"",
+		"localhost:3306",
+		"tapple_c")
+	conn, err := sql.Open(driverName, dsn)
+	if err != nil {
+		t.Fatal(err)
 	}
-	tests := []struct {
-		name string
-		args args
-		want domain.IUserRepository
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewUserRepository(tt.args.db); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewUserRepository() = %v, want %v", got, tt.want)
-			}
-		})
+
+	t.Cleanup(
+		func() { _ = conn.Close() },
+	)
+
+	return &infra.MySQLConnector{Conn: conn}
+}
+
+func prepareUser() *entity.User {
+	return &entity.User{
+		ID:       1,
+		Name:     "カイ",
+		Icon:     " male/n000029/main_0001_01.jpg",
+		Gender:   0,
+		Birthday: time.Date(2000, 9, 7, 0, 0, 0, 0, time.Local),
+		Location: 34,
 	}
 }
 
 func Test_userRepository_FindUserByUserID(t *testing.T) {
-	type fields struct {
-		DB *sql.DB
-	}
-	type args struct {
-		ctx    context.Context
-		userID int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *entity.User
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ur := &userRepository{
-				DB: tt.fields.DB,
-			}
-			got, err := ur.FindUserByUserID(tt.args.ctx, tt.args.userID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userRepository.FindUserByUserID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userRepository.FindUserByUserID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+	ctx := context.TODO()
 
-func Test_userRepository_FindAllUsers(t *testing.T) {
-	type fields struct {
-		DB *sql.DB
+	// トランザクション開始
+	conn := NewMySQLConnectorForTest(t).Conn
+	tx, err := conn.BeginTx(ctx, nil)
+	t.Cleanup(
+		func() { _ = tx.Rollback() },
+	)
+	if err != nil {
+		t.Fatal(err)
 	}
-	type args struct {
-		ctx context.Context
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    entity.UserSlice
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ur := &userRepository{
-				DB: tt.fields.DB,
-			}
-			got, err := ur.FindAllUsers(tt.args.ctx)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userRepository.FindAllUsers() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userRepository.FindAllUsers() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
-func Test_userRepository_FindAllRooms(t *testing.T) {
-	type fields struct {
-		DB *sql.DB
+	wantUser := prepareUser()
+	ur := NewUserRepository(conn)
+	gotUser, err := ur.FindUserByUserID(ctx, userID)
+	if err != nil {
+		t.Fatal(err)
 	}
-	type args struct {
-		ctx    context.Context
-		userID int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    entity.RoomSlice
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ur := &userRepository{
-				DB: tt.fields.DB,
-			}
-			got, err := ur.FindAllRooms(tt.args.ctx, tt.args.userID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userRepository.FindAllRooms() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userRepository.FindAllRooms() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_userRepository_FindRoomDetailByRoomID(t *testing.T) {
-	type fields struct {
-		DB *sql.DB
-	}
-	type args struct {
-		ctx    context.Context
-		userID int
-		roomID int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *entity.Room
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ur := &userRepository{
-				DB: tt.fields.DB,
-			}
-			got, err := ur.FindRoomDetailByRoomID(tt.args.ctx, tt.args.userID, tt.args.roomID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userRepository.FindRoomDetailByRoomID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userRepository.FindRoomDetailByRoomID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_userRepository_SendMessage(t *testing.T) {
-	type fields struct {
-		DB *sql.DB
-	}
-	type args struct {
-		ctx context.Context
-		m   *entity.Message
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *entity.Message
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ur := &userRepository{
-				DB: tt.fields.DB,
-			}
-			got, err := ur.SendMessage(tt.args.ctx, tt.args.m)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("userRepository.SendMessage() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("userRepository.SendMessage() = %v, want %v", got, tt.want)
-			}
-		})
+	if d := cmp.Diff(wantUser, gotUser); len(d) != 0 {
+		t.Fatal(err)
 	}
 }

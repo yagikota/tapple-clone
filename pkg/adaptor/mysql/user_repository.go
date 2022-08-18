@@ -22,6 +22,7 @@ func NewUserRepository(db *sql.DB) domain.IUserRepository {
 }
 
 func (ur *userRepository) FindUserByUserID(ctx context.Context, userID int) (*entity.User, error) {
+	boil.DebugMode = true
 	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -63,7 +64,6 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 // TODO: 例えば、localhost:8080/v1/users/2/rooms/３でもアクセスできてしまうので、改善が必要
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
 func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
-	boil.DebugMode = true
 	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
