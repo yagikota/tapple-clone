@@ -32,6 +32,7 @@ type RoomDetail struct {
 	Icon     string       `json:"icon"`
 	Users    UserSlice    `json:"users"`
 	Messages MessageSlice `json:"messages"`
+	IsLast   bool         `json:"is_last"`
 }
 
 // ルーム一覧で使用
