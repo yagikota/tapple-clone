@@ -78,7 +78,7 @@ func prefCodeToPrefKanji(prefCode int) (pref.Prefecture, bool) {
 
 // ルーム一覧で使用
 func calcAge(birthday time.Time) (int, error) {
-	// 現在日時を数値のみでフォーマット (YYYYMMDD)
+	// 現在日時を数字だけで表現 (YYYYMMDD)
 	dateFormatOnlyNumber := "20060102" // YYYYMMDD
 
 	nowOnlyNumber := time.Now().Format(dateFormatOnlyNumber)
