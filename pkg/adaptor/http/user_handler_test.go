@@ -17,47 +17,20 @@ import (
 
 // テストデータ
 var (
-	userID = 1
-	user1  = &model.User{
-		ID:       model.UserID(userID),
-		Name:     "name1",
-		Icon:     "/icon1",
-		Gender:   1,
-		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
-		Location: 1,
-	}
-	userSlice1 = model.UserSlice{user1}
+	userID     int
+	user1      *model.User
+	userSlice1 model.UserSlice
 
-	message1 = &model.Message{
-		ID:        1,
-		UserID:    1,
-		Content:   "content1",
-		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
-	}
-	messageSlice1 = model.MessageSlice{message1}
+	message1      *model.Message
+	messageSlice1 model.MessageSlice
 
-	roomID = 1
-	room1  = &model.Room{
-		ID:            model.RoomID(roomID),
-		Unread:        1,
-		IsPinned:      true,
-		Name:          "name1",
-		Icon:          "/icon1",
-		LatestMessage: message1,
-	}
-	roomSlice  = model.RoomSlice{room1}
-	rooms1     = &model.Rooms{Rooms: roomSlice}
-	roomDetail = &model.RoomDetail{
-		ID:       model.RoomID(roomID),
-		Name:     "name1",
-		Icon:     "/icon1",
-		Users:    userSlice1,
-		Messages: messageSlice1,
-	}
+	roomID     int
+	room1      *model.Room
+	roomSlice  model.RoomSlice
+	rooms1     *model.Rooms
+	roomDetail *model.RoomDetail
 
-	newMessage1 = &model.NewMessage{
-		Content: "content1",
-	}
+	newMessage1 *model.NewMessage
 )
 
 //  1.SetupSuite
@@ -112,6 +85,47 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 
 func (suite *UserHandlerTestSuite) SetupTest() {
 	suite.rec = httptest.NewRecorder()
+	userID = 1
+	user1 = &model.User{
+		ID:       model.UserID(userID),
+		Name:     "name1",
+		Icon:     "/icon1",
+		Gender:   1,
+		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
+		Location: 1,
+	}
+	userSlice1 = model.UserSlice{user1}
+
+	message1 = &model.Message{
+		ID:        1,
+		UserID:    1,
+		Content:   "content1",
+		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
+	}
+	messageSlice1 = model.MessageSlice{message1}
+
+	roomID = 1
+	room1 = &model.Room{
+		ID:            model.RoomID(roomID),
+		Unread:        1,
+		IsPinned:      true,
+		Name:          "name1",
+		Icon:          "/icon1",
+		LatestMessage: message1,
+	}
+	roomSlice = model.RoomSlice{room1}
+	rooms1 = &model.Rooms{Rooms: roomSlice}
+	roomDetail = &model.RoomDetail{
+		ID:       model.RoomID(roomID),
+		Name:     "name1",
+		Icon:     "/icon1",
+		Users:    userSlice1,
+		Messages: messageSlice1,
+	}
+
+	newMessage1 = &model.NewMessage{
+		Content: "content1",
+	}
 }
 
 // テストを実行するのに必要
