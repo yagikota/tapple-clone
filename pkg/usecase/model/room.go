@@ -63,6 +63,9 @@ func RoomFromDomainModel(m *model.Room) *Room {
 	unread := 0
 	partnerID := UserFromEntity(entity.R.RoomUsers[0].R.User).ID
 	for _, message := range entity.R.Messages {
+		if message.UserID == int(partnerID) && message.IsRead {
+			break
+		}
 		if message.UserID == int(partnerID) && !message.IsRead {
 			unread += 1
 		}
