@@ -53,7 +53,7 @@ func InitRouter() *gin.Engine {
 		// v1/users/{user_id}/rooms
 		relativePath = fmt.Sprintf("/:%s/rooms", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findRooms())
-		// v1/users/{user_id}/rooms/{room_id}
+		// v1/users/{user_id}/rooms/{room_id}?message_id= // ページングようのクエリパラメータ
 		relativePath = fmt.Sprintf("/:%s/rooms/:%s", userIDParam, roomIDParam)
 		usersGroup.GET(relativePath, userHandler.findRoomDetailByRoomID())
 		// v1/users/{user_id}/rooms/{room_id}/messages
