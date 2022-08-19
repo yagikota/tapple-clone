@@ -67,7 +67,7 @@ func TestMain(m *testing.M) {
 		Name:     "name1",
 		Icon:     "icon1",
 		Gender:   0,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		Location: 0,
 	}
 
@@ -76,7 +76,7 @@ func TestMain(m *testing.M) {
 		Name:     "name2",
 		Icon:     "icon2",
 		Gender:   1,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		Location: 1,
 	}
 
@@ -87,7 +87,7 @@ func TestMain(m *testing.M) {
 		Name:     "name1",
 		Icon:     "icon1",
 		Gender:   0,
-		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		Location: 0,
 	}
 
@@ -96,7 +96,7 @@ func TestMain(m *testing.M) {
 		Name:     "name2",
 		Icon:     "icon2",
 		Gender:   1,
-		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		Location: 1,
 	}
 
@@ -112,7 +112,7 @@ func TestMain(m *testing.M) {
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		},
 	}
 
@@ -130,7 +130,7 @@ func TestMain(m *testing.M) {
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		},
 	}
 
@@ -184,7 +184,7 @@ func TestMain(m *testing.M) {
 		Name:     "name2",
 		Icon:     "icon2",
 		Gender:   1,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		Location: 1,
 	}
 	roomDetail1Entity.R.RoomUsers[1].R.User = &entity.User{
@@ -192,7 +192,7 @@ func TestMain(m *testing.M) {
 		Name:     "name1",
 		Icon:     "icon1",
 		Gender:   0,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		Location: 0,
 	}
 
@@ -201,7 +201,7 @@ func TestMain(m *testing.M) {
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 		},
 	}
 
@@ -209,7 +209,7 @@ func TestMain(m *testing.M) {
 		ID:        1,
 		UserID:    1,
 		Content:   "content",
-		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 	}
 
 	roomDetail1 = &model.RoomDetail{
@@ -231,7 +231,7 @@ func TestMain(m *testing.M) {
 		UserID:    1,
 		RoomID:    1,
 		Content:   "content",
-		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.Local),
+		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
 	}
 
 	newMessage = &model.NewMessage{
@@ -276,7 +276,6 @@ func Test_userUsecase_FindUserByUserID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
 			//mock登録
 			controller := gomock.NewController(t)
 			defer controller.Finish()
@@ -320,7 +319,6 @@ func Test_userUsecase_FindAllUsers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
 			//mock登録
 			controller := gomock.NewController(t)
 			defer controller.Finish()
@@ -366,7 +364,6 @@ func Test_userUsecase_FindAllRooms(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
 			//mock登録
 			controller := gomock.NewController(t)
 			defer controller.Finish()
@@ -413,7 +410,6 @@ func Test_userUsecase_FindRoomDetailByRoomID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
 			//mock登録
 			controller := gomock.NewController(t)
 			defer controller.Finish()
@@ -461,7 +457,6 @@ func Test_userUsecase_SendMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
 			//mock登録
 			controller := gomock.NewController(t)
 			defer controller.Finish()
