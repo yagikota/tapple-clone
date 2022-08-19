@@ -31,6 +31,8 @@ var (
 	roomDetail *model.RoomDetail
 
 	newMessage1 *model.NewMessage
+
+	messageID = 1
 )
 
 //  1.SetupSuite
@@ -62,8 +64,9 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 
 	suite.router.Use(
 		func(ctx *gin.Context) {
-			ctx.Set("user_id", userID)
-			ctx.Set("room_id", roomID)
+			ctx.Set("user_id", "1")
+			ctx.Set("room_id", "1")
+			ctx.Set("message_id", "1")
 		},
 	)
 	// ハンドラー登録
@@ -207,9 +210,9 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRooms_200() {
 }
 
 func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200() {
-	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID).Return(roomDetail, nil)
+	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID, messageID).Return(roomDetail, nil)
 	rec := suite.rec
-	path := fmt.Sprintf("%s/%d/rooms/%d", usersAPIRoot, userID, roomID)
+	path := fmt.Sprintf("%s/%d/rooms/%d?message_id=1", usersAPIRoot, userID, roomID)
 	req := httptest.NewRequest(http.MethodGet, path, nil)
 	suite.router.ServeHTTP(rec, req)
 	suite.Equal(http.StatusOK, rec.Code)

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	dmodel "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 	mock "github.com/CyberAgentHack/2208-ace-go-server/pkg/mock/service"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
 	"github.com/gin-gonic/gin"
@@ -15,18 +15,19 @@ import (
 
 // ----- BEGIN デフォルトのテストデータ -----
 var (
-	default_time = time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
-	userID       = 1
-	roomID       = 1
+	defaultTime = time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	userID      = 1
+	roomID      = 1
+	messageID   = 1
 )
 
-func prepareUserEntity(id, gender, location int) *entity.User {
-	return &entity.User{
+func prepareUserDomainModel(id, gender, location int) *dmodel.User {
+	return &dmodel.User{
 		ID:       id,
 		Name:     "name" + strconv.Itoa(id),
 		Icon:     "icon" + strconv.Itoa(id),
 		Gender:   gender,
-		Birthday: default_time,
+		Birthday: defaultTime,
 		Location: location,
 	}
 }
@@ -37,30 +38,32 @@ func prepareUser(id, gender, location int) *model.User {
 		Name:     "name" + strconv.Itoa(id),
 		Icon:     "icon" + strconv.Itoa(id),
 		Gender:   gender,
-		BirthDay: default_time,
+		BirthDay: defaultTime,
 		Location: location,
 	}
 }
 
-func prepareRoomEntity(id int) *entity.Room {
-	room := new(entity.Room)
+func prepareRoomDomainModel(id int) *dmodel.Room {
+	room := new(dmodel.Room)
 	room.ID = id
 	room.R = room.R.NewStruct()
-	room.R.Messages = entity.MessageSlice{
+	room.R.Messages = dmodel.MessageSlice{
 		{
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: default_time,
+			CreatedAt: defaultTime,
 		},
 	}
-	room.R.RoomUsers = entity.RoomUserSlice{
+	room.R.RoomUsers = dmodel.RoomUserSlice{
+		// 自分自身
 		{
 			ID:       1,
 			UserID:   1,
 			RoomID:   1,
 			IsPinned: false,
 		},
+		// 相手側のユーザー
 		{
 			ID:       2,
 			UserID:   2,
@@ -69,7 +72,8 @@ func prepareRoomEntity(id int) *entity.Room {
 		},
 	}
 	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
-	room.R.RoomUsers[0].R.User = &entity.User{
+	// 相手側のユーザー
+	room.R.RoomUsers[0].R.User = &dmodel.User{
 		ID:   2,
 		Name: "name2",
 		Icon: "icon2",
@@ -82,28 +86,31 @@ func prepareRoom(id int) *model.Room {
 		ID:       model.RoomID(id),
 		Unread:   0,
 		IsPinned: false,
-		Name:     "name2",
-		Icon:     "icon2",
+		// 相手側のユーザーの名前とアイコン
+		Name: "name2",
+		Icon: "icon2",
 		LatestMessage: &model.Message{
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: default_time,
+			CreatedAt: defaultTime,
 		},
 	}
 }
 
-func prepareRoomDetailEntity(id int) *entity.Room {
-	room := new(entity.Room)
+func prepareRoomDetailDomainModel(id int) *dmodel.Room {
+	room := new(dmodel.Room)
 	room.ID = id
 	room.R = room.R.NewStruct()
-	room.R.RoomUsers = entity.RoomUserSlice{
+	room.R.RoomUsers = dmodel.RoomUserSlice{
+		// 相手側のユーザー
 		{
 			ID:       1,
 			UserID:   1,
 			RoomID:   1,
 			IsPinned: false,
 		},
+		// 相手側のユーザー
 		{
 			ID:       2,
 			UserID:   2,
@@ -113,28 +120,30 @@ func prepareRoomDetailEntity(id int) *entity.Room {
 	}
 	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
 	room.R.RoomUsers[1].R = room.R.RoomUsers[0].R.NewStruct()
-	room.R.RoomUsers[0].R.User = &entity.User{
+	room.R.RoomUsers[0].R.User = &dmodel.User{
+		// 相手側のユーザー
 		ID:       2,
 		Name:     "name2",
 		Icon:     "icon2",
 		Gender:   1,
-		Birthday: default_time,
+		Birthday: defaultTime,
 		Location: 1,
 	}
-	room.R.RoomUsers[1].R.User = &entity.User{
+	room.R.RoomUsers[1].R.User = &dmodel.User{
+		// 自分自身
 		ID:       1,
 		Name:     "name1",
 		Icon:     "icon1",
 		Gender:   0,
-		Birthday: default_time,
+		Birthday: defaultTime,
 		Location: 0,
 	}
-	room.R.Messages = entity.MessageSlice{
+	room.R.Messages = dmodel.MessageSlice{
 		{
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: default_time,
+			CreatedAt: defaultTime,
 		},
 	}
 	return room
@@ -142,7 +151,8 @@ func prepareRoomDetailEntity(id int) *entity.Room {
 
 func prepareRoomDetail(id int) *model.RoomDetail {
 	return &model.RoomDetail{
-		ID:    model.RoomID(id),
+		ID: model.RoomID(id),
+		// 相手側のユーザーの名前とアイコン
 		Name:  "name2",
 		Icon:  "icon2",
 		Users: []*model.User{prepareUser(2, 1, 1), prepareUser(1, 0, 0)},
@@ -151,7 +161,7 @@ func prepareRoomDetail(id int) *model.RoomDetail {
 				ID:        1,
 				UserID:    1,
 				Content:   "content",
-				CreatedAt: default_time,
+				CreatedAt: defaultTime,
 			},
 		},
 	}
@@ -162,7 +172,7 @@ func prepareMessage(id int) *model.Message {
 		ID:        model.MessageID(id),
 		UserID:    userID,
 		Content:   "content",
-		CreatedAt: default_time,
+		CreatedAt: defaultTime,
 	}
 }
 
@@ -172,21 +182,21 @@ func prepareNewMessage() *model.NewMessage {
 	}
 }
 
-func preparePostMessageEntity() *entity.Message {
-	return &entity.Message{
+func preparePostMessageDomainModel() *dmodel.Message {
+	return &dmodel.Message{
 		UserID:  userID,
 		RoomID:  roomID,
 		Content: "content",
 	}
 }
 
-func prepareCreatedMessageEntity(id int) *entity.Message {
-	return &entity.Message{
+func prepareCreatedMessageDomainModel(id int) *dmodel.Message {
+	return &dmodel.Message{
 		ID:        int64(id),
 		UserID:    userID,
 		RoomID:    roomID,
 		Content:   "content",
-		CreatedAt: default_time,
+		CreatedAt: defaultTime,
 	}
 }
 
@@ -210,7 +220,7 @@ func TestUserHandlerSuite(t *testing.T) {
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserByUserID() {
-	suite.mock.EXPECT().FindUserByUserID(&gin.Context{}, 1).Return(prepareUserEntity(1, 0, 0), nil)
+	suite.mock.EXPECT().FindUserByUserID(&gin.Context{}, 1).Return(prepareUserDomainModel(1, 0, 0), nil)
 	res, err := suite.usecase.FindUserByUserID(&gin.Context{}, 1)
 	suite.Equal(err, nil)
 	suite.Equal(res, prepareUser(1, 0, 0))
@@ -218,7 +228,7 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserByUserID() {
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
 	suite.mock.EXPECT().FindAllUsers(&gin.Context{}).Return(
-		entity.UserSlice{prepareUserEntity(1, 0, 0), prepareUserEntity(2, 1, 1)},
+		dmodel.UserSlice{prepareUserDomainModel(1, 0, 0), prepareUserDomainModel(2, 1, 1)},
 		nil,
 	)
 	res, err := suite.usecase.FindAllUsers(&gin.Context{})
@@ -231,7 +241,7 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllRooms() {
 	suite.mock.EXPECT().FindAllRooms(&gin.Context{}, userID).Return(
-		entity.RoomSlice{prepareRoomEntity(1)},
+		dmodel.RoomSlice{prepareRoomDomainModel(1)},
 		nil,
 	)
 	res, err := suite.usecase.FindAllRooms(&gin.Context{}, userID)
@@ -243,11 +253,11 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllRooms() {
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindRoomDetailByRoomID() {
-	suite.mock.EXPECT().FindRoomDetailByRoomID(&gin.Context{}, 1, 1).Return(
-		prepareRoomDetailEntity(1),
+	suite.mock.EXPECT().FindRoomDetailByRoomID(&gin.Context{}, userID, roomID, messageID).Return(
+		prepareRoomDetailDomainModel(1),
 		nil,
 	)
-	res, err := suite.usecase.FindRoomDetailByRoomID(&gin.Context{}, 1, 1)
+	res, err := suite.usecase.FindRoomDetailByRoomID(&gin.Context{}, userID, roomID, messageID)
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
@@ -256,11 +266,11 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindRoomDetailByRoomID() {
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_SendMessage() {
-	suite.mock.EXPECT().SendMessage(&gin.Context{}, preparePostMessageEntity()).Return(
-		prepareCreatedMessageEntity(1),
+	suite.mock.EXPECT().SendMessage(&gin.Context{}, preparePostMessageDomainModel()).Return(
+		prepareCreatedMessageDomainModel(1),
 		nil,
 	)
-	res, err := suite.usecase.SendMessage(&gin.Context{}, 1, 1, prepareNewMessage())
+	res, err := suite.usecase.SendMessage(&gin.Context{}, userID, roomID, prepareNewMessage())
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
