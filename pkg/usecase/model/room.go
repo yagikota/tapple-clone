@@ -5,12 +5,8 @@ import (
 	"strconv"
 	"time"
 
-<<<<<<< HEAD
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
-=======
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 	pref "github.com/diverse-inc/jp_prefecture"
->>>>>>> e9e0fce (refactor: リファクタリング)
 )
 
 type RoomID int
