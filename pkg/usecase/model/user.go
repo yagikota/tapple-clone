@@ -6,7 +6,7 @@ import (
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
-// domain entityとは別で定義する。
+// domain modelを抽象化して使い回す
 
 type UserID int
 

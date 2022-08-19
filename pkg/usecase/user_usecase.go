@@ -37,14 +37,14 @@ func (uu *userUsecase) FindUserByUserID(ctx context.Context, userID int) (*model
 }
 
 func (uu *userUsecase) FindAllUsers(ctx context.Context) (model.UserSlice, error) {
-	mus, err := uu.userService.FindAllUsers(ctx)
+	muSlice, err := uu.userService.FindAllUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	// メモリ確保
-	uSlice := make(model.UserSlice, 0, len(mus))
-	for _, mu := range mus {
+	uSlice := make(model.UserSlice, 0, len(muSlice))
+	for _, mu := range muSlice {
 		uSlice = append(uSlice, model.UserFromDomainModel(mu))
 	}
 
