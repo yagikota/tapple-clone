@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"strconv"
 	"testing"
 	"time"
@@ -8,7 +9,6 @@ import (
 	dmodel "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 	mock "github.com/CyberAgentHack/2208-ace-go-server/pkg/mock/service"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
-	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 )
@@ -209,7 +209,6 @@ type UserUsecaseTestSuite struct {
 }
 
 func (suite *UserUsecaseTestSuite) SetupSuite() {
-	gin.SetMode(gin.TestMode)
 	mockCtl := gomock.NewController(suite.T())
 	defer mockCtl.Finish()
 	suite.mock = mock.NewMockIUserService(mockCtl)
@@ -221,18 +220,18 @@ func TestUserHandlerSuite(t *testing.T) {
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserByUserID() {
-	suite.mock.EXPECT().FindUserByUserID(&gin.Context{}, 1).Return(prepareUserDomainModel(1, 0, 0), nil)
-	res, err := suite.usecase.FindUserByUserID(&gin.Context{}, 1)
+	suite.mock.EXPECT().FindUserByUserID(context.Background(), 1).Return(prepareUserDomainModel(1, 0, 0), nil)
+	res, err := suite.usecase.FindUserByUserID(context.Background(), 1)
 	suite.Equal(err, nil)
 	suite.Equal(res, prepareUser(1, 0, 0))
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
-	suite.mock.EXPECT().FindAllUsers(&gin.Context{}).Return(
+	suite.mock.EXPECT().FindAllUsers(context.Background()).Return(
 		dmodel.UserSlice{prepareUserDomainModel(1, 0, 0), prepareUserDomainModel(2, 1, 1)},
 		nil,
 	)
-	res, err := suite.usecase.FindAllUsers(&gin.Context{})
+	res, err := suite.usecase.FindAllUsers(context.Background())
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
@@ -241,11 +240,11 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllRooms() {
-	suite.mock.EXPECT().FindAllRooms(&gin.Context{}, userID).Return(
+	suite.mock.EXPECT().FindAllRooms(context.Background(), userID).Return(
 		dmodel.RoomSlice{prepareRoomDomainModel(1)},
 		nil,
 	)
-	res, err := suite.usecase.FindAllRooms(&gin.Context{}, userID)
+	res, err := suite.usecase.FindAllRooms(context.Background(), userID)
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
@@ -254,11 +253,11 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllRooms() {
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindRoomDetailByRoomID() {
-	suite.mock.EXPECT().FindRoomDetailByRoomID(&gin.Context{}, userID, roomID, messageID).Return(
+	suite.mock.EXPECT().FindRoomDetailByRoomID(context.Background(), userID, roomID, messageID).Return(
 		prepareRoomDetailDomainModel(1),
 		nil,
 	)
-	res, err := suite.usecase.FindRoomDetailByRoomID(&gin.Context{}, userID, roomID, messageID)
+	res, err := suite.usecase.FindRoomDetailByRoomID(context.Background(), userID, roomID, messageID)
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
@@ -267,11 +266,11 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindRoomDetailByRoomID() {
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_SendMessage() {
-	suite.mock.EXPECT().SendMessage(&gin.Context{}, preparePostMessageDomainModel()).Return(
+	suite.mock.EXPECT().SendMessage(context.Background(), preparePostMessageDomainModel()).Return(
 		prepareCreatedMessageDomainModel(1),
 		nil,
 	)
-	res, err := suite.usecase.SendMessage(&gin.Context{}, userID, roomID, prepareNewMessage())
+	res, err := suite.usecase.SendMessage(context.Background(), userID, roomID, prepareNewMessage())
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
