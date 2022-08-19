@@ -72,16 +72,6 @@ func prefCodeToPrefKanji(prefCode int) string {
 	return location
 }
 
-func prefCodeToPrefKanji(prefCode int) string {
-	location := "その他"
-	prefInfo, ok := pref.FindByCode(prefCode)
-	if ok {
-		location = prefInfo.KanjiShort()
-	}
-
-	return location
-}
-
 // ルーム一覧で使用
 func calcAge(birthday time.Time) (int, error) {
 	// タイムゾーンをJSTに設定
