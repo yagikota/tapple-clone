@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
+
 	pref "github.com/diverse-inc/jp_prefecture"
 )
 
