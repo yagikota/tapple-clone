@@ -71,5 +71,12 @@ func RoomDetailFromEntity(entity *entity.Room) *RoomDetail {
 	})
 	rm.Messages = mSlice
 
+	// TODO: マージする前に100に変更する
+	const limitRecord = 4
+
+	if len(mSlice) < limitRecord {
+		rm.IsLast = true
+	}
+
 	return rm
 }

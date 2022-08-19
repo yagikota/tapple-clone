@@ -75,7 +75,8 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	orderByMessage := fmt.Sprintf("%s DESC", entity.MessageColumns.CreatedAt)
 	whereMessageCreatedAt := fmt.Sprintf("%s <= ?", entity.MessageColumns.CreatedAt)
 
-	limitRecord := 100
+	// TODO: マージする前に100に変更する
+	const limitRecord = 4
 
 	if messageID == 0 {
 		return entity.Rooms(
