@@ -132,3 +132,15 @@ func (uh *userHandler) sendMessage() gin.HandlerFunc {
 		c.JSON(http.StatusOK, message)
 	}
 }
+
+func (uh *userHandler) findUserDetailByUserID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, err := strconv.Atoi(c.Param("user_id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		userDetail, err := uh.uUsecase.FindUserDetailByUserID(c, userID)
+		c.JSON(http.StatusOK, userDetail)
+	}
+}

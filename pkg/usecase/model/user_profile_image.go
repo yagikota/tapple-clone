@@ -4,16 +4,18 @@ import "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 
 type UserProfileImageID int
 
-type UserProfileImageSlice []*UserProfileImageSlice
+type UserProfileImageSlice []*UserProfileImage
 
 type UserProfileImage struct {
 	ID        UserProfileImageID `json:"id"`
-	ImagePath string             `json:"url"`
+	UserID    int                `json:"user_id"`
+	ImagePath string             `json:"image_path"`
 }
 
-func UserProfileImageFromDomainEntity(m *model.UserProfileImage) *UserProfileImage {
+func UserProfileImageFromDomainModel(m *model.UserProfileImage) *UserProfileImage {
 	return &UserProfileImage{
-		ID:        UserProfileImageID(m.UserID),
+		ID:        UserProfileImageID(m.ID),
+		UserID:    m.UserID,
 		ImagePath: m.ImagePath,
 	}
 }
