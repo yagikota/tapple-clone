@@ -32,7 +32,7 @@ var (
 
 	newMessage1 *model.NewMessage
 
-	messageID = 1
+	messageID int
 )
 
 //  1.SetupSuite
@@ -129,6 +129,8 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 	newMessage1 = &model.NewMessage{
 		Content: "content1",
 	}
+
+	messageID = 1
 }
 
 // テストを実行するのに必要

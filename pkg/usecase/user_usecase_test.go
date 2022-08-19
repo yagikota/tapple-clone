@@ -15,10 +15,10 @@ import (
 
 // ----- BEGIN デフォルトのテストデータ -----
 var (
-	defaultTime = time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
-	userID      = 1
-	roomID      = 1
-	messageID   = 1
+	defaultTime time.Time
+	userID      int
+	roomID      int
+	messageID   int
 )
 
 func prepareUserDomainModel(id, gender, location int) *dmodel.User {
@@ -213,6 +213,11 @@ func (suite *UserUsecaseTestSuite) SetupSuite() {
 	defer mockCtl.Finish()
 	suite.mock = mock.NewMockIUserService(mockCtl)
 	suite.usecase = NewUserUsecase(suite.mock)
+
+	defaultTime = time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	userID = 1
+	roomID = 1
+	messageID = 1
 }
 
 func TestUserHandlerSuite(t *testing.T) {
