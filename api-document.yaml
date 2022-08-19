@@ -286,7 +286,7 @@ components:
           type: integer
           example: 1
           description: プロフィール写真ID
-        url:
+        image_path:
           type: string
           example: "female/n000009/main_0001_01.jpg"
           description: 写真URL
