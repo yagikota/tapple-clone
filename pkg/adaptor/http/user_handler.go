@@ -84,22 +84,22 @@ func (uh *userHandler) findRoomDetailByRoomID() gin.HandlerFunc {
 			return
 		}
 
-		message_id := c.Query("message_id")
-		message_id = c.DefaultQuery("message_id", "0")
+		queryMessageID := c.Query("message_id")
+		queryMessageID = c.DefaultQuery("message_id", "0")
 
-		messageID, err := strconv.Atoi(message_id)
+		messageID, err := strconv.Atoi(queryMessageID)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
-		room_detail, err := uh.uUsecase.FindRoomDetailByRoomID(c, userID, roomID, messageID)
+		roomDetail, err := uh.uUsecase.FindRoomDetailByRoomID(c, userID, roomID, messageID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, room_detail)
+		c.JSON(http.StatusOK, roomDetail)
 	}
 }
 
