@@ -84,19 +84,19 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 			qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
 			qm.Load(entity.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
 		).One(ctx, tx)
-	} else {
-		queryMessage, err := entity.FindMessage(ctx, tx, int64(messageID))
-		if err != nil {
-			return nil, err
-		}
-		queryMessageCreatedAt := queryMessage.CreatedAt
-		return entity.Rooms(
-			qm.Where(whereRoomID, roomID),
-			qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
-			qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-			qm.Load(entity.RoomRels.Messages, qm.Where(whereQueryMessage, queryMessageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
-		).One(ctx, tx)
 	}
+
+	queryMessage, err := entity.FindMessage(ctx, tx, int64(messageID))
+	if err != nil {
+		return nil, err
+	}
+	queryMessageCreatedAt := queryMessage.CreatedAt
+	return entity.Rooms(
+		qm.Where(whereRoomID, roomID),
+		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
+		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
+		qm.Load(entity.RoomRels.Messages, qm.Where(whereQueryMessage, queryMessageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+	).One(ctx, tx)
 }
 
 // TODO: 自身が所属しているルームにのみ送信できるようにする 現状localhost:8080/v1/users/2/rooms/3でも送信できてしまう
