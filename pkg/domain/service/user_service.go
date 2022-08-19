@@ -7,7 +7,7 @@ import (
 	"context"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
+	domain "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
 )
 
 type IUserService interface {
@@ -16,6 +16,7 @@ type IUserService interface {
 	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
 	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error)
 	SendMessage(ctx context.Context, m *model.Message) (*model.Message, error)
+	FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error)
 }
 
 type userService struct {
@@ -46,4 +47,8 @@ func (us *userService) FindRoomDetailByRoomID(ctx context.Context, userID, roomI
 
 func (us *userService) SendMessage(ctx context.Context, m *model.Message) (*model.Message, error) {
 	return us.userRepository.SendMessage(ctx, m)
+}
+
+func (us *userService) FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error) {
+	return us.userRepository.FindUserDetailByUserID(ctx, userID)
 }

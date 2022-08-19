@@ -11,7 +11,7 @@ type Hobby struct {
 	Tag string  `json:"tag"`
 }
 
-func HobbyFromDomainEntity(m *model.Hobby) *Hobby {
+func HobbyFromDomainModel(m *model.Hobby) *Hobby {
 	return &Hobby{
 		ID:  HobbyID(m.ID),
 		Tag: m.Tag,

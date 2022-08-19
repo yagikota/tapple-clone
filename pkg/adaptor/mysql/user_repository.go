@@ -113,3 +113,20 @@ func (ur *userRepository) SendMessage(ctx context.Context, m *model.Message) (*m
 	}
 	return m, nil
 }
+
+func (ur *userRepository) FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error) {
+	boil.DebugMode = true
+
+	tx, err := txFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	whereID := fmt.Sprintf("%s = ?", model.UserColumns.ID)
+
+	return model.Users(
+		qm.Where(whereID, userID),
+		qm.Load(model.UserRels.Hobbies),
+		qm.Load(model.UserRels.UserProfileImages),
+	).One(ctx, tx)
+}
