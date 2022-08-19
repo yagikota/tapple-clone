@@ -3,10 +3,10 @@ package model
 import (
 	"time"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
-// domain entityとは別で定義する。
+// domain modelを抽象化して使い回す
 
 type UserID int
 
@@ -21,13 +21,13 @@ type User struct {
 	Location int       `json:"location"`
 }
 
-func UserFromEntity(entity *entity.User) *User {
+func UserFromDomainModel(m *model.User) *User {
 	return &User{
-		ID:       UserID(entity.ID),
-		Name:     entity.Name,
-		Icon:     entity.Icon,
-		Gender:   entity.Gender,
-		BirthDay: entity.Birthday,
-		Location: entity.Location,
+		ID:       UserID(m.ID),
+		Name:     m.Name,
+		Icon:     m.Icon,
+		Gender:   m.Gender,
+		BirthDay: m.Birthday,
+		Location: m.Location,
 	}
 }
