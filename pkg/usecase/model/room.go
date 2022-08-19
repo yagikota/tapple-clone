@@ -78,9 +78,6 @@ func prefCodeToPrefKanji(prefCode int) (pref.Prefecture, bool) {
 
 // ルーム一覧で使用
 func calcAge(birthday time.Time) (int, error) {
-	// 現在日時を数字だけで表現 (YYYYMMDD)
-	dateFormatOnlyNumber := "20060102" // YYYYMMDD
-
 	// タイムゾーンをJSTに設定
 	now := time.Now()
 	nowUTC := now.UTC()
@@ -88,22 +85,14 @@ func calcAge(birthday time.Time) (int, error) {
 
 	nowJST := nowUTC.In(jst)
 
-	nowOnlyNumber := nowJST.Format(dateFormatOnlyNumber)
-	birthdayOnlyNumber := birthday.Format(dateFormatOnlyNumber)
+	thisYear, thisMonth, thisDay := nowJST.Date()
+	age := thisYear - birthday.Year()
 
-	// 日付文字列をそのまま数値化
-	nowInt, err := strconv.Atoi(nowOnlyNumber)
-	if err != nil {
-		return 0, err
-	}
-	birthdayInt, err := strconv.Atoi(birthdayOnlyNumber)
-	if err != nil {
-		return 0, err
+	// 誕生日を迎えていない時の処理
+	if thisMonth < birthday.Month() && thisDay < birthday.Day() {
+		age -= 1
 	}
 
-	// 20220809 - 20220509 / 10000 = 22歳
-	// (今日の日付 - 誕生日の日付) / 10000 = 年齢
-	age := (nowInt - birthdayInt) / 10000
 	return age, nil
 }
 
