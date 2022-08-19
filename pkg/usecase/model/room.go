@@ -2,6 +2,8 @@ package model
 
 import (
 	"sort"
+	"strconv"
+	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
@@ -16,6 +18,7 @@ type Room struct {
 	Unread        int      `json:"unread"`
 	IsPinned      bool     `json:"is_pinned"`
 	Name          string   `json:"name"`
+	SubName       string   `json:"sub_name"`
 	Icon          string   `json:"icon"`
 	LatestMessage *Message `json:"latest_message"`
 }
@@ -43,6 +46,45 @@ func RoomFromDomainModel(m *model.Room) *Room {
 		Icon:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Icon,
 		LatestMessage: MessageFromDomainModel(m.R.Messages[0]),
 	}
+
+	age, err := calcAge(UserFromDomainModel(m.R.RoomUsers[0].R.User).BirthDay)
+	if err != nil {
+		return nil
+	}
+
+	// 都道府県コードをいい感じに県名に変えてくれるpakage
+	prefInfo, ok = pref.FindByCode(UserFromDomainModel(m.R.RoomUsers[0].R.User).Location)
+	if !ok {
+		location := "その他"
+		r.SubName = strconv.Itoa(age) + "歳・" + location
+	} else {
+		r.SubName = strconv.Itoa(age) + "歳・" + prefInfo.KanjiShort()
+	}
+
+	return r
+}
+
+// ルーム一覧で使用
+func calcAge(birthday time.Time) (int, error) {
+	// 現在日時を数値のみでフォーマット (YYYYMMDD)
+	dateFormatOnlyNumber := "20060102" // YYYYMMDD
+
+	nowOnlyNnmber := time.Now().Format(dateFormatOnlyNumber)
+	birthdayOnlyNumber := birthday.Format(dateFormatOnlyNumber)
+
+	// 日付文字列をそのまま数値化
+	nowInt, err := strconv.Atoi(nowOnlyNnmber)
+	if err != nil {
+		return 0, err
+	}
+	birthdayInt, err := strconv.Atoi(birthdayOnlyNumber)
+	if err != nil {
+		return 0, err
+	}
+
+	// (今日の日付 - 誕生日) / 10000 = 年齢
+	age := (nowInt - birthdayInt) / 10000
+	return age, nil
 }
 
 // ルーム詳細で使用
