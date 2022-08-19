@@ -73,7 +73,7 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	// 自分が2番目にくるようにsort←チャットルームのNameとIconを[0]で取得するため
 	orderBy := fmt.Sprintf("%s = ?", entity.RoomUserColumns.UserID)
 	orderByMessage := fmt.Sprintf("%s DESC", entity.MessageColumns.CreatedAt)
-	whereQueryMessage := fmt.Sprintf("%s <= ?", entity.MessageColumns.CreatedAt)
+	whereMessageCreatedAt := fmt.Sprintf("%s <= ?", entity.MessageColumns.CreatedAt)
 
 	limitRecord := 100
 
@@ -95,7 +95,7 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 		qm.Where(whereRoomID, roomID),
 		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-		qm.Load(entity.RoomRels.Messages, qm.Where(whereQueryMessage, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+		qm.Load(entity.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
 	).One(ctx, tx)
 }
 
