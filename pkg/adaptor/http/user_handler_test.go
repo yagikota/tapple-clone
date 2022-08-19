@@ -23,7 +23,7 @@ var (
 		Name:     "name1",
 		Icon:     "/icon1",
 		Gender:   1,
-		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
+		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
 		Location: 1,
 	}
 	userSlice1 = model.UserSlice{user1}
@@ -32,7 +32,7 @@ var (
 		ID:        1,
 		UserID:    1,
 		Content:   "content1",
-		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
+		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 	messageSlice1 = model.MessageSlice{message1}
 
@@ -135,7 +135,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
 			"name":"name1",
 			"icon":"/icon1",
 			"gender":1,
-			"birthday":"2022-01-01T00:00:00+09:00",
+			"birthday":"2022-01-01T00:00:00Z",
 			"location":1
 		}`,
 		rec.Body.String(),
@@ -155,7 +155,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_200() {
 				"name":"name1",
 				"icon":"/icon1",
 				"gender":1,
-				"birthday":"2022-01-01T00:00:00+09:00",
+				"birthday":"2022-01-01T00:00:00Z",
 				"location":1
 			}
 		]`,
@@ -183,7 +183,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRooms_200() {
 						"id": 1,
 						"user_id": 1,
 						"content": "content1",
-						"created_at": "2022-01-01T00:00:00+09:00"
+						"created_at": "2022-01-01T00:00:00Z"
 					}
 				}
 			]
@@ -210,7 +210,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200()
 					"name": "name1",
 					"icon": "/icon1",
 					"gender": 1,
-					"birthday": "2022-01-01T00:00:00+09:00",
+					"birthday": "2022-01-01T00:00:00Z",
 					"location": 1
 				}
 			],
@@ -219,7 +219,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200()
 					"id": 1,
 					"user_id": 1,
 					"content": "content1",
-					"created_at": "2022-01-01T00:00:00+09:00"
+					"created_at": "2022-01-01T00:00:00Z"
 				}
 			]
 		}`,
@@ -244,7 +244,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_sendMessage_200() {
 			"id": 1,
 			"user_id": 1,
 			"content": "content1",
-			"created_at": "2022-01-01T00:00:00+09:00"
+			"created_at": "2022-01-01T00:00:00Z"
 		}`,
 		rec.Body.String(),
 	)
