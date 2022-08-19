@@ -86,16 +86,16 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 		).One(ctx, tx)
 	}
 
-	queryMessage, err := entity.FindMessage(ctx, tx, int64(messageID))
+	message, err := entity.FindMessage(ctx, tx, int64(messageID))
 	if err != nil {
 		return nil, err
 	}
-	queryMessageCreatedAt := queryMessage.CreatedAt
+	messageCreatedAt := message.CreatedAt
 	return entity.Rooms(
 		qm.Where(whereRoomID, roomID),
 		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-		qm.Load(entity.RoomRels.Messages, qm.Where(whereQueryMessage, queryMessageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+		qm.Load(entity.RoomRels.Messages, qm.Where(whereQueryMessage, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
 	).One(ctx, tx)
 }
 
