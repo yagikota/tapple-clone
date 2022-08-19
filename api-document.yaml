@@ -91,6 +91,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseInternalServerError"
       x-codegen-request-body-name: body
+  /users/{user_id}/profiles:
+    get:
+      tags:
+        - user
+      summary: ユーザー詳細表示API（メッセージ詳細内）
+      description: |
+        指定したユーザー詳細内容を取得します。
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileGetResponse"
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+      x-codegen-request-body-name: body
   /users/{user_id}/rooms/{room_id}/messages:
     post:
       tags:
@@ -177,6 +204,41 @@ components:
           type: boolean
           example: false
           description: 最後のメッセージリスト
+    UserProfileGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        name:
+          type: string
+          example: かな
+          description: ユーザーの名前
+        age:
+          type: integer
+          example: 24
+          description: 年齢
+        location:
+          type: string
+          example: 神奈川
+          description: 所在地
+        is_principal:
+          type: boolean
+          example: true
+          description: 本人認証
+        tags_count:
+          type: integer
+          example: 10
+          description: 設定しているタグの数
+        profile_images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProfileImageInfo"
+        hobbies:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserHobbyInfo"
     MessageGetResponse:
       type: object
       properties:
@@ -217,6 +279,28 @@ components:
           example: "2020-01-31T23:59:59+09:00"
           format: date-time
           description: 最後のメッセージの送信日時
+    ProfileImageInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: プロフィール写真ID
+        url:
+          type: string
+          example: "female/n000009/main_0001_01.jpg"
+          description: 写真URL
+    UserHobbyInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: 趣味ID
+        tag:
+          type: string
+          example: 韓国ドラマ
+          description: 趣味タグの名前
     RoomUserInfo:
       type: object
       properties:
