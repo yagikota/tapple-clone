@@ -5,7 +5,12 @@ import (
 	"strconv"
 	"time"
 
+<<<<<<< HEAD
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
+=======
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	pref "github.com/diverse-inc/jp_prefecture"
+>>>>>>> e9e0fce (refactor: リファクタリング)
 )
 
 type RoomID int
@@ -55,13 +60,20 @@ func RoomFromDomainModel(m *model.Room) *Room {
 	// 都道府県コードをいい感じに県名に変えてくれるpakage
 	prefInfo, ok = pref.FindByCode(UserFromDomainModel(m.R.RoomUsers[0].R.User).Location)
 	if !ok {
-		location := "その他"
-		r.SubName = strconv.Itoa(age) + "歳・" + location
+		location = "その他"
 	} else {
-		r.SubName = strconv.Itoa(age) + "歳・" + prefInfo.KanjiShort()
+		location = prefInfo.KanjiShort()
 	}
 
+	r.SubName = strconv.Itoa(age) + "歳・" + location
+
 	return r
+}
+
+func prefCodeToPrefKanji(prefCode int) (pref.Prefecture, bool) {
+	prefInfo, ok := pref.FindByCode(prefCode)
+
+	return prefInfo, ok
 }
 
 // ルーム一覧で使用
