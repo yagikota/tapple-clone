@@ -1,140 +1,103 @@
 package usecase
 
 import (
-	"context"
-	"os"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
 	mock "github.com/CyberAgentHack/2208-ace-go-server/pkg/mock/service"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/assert/v2"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/suite"
 )
 
-// テストデータ
+// ----- BEGIN デフォルトのテストデータ -----
 var (
-	userID = 1
-	user11 *model.User
-	user12 *model.User
-
-	users1 model.UserSlice
-
-	user11Entity *entity.User
-	user12Entity *entity.User
-
-	users1Entity entity.UserSlice
-
-	message11 *model.Message
-	message12 *model.Message
-
-	postMessage *entity.Message
-
-	messages1Slice model.MessageSlice
-
-	message11Entity *entity.Message
-	message12Entity *entity.Message
-
-	messagesEntity1Slice entity.MessageSlice
-
-	roomID = 1
-	room1  *model.Room
-
-	roomSlice model.RoomSlice
-	rooms1    *model.Rooms
-
-	room1Entity      *entity.Room
-	room1EntitySlice entity.RoomSlice
-
-	roomUser1Entity *entity.RoomUser
-
-	roomDetail1       *model.RoomDetail
-	roomDetailUsers1  *model.UserSlice
-	roomDetail1Entity *entity.Room
-
-	newMessage     *model.NewMessage
-	createdMessage *entity.Message
+	default_time = time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC)
+	userID       = 1
+	roomID       = 1
 )
 
-func TestMain(m *testing.M) {
-	println("before all...")
-
-	user11Entity = &entity.User{
-		ID:       1,
-		Name:     "name1",
-		Icon:     "icon1",
-		Gender:   0,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
-		Location: 0,
+func prepareUserEntity(id, gender, location int) *entity.User {
+	return &entity.User{
+		ID:       id,
+		Name:     "name" + strconv.Itoa(id),
+		Icon:     "icon" + strconv.Itoa(id),
+		Gender:   gender,
+		Birthday: default_time,
+		Location: location,
 	}
+}
 
-	user12Entity = &entity.User{
-		ID:       2,
-		Name:     "name2",
-		Icon:     "icon2",
-		Gender:   1,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
-		Location: 1,
+func prepareUser(id, gender, location int) *model.User {
+	return &model.User{
+		ID:       model.UserID(id),
+		Name:     "name" + strconv.Itoa(id),
+		Icon:     "icon" + strconv.Itoa(id),
+		Gender:   gender,
+		BirthDay: default_time,
+		Location: location,
 	}
+}
 
-	users1Entity = entity.UserSlice{user11Entity, user12Entity}
-
-	user11 = &model.User{
-		ID:       1,
-		Name:     "name1",
-		Icon:     "icon1",
-		Gender:   0,
-		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
-		Location: 0,
+func prepareRoomEntity(id int) *entity.Room {
+	room := new(entity.Room)
+	room.ID = id
+	room.R = room.R.NewStruct()
+	room.R.Messages = entity.MessageSlice{
+		{
+			ID:        1,
+			UserID:    1,
+			Content:   "content",
+			CreatedAt: default_time,
+		},
 	}
-
-	user12 = &model.User{
-		ID:       2,
-		Name:     "name2",
-		Icon:     "icon2",
-		Gender:   1,
-		BirthDay: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
-		Location: 1,
+	room.R.RoomUsers = entity.RoomUserSlice{
+		{
+			ID:       1,
+			UserID:   1,
+			RoomID:   1,
+			IsPinned: false,
+		},
+		{
+			ID:       2,
+			UserID:   2,
+			RoomID:   1,
+			IsPinned: false,
+		},
 	}
+	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
+	room.R.RoomUsers[0].R.User = &entity.User{
+		ID:   2,
+		Name: "name2",
+		Icon: "icon2",
+	}
+	return room
+}
 
-	users1 = model.UserSlice{user11, user12}
-
-	room1 = &model.Room{
-		ID:       1,
+func prepareRoom(id int) *model.Room {
+	return &model.Room{
+		ID:       model.RoomID(id),
 		Unread:   0,
 		IsPinned: false,
-		Name:     "name1",
-		Icon:     "/icon",
+		Name:     "name2",
+		Icon:     "icon2",
 		LatestMessage: &model.Message{
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
+			CreatedAt: default_time,
 		},
 	}
+}
 
-	rooms1 = &model.Rooms{
-		Rooms: []*model.Room{room1},
-	}
-
-	room1Entity = new(entity.Room)
-	room1Entity = &entity.Room{
-		ID: 1,
-	}
-	room1Entity.R = room1Entity.R.NewStruct() //roomにroomRを作成
-	room1Entity.R.Messages = entity.MessageSlice{
-		{
-			ID:        1,
-			UserID:    1,
-			Content:   "content",
-			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
-		},
-	}
-
-	room1Entity.R.RoomUsers = entity.RoomUserSlice{
+func prepareRoomDetailEntity(id int) *entity.Room {
+	room := new(entity.Room)
+	room.ID = id
+	room.R = room.R.NewStruct()
+	room.R.RoomUsers = entity.RoomUserSlice{
 		{
 			ID:       1,
 			UserID:   1,
@@ -148,325 +111,159 @@ func TestMain(m *testing.M) {
 			IsPinned: false,
 		},
 	}
-
-	room1Entity.R.RoomUsers[0].R = room1Entity.R.RoomUsers[0].R.NewStruct()
-	room1Entity.R.RoomUsers[0].R.User = &entity.User{
-		ID:   1,
-		Name: "name1",
-		Icon: "/icon",
-	}
-
-	room1EntitySlice = entity.RoomSlice{room1Entity}
-
-	roomDetail1Entity = new(entity.Room)
-	roomDetail1Entity = &entity.Room{
-		ID: 1,
-	}
-	roomDetail1Entity.R = roomDetail1Entity.R.NewStruct()
-	roomDetail1Entity.R.RoomUsers = entity.RoomUserSlice{
-		{
-			ID:       1,
-			UserID:   1,
-			RoomID:   1,
-			IsPinned: false,
-		},
-		{
-			ID:       2,
-			UserID:   2,
-			RoomID:   1,
-			IsPinned: false,
-		},
-	}
-	roomDetail1Entity.R.RoomUsers[0].R = roomDetail1Entity.R.RoomUsers[0].R.NewStruct()
-	roomDetail1Entity.R.RoomUsers[1].R = roomDetail1Entity.R.RoomUsers[0].R.NewStruct()
-	roomDetail1Entity.R.RoomUsers[0].R.User = &entity.User{
+	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
+	room.R.RoomUsers[1].R = room.R.RoomUsers[0].R.NewStruct()
+	room.R.RoomUsers[0].R.User = &entity.User{
 		ID:       2,
 		Name:     "name2",
 		Icon:     "icon2",
 		Gender:   1,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
+		Birthday: default_time,
 		Location: 1,
 	}
-	roomDetail1Entity.R.RoomUsers[1].R.User = &entity.User{
+	room.R.RoomUsers[1].R.User = &entity.User{
 		ID:       1,
 		Name:     "name1",
 		Icon:     "icon1",
 		Gender:   0,
-		Birthday: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
+		Birthday: default_time,
 		Location: 0,
 	}
-
-	roomDetail1Entity.R.Messages = entity.MessageSlice{
+	room.R.Messages = entity.MessageSlice{
 		{
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
+			CreatedAt: default_time,
 		},
 	}
+	return room
+}
 
-	message11 = &model.Message{
-		ID:        1,
-		UserID:    1,
+func prepareRoomDetail(id int) *model.RoomDetail {
+	return &model.RoomDetail{
+		ID:    model.RoomID(id),
+		Name:  "name2",
+		Icon:  "icon2",
+		Users: []*model.User{prepareUser(2, 1, 1), prepareUser(1, 0, 0)},
+		Messages: []*model.Message{
+			{
+				ID:        1,
+				UserID:    1,
+				Content:   "content",
+				CreatedAt: default_time,
+			},
+		},
+	}
+}
+
+func prepareMessage(id int) *model.Message {
+	return &model.Message{
+		ID:        model.MessageID(id),
+		UserID:    userID,
 		Content:   "content",
-		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
+		CreatedAt: default_time,
 	}
+}
 
-	roomDetail1 = &model.RoomDetail{
-		ID:       1,
-		Name:     "name2",
-		Icon:     "icon2",
-		Users:    []*model.User{user12, user11},
-		Messages: []*model.Message{message11},
-	}
-
-	postMessage = &entity.Message{
-		UserID:  1,
-		RoomID:  1,
+func prepareNewMessage() *model.NewMessage {
+	return &model.NewMessage{
 		Content: "content",
 	}
+}
 
-	createdMessage = &entity.Message{
-		ID:        1,
-		UserID:    1,
-		RoomID:    1,
-		Content:   "content",
-		CreatedAt: time.Date(2022, 4, 1, 0, 0, 0, 0, time.UTC),
-	}
-
-	newMessage = &model.NewMessage{
+func preparePostMessageEntity() *entity.Message {
+	return &entity.Message{
+		UserID:  userID,
+		RoomID:  roomID,
 		Content: "content",
 	}
-
-	code := m.Run()
-
-	println("after all...")
-
-	os.Exit(code)
 }
 
-func Test_userUsecase_FindUserByUserID(t *testing.T) {
-	type fields struct {
-		userService service.IUserService
-	}
-	type args struct {
-		ctx    context.Context
-		userID int
-	}
-	tests := []struct {
-		name          string
-		prepareMockFn func(m *mock.MockIUserService)
-		fields        fields
-		args          args
-		want          *model.User
-		wantErr       error
-	}{
-		{
-			name: "usecase FindUserByUserID success response",
-			args: args{
-				ctx:    &gin.Context{},
-				userID: 1,
-			},
-			prepareMockFn: func(m *mock.MockIUserService) {
-				m.EXPECT().FindUserByUserID(gomock.Any(), userID).Return(user11Entity, nil)
-			},
-			want:    user11,
-			wantErr: nil,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			//mock登録
-			controller := gomock.NewController(t)
-			defer controller.Finish()
-
-			mock := mock.NewMockIUserService(controller)
-			tt.prepareMockFn(mock)
-			uu := NewUserUsecase(mock)
-			res, err := uu.FindUserByUserID(tt.args.ctx, tt.args.userID)
-			assert.Equal(t, res, tt.want)
-			assert.Equal(t, err, tt.wantErr)
-		})
+func prepareCreatedMessageEntity(id int) *entity.Message {
+	return &entity.Message{
+		ID:        int64(id),
+		UserID:    userID,
+		RoomID:    roomID,
+		Content:   "content",
+		CreatedAt: default_time,
 	}
 }
 
-func Test_userUsecase_FindAllUsers(t *testing.T) {
-	type fields struct {
-		userService service.IUserService
-	}
-	type args struct {
-		ctx context.Context
-	}
-	tests := []struct {
-		name          string
-		prepareMockFn func(m *mock.MockIUserService)
-		fields        fields
-		args          args
-		want          model.UserSlice
-		wantErr       error
-	}{
-		{
-			name: "usecase FindAllUsers suceess response",
-			args: args{
-				ctx: &gin.Context{},
-			},
-			prepareMockFn: func(m *mock.MockIUserService) {
-				m.EXPECT().FindAllUsers(gomock.Any()).Return(users1Entity, nil)
-			},
-			want:    users1,
-			wantErr: nil,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			//mock登録
-			controller := gomock.NewController(t)
-			defer controller.Finish()
+// ----- END デフォルトのテストデータ -----
 
-			mock := mock.NewMockIUserService(controller)
-			tt.prepareMockFn(mock)
-			uu := NewUserUsecase(mock)
-
-			res, err := uu.FindAllUsers(tt.args.ctx)
-			assert.Equal(t, res, tt.want)
-			assert.Equal(t, err, tt.wantErr)
-		})
-	}
+type UserUsecaseTestSuite struct {
+	suite.Suite
+	mock    *mock.MockIUserService
+	usecase IUserUsecase
 }
 
-func Test_userUsecase_FindAllRooms(t *testing.T) {
-	type fields struct {
-		userService service.IUserService
-	}
-	type args struct {
-		ctx    context.Context
-		userID int
-	}
-	tests := []struct {
-		name          string
-		prepareMockFn func(m *mock.MockIUserService)
-		fields        fields
-		args          args
-		want          *model.Rooms
-		wantErr       error
-	}{
-		{
-			name: "usecase FindAllRooms success response",
-			args: args{
-				ctx: &gin.Context{},
-			},
-			prepareMockFn: func(m *mock.MockIUserService) {
-				m.EXPECT().FindAllRooms(gomock.Any(), userID).Return(room1EntitySlice, nil)
-			},
-			want:    rooms1,
-			wantErr: nil,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			//mock登録
-			controller := gomock.NewController(t)
-			defer controller.Finish()
-
-			mock := mock.NewMockIUserService(controller)
-			tt.prepareMockFn(mock)
-			uu := NewUserUsecase(mock)
-
-			res, err := uu.FindAllRooms(tt.args.ctx, userID)
-			assert.Equal(t, res, tt.want)
-			assert.Equal(t, err, tt.wantErr)
-		})
-	}
+func (suite *UserUsecaseTestSuite) SetupSuite() {
+	mockCtl := gomock.NewController(suite.T())
+	defer mockCtl.Finish()
+	suite.mock = mock.NewMockIUserService(mockCtl)
+	suite.usecase = NewUserUsecase(suite.mock)
 }
 
-func Test_userUsecase_FindRoomDetailByRoomID(t *testing.T) {
-	type fields struct {
-		userService service.IUserService
-	}
-	type args struct {
-		ctx    context.Context
-		userID int
-		roomID int
-	}
-	tests := []struct {
-		name          string
-		prepareMockFn func(m *mock.MockIUserService)
-		fields        fields
-		args          args
-		want          *model.RoomDetail
-		wantErr       error
-	}{
-		{
-			name: "usecase FindRoomDetailByRoomID success reponse",
-			args: args{
-				ctx: &gin.Context{},
-			},
-			prepareMockFn: func(m *mock.MockIUserService) {
-				m.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID).Return(roomDetail1Entity, nil)
-			},
-			want:    roomDetail1,
-			wantErr: nil,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			//mock登録
-			controller := gomock.NewController(t)
-			defer controller.Finish()
-
-			mock := mock.NewMockIUserService(controller)
-			tt.prepareMockFn(mock)
-			uu := NewUserUsecase(mock)
-
-			res, err := uu.FindRoomDetailByRoomID(tt.args.ctx, userID, roomID)
-			assert.Equal(t, res, tt.want)
-			assert.Equal(t, err, tt.wantErr)
-		})
-	}
+func TestUserHandlerSuite(t *testing.T) {
+	suite.Run(t, new(UserUsecaseTestSuite))
 }
 
-func Test_userUsecase_SendMessage(t *testing.T) {
-	type fields struct {
-		userService service.IUserService
-	}
-	type args struct {
-		ctx    context.Context
-		userID int
-		roomID int
-		m      *model.NewMessage
-	}
-	tests := []struct {
-		name          string
-		prepareMockFn func(m *mock.MockIUserService)
-		fields        fields
-		args          args
-		want          *model.Message
-		wantErr       error
-	}{
-		{
-			name: "usecase SendMessage success response",
-			args: args{
-				ctx: &gin.Context{},
-			},
-			prepareMockFn: func(m *mock.MockIUserService) {
-				m.EXPECT().SendMessage(gomock.Any(), postMessage).Return(createdMessage, nil)
-			},
-			want:    message11,
-			wantErr: nil,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			//mock登録
-			controller := gomock.NewController(t)
-			defer controller.Finish()
+func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserByUserID() {
+	suite.mock.EXPECT().FindUserByUserID(&gin.Context{}, 1).Return(prepareUserEntity(1, 0, 0), nil)
+	res, err := suite.usecase.FindUserByUserID(&gin.Context{}, 1)
+	suite.Equal(err, nil)
+	suite.Equal(res, prepareUser(1, 0, 0))
+}
 
-			mock := mock.NewMockIUserService(controller)
-			tt.prepareMockFn(mock)
-			uu := NewUserUsecase(mock)
-			res, err := uu.SendMessage(tt.args.ctx, userID, roomID, newMessage)
-			assert.Equal(t, res, tt.want)
-			assert.Equal(t, err, tt.wantErr)
-		})
-	}
+func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
+	suite.mock.EXPECT().FindAllUsers(&gin.Context{}).Return(
+		entity.UserSlice{prepareUserEntity(1, 0, 0), prepareUserEntity(2, 1, 1)},
+		nil,
+	)
+	res, err := suite.usecase.FindAllUsers(&gin.Context{})
+	suite.Equal(err, nil)
+	suite.Equal(
+		res,
+		model.UserSlice{prepareUser(1, 0, 0), prepareUser(2, 1, 1)},
+	)
+}
+
+func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllRooms() {
+	suite.mock.EXPECT().FindAllRooms(&gin.Context{}, userID).Return(
+		entity.RoomSlice{prepareRoomEntity(1)},
+		nil,
+	)
+	res, err := suite.usecase.FindAllRooms(&gin.Context{}, userID)
+	suite.Equal(err, nil)
+	suite.Equal(
+		res,
+		&model.Rooms{Rooms: []*model.Room{prepareRoom(1)}},
+	)
+}
+
+func (suite *UserUsecaseTestSuite) Test_userUsecase_FindRoomDetailByRoomID() {
+	suite.mock.EXPECT().FindRoomDetailByRoomID(&gin.Context{}, 1, 1).Return(
+		prepareRoomDetailEntity(1),
+		nil,
+	)
+	res, err := suite.usecase.FindRoomDetailByRoomID(&gin.Context{}, 1, 1)
+	suite.Equal(err, nil)
+	suite.Equal(
+		res,
+		prepareRoomDetail(1),
+	)
+}
+
+func (suite *UserUsecaseTestSuite) Test_userUsecase_SendMessage() {
+	suite.mock.EXPECT().SendMessage(&gin.Context{}, preparePostMessageEntity()).Return(
+		prepareCreatedMessageEntity(1),
+		nil,
+	)
+	res, err := suite.usecase.SendMessage(&gin.Context{}, 1, 1, prepareNewMessage())
+	suite.Equal(err, nil)
+	suite.Equal(
+		res,
+		prepareMessage(1),
+	)
 }
