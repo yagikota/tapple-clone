@@ -59,20 +59,17 @@ func RoomFromDomainModel(m *model.Room) *Room {
 	location := prefCodeToPrefKanji(u.Location)
 	r.SubName = strconv.Itoa(age) + "歳・" + location
 
-	// 未読数計算
-	unread := 0
-	partnerID := UserFromEntity(entity.R.RoomUsers[0].R.User).ID
-	for _, message := range entity.R.Messages {
-		if message.UserID == int(partnerID) && message.IsRead {
-			break
-		}
-		if message.UserID == int(partnerID) && !message.IsRead {
-			unread += 1
-		}
-	}
-	r.Unread = unread
-
 	return r
+}
+
+func prefCodeToPrefKanji(prefCode int) string {
+	location := "その他"
+	prefInfo, ok := pref.FindByCode(prefCode)
+	if ok {
+		location = prefInfo.KanjiShort()
+	}
+
+	return location
 }
 
 func prefCodeToPrefKanji(prefCode int) string {
