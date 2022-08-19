@@ -209,6 +209,7 @@ type UserUsecaseTestSuite struct {
 }
 
 func (suite *UserUsecaseTestSuite) SetupSuite() {
+	gin.SetMode(gin.TestMode)
 	mockCtl := gomock.NewController(suite.T())
 	defer mockCtl.Finish()
 	suite.mock = mock.NewMockIUserService(mockCtl)

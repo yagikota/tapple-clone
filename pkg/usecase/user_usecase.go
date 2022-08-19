@@ -32,7 +32,6 @@ func (uu *userUsecase) FindUserByUserID(ctx context.Context, userID int) (*model
 	if err != nil {
 		return nil, err
 	}
-	log.Println(model.UserFromDomainModel(mu))
 	return model.UserFromDomainModel(mu), err
 }
 
