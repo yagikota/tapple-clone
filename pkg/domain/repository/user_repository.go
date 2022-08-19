@@ -6,13 +6,13 @@ package domain
 import (
 	"context"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
 type IUserRepository interface {
-	FindUserByUserID(ctx context.Context, userID int) (*entity.User, error)
-	FindAllUsers(ctx context.Context) (entity.UserSlice, error)
-	FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error)
-	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error)
-	SendMessage(ctx context.Context, m *entity.Message) (*entity.Message, error)
+	FindUserByUserID(ctx context.Context, userID int) (*model.User, error)
+	FindAllUsers(ctx context.Context) (model.UserSlice, error)
+	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
+	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error)
+	SendMessage(ctx context.Context, m *model.Message) (*model.Message, error)
 }

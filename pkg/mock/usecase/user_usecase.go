@@ -66,18 +66,18 @@ func (mr *MockIUserUsecaseMockRecorder) FindAllUsers(ctx interface{}) *gomock.Ca
 }
 
 // FindRoomDetailByRoomID mocks base method.
-func (m *MockIUserUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.RoomDetail, error) {
+func (m *MockIUserUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindRoomDetailByRoomID", ctx, userID, roomID)
+	ret := m.ctrl.Call(m, "FindRoomDetailByRoomID", ctx, userID, roomID, messageID)
 	ret0, _ := ret[0].(*model.RoomDetail)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindRoomDetailByRoomID indicates an expected call of FindRoomDetailByRoomID.
-func (mr *MockIUserUsecaseMockRecorder) FindRoomDetailByRoomID(ctx, userID, roomID interface{}) *gomock.Call {
+func (mr *MockIUserUsecaseMockRecorder) FindRoomDetailByRoomID(ctx, userID, roomID, messageID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRoomDetailByRoomID", reflect.TypeOf((*MockIUserUsecase)(nil).FindRoomDetailByRoomID), ctx, userID, roomID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRoomDetailByRoomID", reflect.TypeOf((*MockIUserUsecase)(nil).FindRoomDetailByRoomID), ctx, userID, roomID, messageID)
 }
 
 // FindUserByUserID mocks base method.

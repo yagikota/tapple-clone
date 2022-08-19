@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entity "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	model "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,10 +36,10 @@ func (m *MockIUserRepository) EXPECT() *MockIUserRepositoryMockRecorder {
 }
 
 // FindAllRooms mocks base method.
-func (m *MockIUserRepository) FindAllRooms(ctx context.Context, userID int) (entity.RoomSlice, error) {
+func (m *MockIUserRepository) FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAllRooms", ctx, userID)
-	ret0, _ := ret[0].(entity.RoomSlice)
+	ret0, _ := ret[0].(model.RoomSlice)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -51,10 +51,10 @@ func (mr *MockIUserRepositoryMockRecorder) FindAllRooms(ctx, userID interface{})
 }
 
 // FindAllUsers mocks base method.
-func (m *MockIUserRepository) FindAllUsers(ctx context.Context) (entity.UserSlice, error) {
+func (m *MockIUserRepository) FindAllUsers(ctx context.Context) (model.UserSlice, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAllUsers", ctx)
-	ret0, _ := ret[0].(entity.UserSlice)
+	ret0, _ := ret[0].(model.UserSlice)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,25 +66,25 @@ func (mr *MockIUserRepositoryMockRecorder) FindAllUsers(ctx interface{}) *gomock
 }
 
 // FindRoomDetailByRoomID mocks base method.
-func (m *MockIUserRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
+func (m *MockIUserRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindRoomDetailByRoomID", ctx, userID, roomID)
-	ret0, _ := ret[0].(*entity.Room)
+	ret := m.ctrl.Call(m, "FindRoomDetailByRoomID", ctx, userID, roomID, messageID)
+	ret0, _ := ret[0].(*model.Room)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindRoomDetailByRoomID indicates an expected call of FindRoomDetailByRoomID.
-func (mr *MockIUserRepositoryMockRecorder) FindRoomDetailByRoomID(ctx, userID, roomID interface{}) *gomock.Call {
+func (mr *MockIUserRepositoryMockRecorder) FindRoomDetailByRoomID(ctx, userID, roomID, messageID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRoomDetailByRoomID", reflect.TypeOf((*MockIUserRepository)(nil).FindRoomDetailByRoomID), ctx, userID, roomID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRoomDetailByRoomID", reflect.TypeOf((*MockIUserRepository)(nil).FindRoomDetailByRoomID), ctx, userID, roomID, messageID)
 }
 
 // FindUserByUserID mocks base method.
-func (m *MockIUserRepository) FindUserByUserID(ctx context.Context, userID int) (*entity.User, error) {
+func (m *MockIUserRepository) FindUserByUserID(ctx context.Context, userID int) (*model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserByUserID", ctx, userID)
-	ret0, _ := ret[0].(*entity.User)
+	ret0, _ := ret[0].(*model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -96,10 +96,10 @@ func (mr *MockIUserRepositoryMockRecorder) FindUserByUserID(ctx, userID interfac
 }
 
 // SendMessage mocks base method.
-func (m_2 *MockIUserRepository) SendMessage(ctx context.Context, m *entity.Message) (*entity.Message, error) {
+func (m_2 *MockIUserRepository) SendMessage(ctx context.Context, m *model.Message) (*model.Message, error) {
 	m_2.ctrl.T.Helper()
 	ret := m_2.ctrl.Call(m_2, "SendMessage", ctx, m)
-	ret0, _ := ret[0].(*entity.Message)
+	ret0, _ := ret[0].(*model.Message)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

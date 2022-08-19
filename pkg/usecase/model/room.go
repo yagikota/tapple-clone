@@ -1,6 +1,10 @@
 package model
 
-import "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+import (
+	"sort"
+
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
+)
 
 type RoomID int
 
@@ -31,34 +35,39 @@ type RoomDetail struct {
 }
 
 // ルーム一覧で使用
-func RoomFromEntity(entity *entity.Room) *Room {
+func RoomFromDomainModel(m *model.Room) *Room {
 	return &Room{
-		ID:            RoomID(entity.ID),
-		IsPinned:      entity.R.RoomUsers[0].IsPinned,
-		Name:          UserFromEntity(entity.R.RoomUsers[0].R.User).Name,
-		Icon:          UserFromEntity(entity.R.RoomUsers[0].R.User).Icon,
-		LatestMessage: MessageFromEntity(entity.R.Messages[0]),
+		ID:            RoomID(m.ID),
+		IsPinned:      m.R.RoomUsers[0].IsPinned,
+		Name:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Name,
+		Icon:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Icon,
+		LatestMessage: MessageFromDomainModel(m.R.Messages[0]),
 	}
 }
 
 // ルーム詳細で使用
-func RoomDetailFromEntity(entity *entity.Room) *RoomDetail {
+func RoomDetailFromDomainModel(m *model.Room) *RoomDetail {
 	rm := &RoomDetail{
-		ID:   RoomID(entity.ID),
-		Name: entity.R.RoomUsers[0].R.User.Name,
-		Icon: entity.R.RoomUsers[0].R.User.Icon,
+		ID:   RoomID(m.ID),
+		Name: m.R.RoomUsers[0].R.User.Name,
+		Icon: m.R.RoomUsers[0].R.User.Icon,
 	}
 
-	uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
-	for _, roomUser := range entity.R.RoomUsers {
-		uSlice = append(uSlice, UserFromEntity(roomUser.R.User))
+	uSlice := make(UserSlice, 0, len(m.R.RoomUsers))
+	for _, roomUser := range m.R.RoomUsers {
+		uSlice = append(uSlice, UserFromDomainModel(roomUser.R.User))
 	}
 	rm.Users = uSlice
 
-	mSlice := make(MessageSlice, 0, len(entity.R.Messages))
-	for _, message := range entity.R.Messages {
-		mSlice = append(mSlice, MessageFromEntity(message))
+	mSlice := make(MessageSlice, 0, len(m.R.Messages))
+	for _, message := range m.R.Messages {
+		mSlice = append(mSlice, MessageFromDomainModel(message))
 	}
+
+	// 古い順番にソート
+	sort.Slice(mSlice, func(i, j int) bool {
+		return mSlice[i].CreatedAt.Before(mSlice[j].CreatedAt)
+	})
 	rm.Messages = mSlice
 
 	return rm
