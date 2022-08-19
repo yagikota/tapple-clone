@@ -53,6 +53,7 @@ func RoomFromDomainModel(m *model.Room) *Room {
 		return nil
 	}
 
+<<<<<<< HEAD
 	// 都道府県コードをいい感じに県名に変えてくれるpakage
 	prefInfo, ok = pref.FindByCode(UserFromDomainModel(m.R.RoomUsers[0].R.User).Location)
 	if !ok {
@@ -61,15 +62,24 @@ func RoomFromDomainModel(m *model.Room) *Room {
 		location = prefInfo.KanjiShort()
 	}
 
+=======
+	location := prefCodeToPrefKanji(ufe.Location)
+>>>>>>> d809f6a (refactor: 都道県コードを県名に変換する処理を関数の中に移動)
 	r.SubName = strconv.Itoa(age) + "歳・" + location
 
 	return r
 }
 
-func prefCodeToPrefKanji(prefCode int) (pref.Prefecture, bool) {
+func prefCodeToPrefKanji(prefCode int) string {
 	prefInfo, ok := pref.FindByCode(prefCode)
+	var location string
+	if !ok {
+		location = "その他"
+	} else {
+		location = prefInfo.KanjiShort()
+	}
 
-	return prefInfo, ok
+	return location
 }
 
 // ルーム一覧で使用
