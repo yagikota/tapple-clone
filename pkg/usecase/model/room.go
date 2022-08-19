@@ -40,42 +40,31 @@ type RoomDetail struct {
 
 // ルーム一覧で使用
 func RoomFromDomainModel(m *model.Room) *Room {
-	return &Room{
+	u := UserFromDomainModel(m.R.RoomUsers[0].R.User)
+	r := &Room{
 		ID:            RoomID(m.ID),
 		IsPinned:      m.R.RoomUsers[0].IsPinned,
-		Name:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Name,
-		Icon:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Icon,
+		Name:          u.Name,
+		Icon:          u.Icon,
 		LatestMessage: MessageFromDomainModel(m.R.Messages[0]),
 	}
 
-	age, err := calcAge(UserFromDomainModel(m.R.RoomUsers[0].R.User).BirthDay)
+	age, err := calcAge(u.BirthDay)
 	if err != nil {
 		return nil
 	}
 
-<<<<<<< HEAD
-	// 都道府県コードをいい感じに県名に変えてくれるpakage
-	prefInfo, ok = pref.FindByCode(UserFromDomainModel(m.R.RoomUsers[0].R.User).Location)
-	if !ok {
-		location = "その他"
-	} else {
-		location = prefInfo.KanjiShort()
-	}
-
-=======
-	location := prefCodeToPrefKanji(ufe.Location)
->>>>>>> d809f6a (refactor: 都道県コードを県名に変換する処理を関数の中に移動)
+	// 都道府県コードを県名に変換
+	location := prefCodeToPrefKanji(u.Location)
 	r.SubName = strconv.Itoa(age) + "歳・" + location
 
 	return r
 }
 
 func prefCodeToPrefKanji(prefCode int) string {
+	location := "その他"
 	prefInfo, ok := pref.FindByCode(prefCode)
-	var location string
-	if !ok {
-		location = "その他"
-	} else {
+	if ok {
 		location = prefInfo.KanjiShort()
 	}
 
