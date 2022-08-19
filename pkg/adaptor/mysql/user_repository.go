@@ -62,7 +62,7 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (entity.
 
 // TODO: 例えば、localhost:8080/v1/users/2/rooms/３でもアクセスできてしまうので、改善が必要
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
-func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*entity.Room, error) {
+func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*entity.Room, error) {
 	boil.DebugMode = true
 	tx, err := txFromContext(ctx)
 	if err != nil {
@@ -72,12 +72,31 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	whereRoomID := fmt.Sprintf("%s = ?", entity.RoomColumns.ID)
 	// 自分が2番目にくるようにsort←チャットルームのNameとIconを[0]で取得するため
 	orderBy := fmt.Sprintf("%s = ?", entity.RoomUserColumns.UserID)
-	return entity.Rooms(
-		qm.Where(whereRoomID, roomID),
-		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
-		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-		qm.Load(entity.RoomRels.Messages),
-	).One(ctx, tx)
+	orderByMessage := fmt.Sprintf("%s DESC", entity.MessageColumns.CreatedAt)
+	whereQueryMessage := fmt.Sprintf("%s <= ?", entity.MessageColumns.CreatedAt)
+
+	limitRecord := 100
+
+	if messageID == 0 {
+		return entity.Rooms(
+			qm.Where(whereRoomID, roomID),
+			qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
+			qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
+			qm.Load(entity.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+		).One(ctx, tx)
+	} else {
+		queryMessage, err := entity.FindMessage(ctx, tx, int64(messageID))
+		if err != nil {
+			return nil, err
+		}
+		queryMessageCreatedAt := queryMessage.CreatedAt
+		return entity.Rooms(
+			qm.Where(whereRoomID, roomID),
+			qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
+			qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
+			qm.Load(entity.RoomRels.Messages, qm.Where(whereQueryMessage, queryMessageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+		).One(ctx, tx)
+	}
 }
 
 // TODO: 自身が所属しているルームにのみ送信できるようにする 現状localhost:8080/v1/users/2/rooms/3でも送信できてしまう

@@ -13,7 +13,7 @@ type IUserUsecase interface {
 	FindUserByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAllUsers(ctx context.Context) (model.UserSlice, error)
 	FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error)
-	FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.RoomDetail, error)
+	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error)
 	SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error)
 }
 
@@ -78,8 +78,8 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Roo
 	return &model.Rooms{Rooms: rSlice}, nil
 }
 
-func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID int) (*model.RoomDetail, error) {
-	entity, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID)
+func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error) {
+	entity, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID, messageID)
 	if err != nil {
 		return nil, err
 	}
