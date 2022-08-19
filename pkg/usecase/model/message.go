@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
 // https://github.com/gin-gonic/gin#model-binding-and-validation
@@ -19,7 +19,7 @@ type Message struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func MessageFromEntity(entity *entity.Message) *Message {
+func MessageFromEntity(entity *model.Message) *Message {
 	return &Message{
 		ID:        MessageID(entity.ID),
 		UserID:    entity.UserID,
@@ -33,8 +33,8 @@ type NewMessage struct {
 }
 
 // TODO: メソッドと関数の使い分け
-func (m *NewMessage) ToEntity(userID, roomID int) *entity.Message {
-	return &entity.Message{
+func (m *NewMessage) ToEntity(userID, roomID int) *model.Message {
+	return &model.Message{
 		UserID:  userID,
 		RoomID:  roomID,
 		Content: m.Content,

@@ -3,7 +3,7 @@ package model
 import (
 	"sort"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
 type RoomID int
@@ -35,7 +35,7 @@ type RoomDetail struct {
 }
 
 // ルーム一覧で使用
-func RoomFromEntity(entity *entity.Room) *Room {
+func RoomFromEntity(entity *model.Room) *Room {
 	return &Room{
 		ID:            RoomID(entity.ID),
 		IsPinned:      entity.R.RoomUsers[0].IsPinned,
@@ -46,7 +46,7 @@ func RoomFromEntity(entity *entity.Room) *Room {
 }
 
 // ルーム詳細で使用
-func RoomDetailFromEntity(entity *entity.Room) *RoomDetail {
+func RoomDetailFromEntity(entity *model.Room) *RoomDetail {
 	rm := &RoomDetail{
 		ID:   RoomID(entity.ID),
 		Name: entity.R.RoomUsers[0].R.User.Name,
