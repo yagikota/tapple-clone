@@ -81,7 +81,14 @@ func calcAge(birthday time.Time) (int, error) {
 	// 現在日時を数字だけで表現 (YYYYMMDD)
 	dateFormatOnlyNumber := "20060102" // YYYYMMDD
 
-	nowOnlyNumber := time.Now().Format(dateFormatOnlyNumber)
+	// タイムゾーンをJSTに設定
+	now := time.Now()
+	nowUTC := now.UTC()
+	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+
+	nowJST := nowUTC.In(jst)
+
+	nowOnlyNumber := nowJST.Format(dateFormatOnlyNumber)
 	birthdayOnlyNumber := birthday.Format(dateFormatOnlyNumber)
 
 	// 日付文字列をそのまま数値化
@@ -94,7 +101,8 @@ func calcAge(birthday time.Time) (int, error) {
 		return 0, err
 	}
 
-	// (今日の日付 - 誕生日) / 10000 = 年齢
+	// 20220809 - 20220509 / 10000 = 22歳
+	// (今日の日付 - 誕生日の日付) / 10000 = 年齢
 	age := (nowInt - birthdayInt) / 10000
 	return age, nil
 }
