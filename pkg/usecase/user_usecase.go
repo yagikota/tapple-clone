@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"log"
 	"sort"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
