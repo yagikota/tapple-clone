@@ -81,11 +81,11 @@ func calcAge(birthday time.Time) (int, error) {
 	// 現在日時を数値のみでフォーマット (YYYYMMDD)
 	dateFormatOnlyNumber := "20060102" // YYYYMMDD
 
-	nowOnlyNnmber := time.Now().Format(dateFormatOnlyNumber)
+	nowOnlyNumber := time.Now().Format(dateFormatOnlyNumber)
 	birthdayOnlyNumber := birthday.Format(dateFormatOnlyNumber)
 
 	// 日付文字列をそのまま数値化
-	nowInt, err := strconv.Atoi(nowOnlyNnmber)
+	nowInt, err := strconv.Atoi(nowOnlyNumber)
 	if err != nil {
 		return 0, err
 	}
