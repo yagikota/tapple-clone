@@ -1,6 +1,10 @@
 package model
 
-import "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+import (
+	"sort"
+
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+)
 
 type RoomID int
 
@@ -59,6 +63,11 @@ func RoomDetailFromEntity(entity *entity.Room) *RoomDetail {
 	for _, message := range entity.R.Messages {
 		mSlice = append(mSlice, MessageFromEntity(message))
 	}
+
+	// 古い順番にソート
+	sort.Slice(mSlice, func(i, j int) bool {
+		return mSlice[i].CreatedAt.Before(mSlice[j].CreatedAt)
+	})
 	rm.Messages = mSlice
 
 	return rm
