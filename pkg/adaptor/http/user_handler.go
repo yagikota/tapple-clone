@@ -85,9 +85,7 @@ func (uh *userHandler) findRoomDetailByRoomID() gin.HandlerFunc {
 		}
 
 		message_id := c.Query("message_id")
-		if message_id == "" {
-			message_id = "0"
-		}
+		message_id = c.DefaultQuery("message_id", "0")
 
 		messageID, err := strconv.Atoi(message_id)
 		if err != nil {
