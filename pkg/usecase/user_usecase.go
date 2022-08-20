@@ -15,6 +15,7 @@ type IUserUsecase interface {
 	FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error)
 	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error)
 	SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error)
+	FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error)
 }
 
 type userUsecase struct {
@@ -28,39 +29,39 @@ func NewUserUsecase(uService service.IUserService) IUserUsecase {
 }
 
 func (uu *userUsecase) FindUserByUserID(ctx context.Context, userID int) (*model.User, error) {
-	mu, err := uu.userService.FindUserByUserID(ctx, userID)
+	entity, err := uu.userService.FindUserByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	log.Println(model.UserFromDomainModel(mu))
-	return model.UserFromDomainModel(mu), err
+	log.Println(model.UserFromDomainModel(entity))
+	return model.UserFromDomainModel(entity), err
 }
 
 func (uu *userUsecase) FindAllUsers(ctx context.Context) (model.UserSlice, error) {
-	muSlice, err := uu.userService.FindAllUsers(ctx)
+	entities, err := uu.userService.FindAllUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	// メモリ確保
-	uSlice := make(model.UserSlice, 0, len(muSlice))
-	for _, mu := range muSlice {
-		uSlice = append(uSlice, model.UserFromDomainModel(mu))
+	uSlice := make(model.UserSlice, 0, len(entities))
+	for _, entity := range entities {
+		uSlice = append(uSlice, model.UserFromDomainModel(entity))
 	}
 
 	return uSlice, nil
 }
 
 func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error) {
-	mrSlice, err := uu.userService.FindAllRooms(ctx, userID)
+	entities, err := uu.userService.FindAllRooms(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	// メモリ確保
-	rSlice := make(model.RoomSlice, 0, len(mrSlice))
-	for _, mr := range mrSlice {
-		rSlice = append(rSlice, model.RoomFromDomainModel(mr))
+	rSlice := make(model.RoomSlice, 0, len(entities))
+	for _, entity := range entities {
+		rSlice = append(rSlice, model.RoomFromDomainModel(entity))
 	}
 
 	sort.Slice(rSlice, func(i, j int) bool {
@@ -79,19 +80,28 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Roo
 }
 
 func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error) {
-	mr, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID, messageID)
+	entity, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID, messageID)
 	if err != nil {
 		return nil, err
 	}
 
-	return model.RoomDetailFromDomainModel(mr), nil
+	return model.RoomDetailFromDomainModel(entity), nil
 }
 
 func (uu *userUsecase) SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error) {
-	mm, err := uu.userService.SendMessage(ctx, m.ToDomainModel(userID, roomID))
+	entity, err := uu.userService.SendMessage(ctx, m.ToDomainModel(userID, roomID))
 	if err != nil {
 		return nil, err
 	}
 
-	return model.MessageFromDomainModel(mm), nil
+	return model.MessageFromDomainModel(entity), nil
+}
+
+func (uu *userUsecase) FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error) {
+	entity, err := uu.userService.FindUserDetailByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return model.UserDetailFromDomainModel(entity), nil
 }
