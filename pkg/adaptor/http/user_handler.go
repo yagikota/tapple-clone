@@ -141,6 +141,11 @@ func (uh *userHandler) findUserDetailByUserID() gin.HandlerFunc {
 			return
 		}
 		userDetail, err := uh.uUsecase.FindUserDetailByUserID(c, userID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
 		c.JSON(http.StatusOK, userDetail)
 	}
 }

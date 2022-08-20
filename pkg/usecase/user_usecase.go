@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"log"
 	"sort"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
@@ -33,7 +32,6 @@ func (uu *userUsecase) FindUserByUserID(ctx context.Context, userID int) (*model
 	if err != nil {
 		return nil, err
 	}
-	log.Println(model.UserFromDomainModel(entity))
 	return model.UserFromDomainModel(entity), err
 }
 
@@ -43,7 +41,6 @@ func (uu *userUsecase) FindAllUsers(ctx context.Context) (model.UserSlice, error
 		return nil, err
 	}
 
-	// メモリ確保
 	uSlice := make(model.UserSlice, 0, len(entities))
 	for _, entity := range entities {
 		uSlice = append(uSlice, model.UserFromDomainModel(entity))
@@ -58,7 +55,6 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Roo
 		return nil, err
 	}
 
-	// メモリ確保
 	rSlice := make(model.RoomSlice, 0, len(entities))
 	for _, entity := range entities {
 		rSlice = append(rSlice, model.RoomFromDomainModel(entity))
@@ -98,10 +94,10 @@ func (uu *userUsecase) SendMessage(ctx context.Context, userID, roomID int, m *m
 }
 
 func (uu *userUsecase) FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error) {
-	entity, err := uu.userService.FindUserDetailByUserID(ctx, userID)
+	mu, err := uu.userService.FindUserDetailByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	return model.UserDetailFromDomainModel(entity), nil
+	return model.UserDetailFromDomainModel(mu), nil
 }

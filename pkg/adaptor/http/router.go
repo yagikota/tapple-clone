@@ -59,7 +59,7 @@ func InitRouter() *gin.Engine {
 		// v1/users/{user_id}/rooms/{room_id}/messages
 		relativePath = fmt.Sprintf("/:%s/rooms/:%s/messages", userIDParam, roomIDParam)
 		usersGroup.POST(relativePath, userHandler.sendMessage())
-		// // v1/users/{user_id}/profiles
+		// v1/users/{user_id}/profile
 		relativePath = fmt.Sprintf("/:%s/profile", userIDParam)
 		usersGroup.GET(relativePath, userHandler.findUserDetailByUserID())
 	}
