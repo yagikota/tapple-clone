@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 	domain "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -80,9 +79,9 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	if messageID == 0 {
 		return model.Rooms(
 			qm.Where(whereRoomID, roomID),
-			qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
-			qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-			qm.Load(entity.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LimitRecord)),
+			qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
+			qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
+			qm.Load(model.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LimitRecord)),
 		).One(ctx, tx)
 	}
 
@@ -93,9 +92,9 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	messageCreatedAt := message.CreatedAt
 	return model.Rooms(
 		qm.Where(whereRoomID, roomID),
-		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
-		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-		qm.Load(entity.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(constant.LimitRecord)),
+		qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
+		qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
+		qm.Load(model.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(constant.LimitRecord)),
 	).One(ctx, tx)
 }
 
