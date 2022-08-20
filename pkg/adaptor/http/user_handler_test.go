@@ -113,6 +113,7 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 		Unread:        1,
 		IsPinned:      true,
 		Name:          "name1",
+		SubName:       "sub_name1",
 		Icon:          "/icon1",
 		LatestMessage: message1,
 	}
@@ -124,6 +125,7 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 		Icon:     "/icon1",
 		Users:    userSlice1,
 		Messages: messageSlice1,
+		IsLast: true,
 	}
 
 	newMessage1 = &model.NewMessage{
@@ -139,6 +141,7 @@ func TestUserHandlerSuite(t *testing.T) {
 }
 
 func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
+	// TODO: gomock.Any()を貼るべく使わないようにする https://stackoverflow.com/questions/66952761/how-to-unit-test-a-go-gin-handler-function
 	suite.mock.EXPECT().FindUserByUserID(gomock.Any(), userID).Return(user1, nil)
 	// レスポンスを受け止める*httptest.ResponseRecorder
 	rec := suite.rec
@@ -197,6 +200,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRooms_200() {
 					"unread": 1,
 					"is_pinned": true,
 					"name": "name1",
+					"sub_name": "sub_name1",
 					"icon": "/icon1",
 					"latest_message": {
 						"id": 1,
@@ -240,7 +244,8 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200()
 					"content": "content1",
 					"created_at": "2022-01-01T00:00:00Z"
 				}
-			]
+			],
+			"is_last": true
 		}`,
 		rec.Body.String(),
 	)
