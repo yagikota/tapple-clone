@@ -2,5 +2,5 @@ package constant
 
 const (
 	LimitMessageRecord = 100
-	AmountDisplayTags  = 8
+	AmountDisplayTags  = 6
 )
