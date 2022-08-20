@@ -125,7 +125,7 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 		Icon:     "/icon1",
 		Users:    userSlice1,
 		Messages: messageSlice1,
-		IsLast: true,
+		IsLast:   true,
 	}
 
 	newMessage1 = &model.NewMessage{
