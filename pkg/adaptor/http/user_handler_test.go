@@ -1,7 +1,6 @@
 package http
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -33,6 +32,8 @@ var (
 	newMessage1 *model.NewMessage
 
 	messageID int
+
+	userDetail *model.UserDetail
 )
 
 //  1.SetupSuite
@@ -65,8 +66,6 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 	suite.router.Use(
 		func(ctx *gin.Context) {
 			ctx.Set("user_id", "1")
-			ctx.Set("room_id", "1")
-			ctx.Set("message_id", "1")
 		},
 	)
 	// ハンドラー登録
@@ -75,15 +74,9 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 	// v1/users/{user_id}
 	path := usersAPIRoot + fmt.Sprintf("/:%s", userIDParam)
 	suite.router.GET(path, suite.handler.findUserByUserID())
-	// v1/users/{user_id}/rooms
-	path = usersAPIRoot + fmt.Sprintf("/:%s/rooms", userIDParam)
-	suite.router.GET(path, suite.handler.findRooms())
-	// v1/users/{user_id}/rooms/{room_id}
-	path = usersAPIRoot + fmt.Sprintf("/:%s/rooms/:%s", userIDParam, roomIDParam)
-	suite.router.GET(path, suite.handler.findRoomDetailByRoomID())
-	// v1/users/{user_id}/rooms/{room_id}/messages
-	path = usersAPIRoot + fmt.Sprintf("/:%s/rooms/:%s/messages", userIDParam, roomIDParam)
-	suite.router.POST(path, suite.handler.sendMessage())
+	// v1/users/{user_id}/profile
+	path = usersAPIRoot + fmt.Sprintf("/:%s/profile", userIDParam)
+	suite.router.GET(path, suite.handler.findUserDetailByUserID())
 }
 
 func (suite *UserHandlerTestSuite) SetupTest() {
@@ -95,7 +88,7 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 		Icon:     "/icon1",
 		Gender:   1,
 		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
-		Location: 1,
+		Location: "その他",
 	}
 	userSlice1 = model.UserSlice{user1}
 
@@ -133,6 +126,28 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 	}
 
 	messageID = 1
+
+	userDetail = &model.UserDetail{
+		ID:          1,
+		Name:        "name1",
+		Age:         1,
+		Location:    "その他",
+		IsPrincipal: false,
+		TagCount:    1,
+		ProfileImages: []*model.UserProfileImage{
+			{
+				ID:        1,
+				UserID:    1,
+				ImagePath: "image_path",
+			},
+		},
+		Hobbies: []*model.Hobby{
+			{
+				ID:  1,
+				Tag: "tag",
+			},
+		},
+	}
 }
 
 // テストを実行するのに必要
@@ -158,7 +173,8 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
 			"icon":"/icon1",
 			"gender":1,
 			"birthday":"2022-01-01T00:00:00Z",
-			"location":1
+			"location":"その他",
+			"is_principal": false
 		}`,
 		rec.Body.String(),
 	)
@@ -178,97 +194,41 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_200() {
 				"icon":"/icon1",
 				"gender":1,
 				"birthday":"2022-01-01T00:00:00Z",
-				"location":1
+				"location":"その他",
+				"is_principal": false
 			}
 		]`,
 		rec.Body.String(),
 	)
 }
 
-func (suite *UserHandlerTestSuite) Test_userHandler_findRooms_200() {
-	suite.mock.EXPECT().FindAllRooms(gomock.Any(), userID).Return(rooms1, nil)
+func (suite *UserHandlerTestSuite) Test_userHandler_findUserDetailByUserID_200() {
+	suite.mock.EXPECT().FindUserDetailByUserID(gomock.Any(), userID).Return(userDetail, nil)
 	rec := suite.rec
-	path := fmt.Sprintf("%s/%d/rooms", usersAPIRoot, userID)
-	req := httptest.NewRequest(http.MethodGet, path, nil)
-	suite.router.ServeHTTP(rec, req)
-	suite.Equal(http.StatusOK, rec.Code)
-	suite.JSONEq(
-		`{
-			"rooms": [
-				{
-					"id": 1,
-					"unread": 1,
-					"is_pinned": true,
-					"name": "name1",
-					"sub_name": "sub_name1",
-					"icon": "/icon1",
-					"latest_message": {
-						"id": 1,
-						"user_id": 1,
-						"content": "content1",
-						"created_at": "2022-01-01T00:00:00Z"
-					}
-				}
-			]
-		}`,
-		rec.Body.String(),
-	)
-}
-
-func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200() {
-	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID, messageID).Return(roomDetail, nil)
-	rec := suite.rec
-	path := fmt.Sprintf("%s/%d/rooms/%d?message_id=1", usersAPIRoot, userID, roomID)
-	req := httptest.NewRequest(http.MethodGet, path, nil)
+	req := httptest.NewRequest(http.MethodGet, usersAPIRoot+"/1/profile", nil)
 	suite.router.ServeHTTP(rec, req)
 	suite.Equal(http.StatusOK, rec.Code)
 	suite.JSONEq(
 		`{
 			"id": 1,
 			"name": "name1",
-			"icon": "/icon1",
-			"users": [
-				{
-					"id": 1,
-					"name": "name1",
-					"icon": "/icon1",
-					"gender": 1,
-					"birthday": "2022-01-01T00:00:00Z",
-					"location": 1
-				}
-			],
-			"messages": [
+			"age": 1,
+			"location": "その他",
+			"is_principal": false,
+			"tag_count": 1,
+			"profile_images": [
 				{
 					"id": 1,
 					"user_id": 1,
-					"content": "content1",
-					"created_at": "2022-01-01T00:00:00Z"
+					"image_path": "image_path"
 				}
 			],
-			"is_last": true
-		}`,
-		rec.Body.String(),
-	)
-}
-
-func (suite *UserHandlerTestSuite) Test_userHandler_sendMessage_200() {
-	suite.mock.EXPECT().SendMessage(gomock.Any(), userID, roomID, newMessage1).Return(message1, nil)
-	rec := suite.rec
-	path := fmt.Sprintf("%s/%d/rooms/%d/messages", usersAPIRoot, userID, roomID)
-	jsonStr := []byte(
-		`{
-			"content": "content1"
-		}`,
-	)
-	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(jsonStr))
-	suite.router.ServeHTTP(rec, req)
-	suite.Equal(http.StatusOK, rec.Code)
-	suite.JSONEq(
-		`{
-			"id": 1,
-			"user_id": 1,
-			"content": "content1",
-			"created_at": "2022-01-01T00:00:00Z"
+			"hobbies": [
+				{
+					"id": 1,
+					"tag": "tag"
+				}
+			]
 		}`,
 		rec.Body.String(),
 	)
