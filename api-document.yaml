@@ -124,26 +124,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseInternalServerError"
+  /users/{user_id}/rooms/{room_id}/messages/{message_id}:
     delete:
       tags:
         - user
       summary: メッセージ削除API
       description: |
         メッセージを削除します。
-      requestBody:
-        description: Request Body
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MessageDeleteRequest"
-        required: true
       responses:
         200:
           description: A successful response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageDeleteResponse"
         400:
           description: リクエストが不正
           content:
@@ -248,9 +238,9 @@ components:
           format: date
           description: 最後のメッセージの送信日時
         location:
-          type: integer
-          example: 34
-          description: 都道府県コード(その他:0, 北海道:1~沖縄:47)
+          type: string
+          example: 神奈川
+          description: 都道府県名
     RoomInfo:
       type: object
       properties:
