@@ -151,6 +151,10 @@ components:
           items:
             $ref: "#/components/schemas/MessageGetResponse"
           description: チャットルーム内のメッセージの一覧
+        is_last:
+          type: boolean
+          example: false
+          description: 最後のメッセージリスト
     MessageGetResponse:
       type: object
       properties:

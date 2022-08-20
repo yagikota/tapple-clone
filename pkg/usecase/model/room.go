@@ -3,6 +3,7 @@ package model
 import (
 	"sort"
 
+	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
@@ -32,6 +33,7 @@ type RoomDetail struct {
 	Icon     string       `json:"icon"`
 	Users    UserSlice    `json:"users"`
 	Messages MessageSlice `json:"messages"`
+	IsLast   bool         `json:"is_last"`
 }
 
 // ルーム一覧で使用
@@ -69,6 +71,11 @@ func RoomDetailFromDomainModel(m *model.Room) *RoomDetail {
 		return mSlice[i].CreatedAt.Before(mSlice[j].CreatedAt)
 	})
 	rm.Messages = mSlice
+
+	// 取得したメッセージの数がLIMIT_RECORDより少なくなったらフラグをtureに変更
+	if len(mSlice) < constant.LimitMessageRecord {
+		rm.IsLast = true
+	}
 
 	return rm
 }
