@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"sort"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/service"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/usecase/model"
@@ -11,9 +10,6 @@ import (
 type IUserUsecase interface {
 	FindUserByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAllUsers(ctx context.Context) (model.UserSlice, error)
-	FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error)
-	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error)
-	SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error)
 	FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error)
 }
 
@@ -48,50 +44,6 @@ func (uu *userUsecase) FindAllUsers(ctx context.Context) (model.UserSlice, error
 	}
 
 	return uSlice, nil
-}
-
-func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error) {
-	mrSlice, err := uu.userService.FindAllRooms(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	rSlice := make(model.RoomSlice, 0, len(mrSlice))
-	for _, mr := range mrSlice {
-		rSlice = append(rSlice, model.RoomFromDomainModel(mr))
-	}
-
-	sort.Slice(rSlice, func(i, j int) bool {
-		//is_pinnedがtrueを優先
-		if rSlice[i].IsPinned && !rSlice[j].IsPinned {
-			return true
-		} else if !rSlice[i].IsPinned && rSlice[j].IsPinned {
-			return false
-		}
-
-		//LatestMessageの降順
-		return rSlice[i].LatestMessage.CreatedAt.After(rSlice[j].LatestMessage.CreatedAt)
-	})
-
-	return &model.Rooms{Rooms: rSlice}, nil
-}
-
-func (uu *userUsecase) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error) {
-	mr, err := uu.userService.FindRoomDetailByRoomID(ctx, userID, roomID, messageID)
-	if err != nil {
-		return nil, err
-	}
-
-	return model.RoomDetailFromDomainModel(mr), nil
-}
-
-func (uu *userUsecase) SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error) {
-	mm, err := uu.userService.SendMessage(ctx, m.ToDomainModel(userID, roomID))
-	if err != nil {
-		return nil, err
-	}
-
-	return model.MessageFromDomainModel(mm), nil
 }
 
 func (uu *userUsecase) FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error) {

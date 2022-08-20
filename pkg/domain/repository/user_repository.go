@@ -12,8 +12,5 @@ import (
 type IUserRepository interface {
 	FindUserByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAllUsers(ctx context.Context) (model.UserSlice, error)
-	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
-	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error)
-	SendMessage(ctx context.Context, m *model.Message) (*model.Message, error)
 	FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error)
 }

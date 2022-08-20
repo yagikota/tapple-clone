@@ -35,21 +35,6 @@ func (m *MockIUserService) EXPECT() *MockIUserServiceMockRecorder {
 	return m.recorder
 }
 
-// FindAllRooms mocks base method.
-func (m *MockIUserService) FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAllRooms", ctx, userID)
-	ret0, _ := ret[0].(model.RoomSlice)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAllRooms indicates an expected call of FindAllRooms.
-func (mr *MockIUserServiceMockRecorder) FindAllRooms(ctx, userID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllRooms", reflect.TypeOf((*MockIUserService)(nil).FindAllRooms), ctx, userID)
-}
-
 // FindAllUsers mocks base method.
 func (m *MockIUserService) FindAllUsers(ctx context.Context) (model.UserSlice, error) {
 	m.ctrl.T.Helper()
@@ -63,21 +48,6 @@ func (m *MockIUserService) FindAllUsers(ctx context.Context) (model.UserSlice, e
 func (mr *MockIUserServiceMockRecorder) FindAllUsers(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllUsers", reflect.TypeOf((*MockIUserService)(nil).FindAllUsers), ctx)
-}
-
-// FindRoomDetailByRoomID mocks base method.
-func (m *MockIUserService) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindRoomDetailByRoomID", ctx, userID, roomID, messageID)
-	ret0, _ := ret[0].(*model.Room)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindRoomDetailByRoomID indicates an expected call of FindRoomDetailByRoomID.
-func (mr *MockIUserServiceMockRecorder) FindRoomDetailByRoomID(ctx, userID, roomID, messageID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRoomDetailByRoomID", reflect.TypeOf((*MockIUserService)(nil).FindRoomDetailByRoomID), ctx, userID, roomID, messageID)
 }
 
 // FindUserByUserID mocks base method.
@@ -108,19 +78,4 @@ func (m *MockIUserService) FindUserDetailByUserID(ctx context.Context, userID in
 func (mr *MockIUserServiceMockRecorder) FindUserDetailByUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserDetailByUserID", reflect.TypeOf((*MockIUserService)(nil).FindUserDetailByUserID), ctx, userID)
-}
-
-// SendMessage mocks base method.
-func (m_2 *MockIUserService) SendMessage(ctx context.Context, m *model.Message) (*model.Message, error) {
-	m_2.ctrl.T.Helper()
-	ret := m_2.ctrl.Call(m_2, "SendMessage", ctx, m)
-	ret0, _ := ret[0].(*model.Message)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SendMessage indicates an expected call of SendMessage.
-func (mr *MockIUserServiceMockRecorder) SendMessage(ctx, m interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockIUserService)(nil).SendMessage), ctx, m)
 }

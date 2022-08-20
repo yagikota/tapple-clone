@@ -13,9 +13,6 @@ import (
 type IUserService interface {
 	FindUserByUserID(ctx context.Context, userID int) (*model.User, error)
 	FindAllUsers(ctx context.Context) (model.UserSlice, error)
-	FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error)
-	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error)
-	SendMessage(ctx context.Context, m *model.Message) (*model.Message, error)
 	FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error)
 }
 
@@ -35,18 +32,6 @@ func (us *userService) FindUserByUserID(ctx context.Context, userID int) (*model
 
 func (us *userService) FindAllUsers(ctx context.Context) (model.UserSlice, error) {
 	return us.userRepository.FindAllUsers(ctx)
-}
-
-func (us *userService) FindAllRooms(ctx context.Context, userID int) (model.RoomSlice, error) {
-	return us.userRepository.FindAllRooms(ctx, userID)
-}
-
-func (us *userService) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error) {
-	return us.userRepository.FindRoomDetailByRoomID(ctx, userID, roomID, messageID)
-}
-
-func (us *userService) SendMessage(ctx context.Context, m *model.Message) (*model.Message, error) {
-	return us.userRepository.SendMessage(ctx, m)
 }
 
 func (us *userService) FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error) {
