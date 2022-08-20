@@ -3,6 +3,7 @@ package model
 import (
 	"sort"
 
+	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 )
 
@@ -71,10 +72,7 @@ func RoomDetailFromEntity(entity *entity.Room) *RoomDetail {
 	})
 	rm.Messages = mSlice
 
-	// TODO: マージする前に100に変更する
-	const limitRecord = 4
-
-	if len(mSlice) < limitRecord {
+	if len(mSlice) < constant.LIMIT_RECORD {
 		rm.IsLast = true
 	}
 

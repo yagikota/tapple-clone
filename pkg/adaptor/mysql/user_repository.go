@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
 	domain "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -75,15 +76,12 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	orderByMessage := fmt.Sprintf("%s DESC", entity.MessageColumns.CreatedAt)
 	whereMessageCreatedAt := fmt.Sprintf("%s <= ?", entity.MessageColumns.CreatedAt)
 
-	// TODO: マージする前に100に変更する
-	const limitRecord = 4
-
 	if messageID == 0 {
 		return entity.Rooms(
 			qm.Where(whereRoomID, roomID),
 			qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 			qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-			qm.Load(entity.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+			qm.Load(entity.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LIMIT_RECORD)),
 		).One(ctx, tx)
 	}
 
@@ -96,7 +94,7 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 		qm.Where(whereRoomID, roomID),
 		qm.Load(entity.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 		qm.Load(qm.Rels(entity.RoomRels.RoomUsers, entity.RoomUserRels.User)),
-		qm.Load(entity.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+		qm.Load(entity.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(constant.LIMIT_RECORD)),
 	).One(ctx, tx)
 }
 
