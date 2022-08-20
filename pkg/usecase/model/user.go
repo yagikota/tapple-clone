@@ -13,12 +13,13 @@ type UserID int
 type UserSlice []*User
 
 type User struct {
-	ID       UserID    `json:"id"`
-	Name     string    `json:"name"`
-	Icon     string    `json:"icon"`
-	Gender   int       `json:"gender"`
-	BirthDay time.Time `json:"birthday"`
-	Location int       `json:"location"`
+	ID          UserID    `json:"id"`
+	Name        string    `json:"name"`
+	Icon        string    `json:"icon"`
+	Gender      int       `json:"gender"`
+	BirthDay    time.Time `json:"birthday"`
+	Location    int       `json:"location"`
+	IsPrincipal bool      `json:"is_principal"`
 }
 
 type UserDetail struct {
@@ -34,19 +35,21 @@ type UserDetail struct {
 
 func UserFromDomainModel(m *model.User) *User {
 	return &User{
-		ID:       UserID(m.ID),
-		Name:     m.Name,
-		Icon:     m.Icon,
-		Gender:   m.Gender,
-		BirthDay: m.Birthday,
-		Location: m.Location,
+		ID:          UserID(m.ID),
+		Name:        m.Name,
+		Icon:        m.Icon,
+		Gender:      m.Gender,
+		BirthDay:    m.Birthday,
+		Location:    m.Location,
+		IsPrincipal: m.IsPrincipal,
 	}
 }
 
 func UserDetailFromDomainModel(m *model.User) *UserDetail {
 	ud := &UserDetail{
-		ID:   UserID(m.ID),
-		Name: m.Name,
+		ID:          UserID(m.ID),
+		Name:        m.Name,
+		IsPrincipal: m.IsPrincipal,
 	}
 
 	age, err := calcAge(m.Birthday)

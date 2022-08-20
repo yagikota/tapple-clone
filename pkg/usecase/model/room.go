@@ -19,6 +19,7 @@ type Room struct {
 	IsPinned      bool     `json:"is_pinned"`
 	Name          string   `json:"name"`
 	SubName       string   `json:"sub_name"`
+	IsPrincipal   bool     `json:"is_principal"`
 	Icon          string   `json:"icon"`
 	LatestMessage *Message `json:"latest_message"`
 }
@@ -57,6 +58,8 @@ func RoomFromDomainModel(m *model.Room) *Room {
 	// 都道府県コードを県名に変換
 	location := prefCodeToPrefKanji(u.Location)
 	r.SubName = strconv.Itoa(age) + "歳・" + location
+
+	r.IsPrincipal = u.IsPrincipal
 
 	return r
 }

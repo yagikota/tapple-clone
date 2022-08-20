@@ -35,6 +35,8 @@ type User struct { // ユーザーID
 	Birthday time.Time `boil:"birthday" json:"birthday" toml:"birthday" yaml:"birthday"`
 	// 所在地(0: その他, 北海道:1~沖縄: 47)
 	Location int `boil:"location" json:"location" toml:"location" yaml:"location"`
+	// 本人認証(0: されていない, 1: されている)
+	IsPrincipal bool `boil:"is_principal" json:"is_principal" toml:"is_principal" yaml:"is_principal"`
 	// ユーザー作成日時
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	// ユーザー更新日時
@@ -47,71 +49,77 @@ type User struct { // ユーザーID
 }
 
 var UserColumns = struct {
-	ID        string
-	Name      string
-	Icon      string
-	Gender    string
-	Birthday  string
-	Location  string
-	CreatedAt string
-	UpdatedAt string
-	DeteledAt string
+	ID          string
+	Name        string
+	Icon        string
+	Gender      string
+	Birthday    string
+	Location    string
+	IsPrincipal string
+	CreatedAt   string
+	UpdatedAt   string
+	DeteledAt   string
 }{
-	ID:        "id",
-	Name:      "name",
-	Icon:      "icon",
-	Gender:    "gender",
-	Birthday:  "birthday",
-	Location:  "location",
-	CreatedAt: "created_at",
-	UpdatedAt: "updated_at",
-	DeteledAt: "deteled_at",
+	ID:          "id",
+	Name:        "name",
+	Icon:        "icon",
+	Gender:      "gender",
+	Birthday:    "birthday",
+	Location:    "location",
+	IsPrincipal: "is_principal",
+	CreatedAt:   "created_at",
+	UpdatedAt:   "updated_at",
+	DeteledAt:   "deteled_at",
 }
 
 var UserTableColumns = struct {
-	ID        string
-	Name      string
-	Icon      string
-	Gender    string
-	Birthday  string
-	Location  string
-	CreatedAt string
-	UpdatedAt string
-	DeteledAt string
+	ID          string
+	Name        string
+	Icon        string
+	Gender      string
+	Birthday    string
+	Location    string
+	IsPrincipal string
+	CreatedAt   string
+	UpdatedAt   string
+	DeteledAt   string
 }{
-	ID:        "users.id",
-	Name:      "users.name",
-	Icon:      "users.icon",
-	Gender:    "users.gender",
-	Birthday:  "users.birthday",
-	Location:  "users.location",
-	CreatedAt: "users.created_at",
-	UpdatedAt: "users.updated_at",
-	DeteledAt: "users.deteled_at",
+	ID:          "users.id",
+	Name:        "users.name",
+	Icon:        "users.icon",
+	Gender:      "users.gender",
+	Birthday:    "users.birthday",
+	Location:    "users.location",
+	IsPrincipal: "users.is_principal",
+	CreatedAt:   "users.created_at",
+	UpdatedAt:   "users.updated_at",
+	DeteledAt:   "users.deteled_at",
 }
 
 // Generated where
 
 var UserWhere = struct {
-	ID        whereHelperint
-	Name      whereHelperstring
-	Icon      whereHelperstring
-	Gender    whereHelperint
-	Birthday  whereHelpertime_Time
-	Location  whereHelperint
-	CreatedAt whereHelpertime_Time
-	UpdatedAt whereHelpertime_Time
-	DeteledAt whereHelpernull_Time
+	ID          whereHelperint
+	Name        whereHelperstring
+	Icon        whereHelperstring
+	Gender      whereHelperint
+	Birthday    whereHelpertime_Time
+	Location    whereHelperint
+	IsPrincipal whereHelperbool
+	CreatedAt   whereHelpertime_Time
+	UpdatedAt   whereHelpertime_Time
+	DeteledAt   whereHelpernull_Time
 }{
-	ID:        whereHelperint{field: "`users`.`id`"},
-	Name:      whereHelperstring{field: "`users`.`name`"},
-	Icon:      whereHelperstring{field: "`users`.`icon`"},
-	Gender:    whereHelperint{field: "`users`.`gender`"},
-	Birthday:  whereHelpertime_Time{field: "`users`.`birthday`"},
-	Location:  whereHelperint{field: "`users`.`location`"},
-	CreatedAt: whereHelpertime_Time{field: "`users`.`created_at`"},
-	UpdatedAt: whereHelpertime_Time{field: "`users`.`updated_at`"},
-	DeteledAt: whereHelpernull_Time{field: "`users`.`deteled_at`"},
+	ID:          whereHelperint{field: "`users`.`id`"},
+	Name:        whereHelperstring{field: "`users`.`name`"},
+	Icon:        whereHelperstring{field: "`users`.`icon`"},
+	Gender:      whereHelperint{field: "`users`.`gender`"},
+	Birthday:    whereHelpertime_Time{field: "`users`.`birthday`"},
+	Location:    whereHelperint{field: "`users`.`location`"},
+	IsPrincipal: whereHelperbool{field: "`users`.`is_principal`"},
+	CreatedAt:   whereHelpertime_Time{field: "`users`.`created_at`"},
+	UpdatedAt:   whereHelpertime_Time{field: "`users`.`updated_at`"},
+	DeteledAt:   whereHelpernull_Time{field: "`users`.`deteled_at`"},
 }
 
 // UserRels is where relationship names are stored.
@@ -172,9 +180,9 @@ func (r *userR) GetUserProfileImages() UserProfileImageSlice {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"id", "name", "icon", "gender", "birthday", "location", "created_at", "updated_at", "deteled_at"}
+	userAllColumns            = []string{"id", "name", "icon", "gender", "birthday", "location", "is_principal", "created_at", "updated_at", "deteled_at"}
 	userColumnsWithoutDefault = []string{"name", "icon", "gender", "birthday", "location", "deteled_at"}
-	userColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
+	userColumnsWithDefault    = []string{"id", "is_principal", "created_at", "updated_at"}
 	userPrimaryKeyColumns     = []string{"id"}
 	userGeneratedColumns      = []string{}
 )
