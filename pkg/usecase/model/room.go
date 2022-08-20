@@ -2,9 +2,13 @@ package model
 
 import (
 	"sort"
+	"strconv"
+	"time"
 
 	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
+
+	pref "github.com/diverse-inc/jp_prefecture"
 )
 
 type RoomID int
@@ -17,6 +21,7 @@ type Room struct {
 	Unread        int      `json:"unread"`
 	IsPinned      bool     `json:"is_pinned"`
 	Name          string   `json:"name"`
+	SubName       string   `json:"sub_name"`
 	Icon          string   `json:"icon"`
 	LatestMessage *Message `json:"latest_message"`
 }
@@ -38,13 +43,55 @@ type RoomDetail struct {
 
 // ルーム一覧で使用
 func RoomFromDomainModel(m *model.Room) *Room {
-	return &Room{
+	u := UserFromDomainModel(m.R.RoomUsers[0].R.User)
+	r := &Room{
 		ID:            RoomID(m.ID),
 		IsPinned:      m.R.RoomUsers[0].IsPinned,
-		Name:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Name,
-		Icon:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Icon,
+		Name:          u.Name,
+		Icon:          u.Icon,
 		LatestMessage: MessageFromDomainModel(m.R.Messages[0]),
 	}
+
+	age, err := calcAge(u.BirthDay)
+	if err != nil {
+		return nil
+	}
+
+	// 都道府県コードを県名に変換
+	location := prefCodeToPrefKanji(u.Location)
+	r.SubName = strconv.Itoa(age) + "歳・" + location
+
+	return r
+}
+
+func prefCodeToPrefKanji(prefCode int) string {
+	location := "その他"
+	prefInfo, ok := pref.FindByCode(prefCode)
+	if ok {
+		location = prefInfo.KanjiShort()
+	}
+
+	return location
+}
+
+// ルーム一覧で使用
+func calcAge(birthday time.Time) (int, error) {
+	// タイムゾーンをJSTに設定
+	now := time.Now()
+	nowUTC := now.UTC()
+	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+
+	nowJST := nowUTC.In(jst)
+
+	thisYear, thisMonth, thisDay := nowJST.Date()
+	age := thisYear - birthday.Year()
+
+	// 誕生日を迎えていない時の処理
+	if thisMonth < birthday.Month() && thisDay < birthday.Day() {
+		age -= 1
+	}
+
+	return age, nil
 }
 
 // ルーム詳細で使用
