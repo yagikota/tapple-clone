@@ -101,6 +101,13 @@ paths:
       summary: チャットルーム詳細表示API
       description: |
         指定したチャットルームのメッセージ内容を取得します。
+      parameters:
+        - in: query
+          name: message_id
+          required: false
+          schema:
+            type: integer
+          description: ページング用のクエリパラメータ
       responses:
         200:
           description: A successful response.
