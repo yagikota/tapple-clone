@@ -2,8 +2,10 @@ package model
 
 import (
 	"sort"
+	"strconv"
 
-	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/entity"
+	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
+	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
 type RoomID int
@@ -16,6 +18,7 @@ type Room struct {
 	Unread        int      `json:"unread"`
 	IsPinned      bool     `json:"is_pinned"`
 	Name          string   `json:"name"`
+	SubName       string   `json:"sub_name"`
 	Icon          string   `json:"icon"`
 	LatestMessage *Message `json:"latest_message"`
 }
@@ -32,36 +35,49 @@ type RoomDetail struct {
 	Icon     string       `json:"icon"`
 	Users    UserSlice    `json:"users"`
 	Messages MessageSlice `json:"messages"`
+	IsLast   bool         `json:"is_last"`
 }
 
 // ルーム一覧で使用
-func RoomFromEntity(entity *entity.Room) *Room {
-	return &Room{
-		ID:            RoomID(entity.ID),
-		IsPinned:      entity.R.RoomUsers[0].IsPinned,
-		Name:          UserFromEntity(entity.R.RoomUsers[0].R.User).Name,
-		Icon:          UserFromEntity(entity.R.RoomUsers[0].R.User).Icon,
-		LatestMessage: MessageFromEntity(entity.R.Messages[0]),
+func RoomFromDomainModel(m *model.Room) *Room {
+	u := UserFromDomainModel(m.R.RoomUsers[0].R.User)
+	r := &Room{
+		ID:            RoomID(m.ID),
+		IsPinned:      m.R.RoomUsers[0].IsPinned,
+		Name:          u.Name,
+		Icon:          u.Icon,
+		LatestMessage: MessageFromDomainModel(m.R.Messages[0]),
 	}
+
+	age, err := calcAge(u.BirthDay)
+	if err != nil {
+		return nil
+	}
+
+	// 都道府県コードを県名に変換
+	location := prefCodeToPrefKanji(u.Location)
+	r.SubName = strconv.Itoa(age) + "歳・" + location
+
+	return r
 }
 
 // ルーム詳細で使用
-func RoomDetailFromEntity(entity *entity.Room) *RoomDetail {
+func RoomDetailFromDomainModel(m *model.Room) *RoomDetail {
 	rm := &RoomDetail{
-		ID:   RoomID(entity.ID),
-		Name: entity.R.RoomUsers[0].R.User.Name,
-		Icon: entity.R.RoomUsers[0].R.User.Icon,
+		ID:   RoomID(m.ID),
+		Name: m.R.RoomUsers[0].R.User.Name,
+		Icon: m.R.RoomUsers[0].R.User.Icon,
 	}
 
-	uSlice := make(UserSlice, 0, len(entity.R.RoomUsers))
-	for _, roomUser := range entity.R.RoomUsers {
-		uSlice = append(uSlice, UserFromEntity(roomUser.R.User))
+	uSlice := make(UserSlice, 0, len(m.R.RoomUsers))
+	for _, roomUser := range m.R.RoomUsers {
+		uSlice = append(uSlice, UserFromDomainModel(roomUser.R.User))
 	}
 	rm.Users = uSlice
 
-	mSlice := make(MessageSlice, 0, len(entity.R.Messages))
-	for _, message := range entity.R.Messages {
-		mSlice = append(mSlice, MessageFromEntity(message))
+	mSlice := make(MessageSlice, 0, len(m.R.Messages))
+	for _, message := range m.R.Messages {
+		mSlice = append(mSlice, MessageFromDomainModel(message))
 	}
 
 	// 古い順番にソート
@@ -69,6 +85,11 @@ func RoomDetailFromEntity(entity *entity.Room) *RoomDetail {
 		return mSlice[i].CreatedAt.Before(mSlice[j].CreatedAt)
 	})
 	rm.Messages = mSlice
+
+	// 取得したメッセージの数がLIMIT_RECORDより少なくなったらフラグをtureに変更
+	if len(mSlice) < constant.LimitMessageRecord {
+		rm.IsLast = true
+	}
 
 	return rm
 }

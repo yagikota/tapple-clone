@@ -35,6 +35,7 @@ seed: ## seed
 	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_room_users.up.sql
 	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_messages.up.sql
 	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_user_profile_images.up.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_hobbies.up.sql
 
 # ローカルデータDLETEのコマンド
 .PHONY: delete
@@ -44,6 +45,7 @@ delete: ## delete
 	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_rooms.down.sql
 	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_users.down.sql
 	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_user_profile_images.down.sql
+	mysql $(MYSQL_INFO) $(DB_NAME) < $(DML_DIR)/dummy_hobbies.down.sql
 
 # sqlboilerでmodel自動生成
 .PHONY: generate-model
