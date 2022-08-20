@@ -83,7 +83,7 @@ func checkStatusMiddleware() gin.HandlerFunc {
 		c.Next()
 		// エラーが発生した場合
 		if err := c.Errors.Last(); err != nil {
-			code := (c.Writer.Status())
+			code := c.Writer.Status()
 			c.JSON(code, createErrorResponse(code))
 			return
 		}
