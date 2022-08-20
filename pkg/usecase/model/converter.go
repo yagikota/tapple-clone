@@ -18,11 +18,8 @@ func prefCodeToPrefKanji(prefCode int) string {
 
 func calcAge(birthday time.Time) (int, error) {
 	// タイムゾーンをJSTに設定
-	now := time.Now()
-	nowUTC := now.UTC()
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-
-	nowJST := nowUTC.In(jst)
+	nowJST := time.Now().In(jst)
 
 	thisYear, thisMonth, thisDay := nowJST.Date()
 	age := thisYear - birthday.Year()
