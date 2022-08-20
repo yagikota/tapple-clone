@@ -13,12 +13,13 @@ type UserID int
 type UserSlice []*User
 
 type User struct {
-	ID       UserID    `json:"id"`
-	Name     string    `json:"name"`
-	Icon     string    `json:"icon"`
-	Gender   int       `json:"gender"`
-	BirthDay time.Time `json:"birthday"`
-	Location int       `json:"location"`
+	ID          UserID    `json:"id"`
+	Name        string    `json:"name"`
+	Icon        string    `json:"icon"`
+	Gender      int       `json:"gender"`
+	BirthDay    time.Time `json:"birthday"`
+	Location    int       `json:"location"`
+	IsPrincipal bool      `json:"is_principal"`
 }
 
 type UserDetail struct {

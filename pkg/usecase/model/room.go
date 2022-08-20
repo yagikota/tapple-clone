@@ -19,6 +19,7 @@ type Room struct {
 	IsPinned      bool     `json:"is_pinned"`
 	Name          string   `json:"name"`
 	SubName       string   `json:"sub_name"`
+	IsPrincipal   bool     `json:"is_principal"`
 	Icon          string   `json:"icon"`
 	LatestMessage *Message `json:"latest_message"`
 }
