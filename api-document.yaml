@@ -10,33 +10,6 @@ tags:
   - name: user
     description: ユーザー関連API
 paths:
-  /users/{user_id}/profile_images:
-    post:
-      tags:
-        - user
-      summary: プロフィール写真保存API
-      description: |
-        指定したユーザーのプロフィール写真を保存します。
-      requestBody:
-        description: Request Body
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserProfileImageCreateResponse"
-        required: true
-      responses:
-        400:
-          description: リクエストが不正
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseBadRequest"
-        500:
-          description: サーバーエラー
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseInternalServerError"
   /users/{user_id}/rooms:
     get:
       tags:
@@ -78,33 +51,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserRoomGetResponse"
-        400:
-          description: リクエストが不正
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseBadRequest"
-        500:
-          description: サーバーエラー
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseInternalServerError"
-      x-codegen-request-body-name: body
-  /users/{user_id}/profile:
-    get:
-      tags:
-        - user
-      summary: ユーザー詳細表示API（メッセージ詳細内）
-      description: |
-        指定したユーザー詳細内容を取得します。
-      responses:
-        200:
-          description: A successful response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserProfileGetResponse"
         400:
           description: リクエストが不正
           content:
@@ -161,6 +107,60 @@ paths:
       responses:
         200:
           description: A successful response.
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+  /users/{user_id}/profile:
+    get:
+      tags:
+        - user
+      summary: ユーザー詳細表示API（メッセージ詳細内）
+      description: |
+        指定したユーザー詳細内容を取得します。
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileGetResponse"
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+      x-codegen-request-body-name: body
+  /users/{user_id}/profile_images:
+    post:
+      tags:
+        - user
+      summary: プロフィール写真保存API
+      description: |
+        指定したユーザーのプロフィール写真を保存します。
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileImageCreateResponse"
+        required: true
+      responses:
         400:
           description: リクエストが不正
           content:
