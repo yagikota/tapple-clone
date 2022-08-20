@@ -1,4 +1,4 @@
-package constfun
+package model
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	pref "github.com/diverse-inc/jp_prefecture"
 )
 
-func PrefCodeToPrefKanji(prefCode int) string {
+func prefCodeToPrefKanji(prefCode int) string {
 	location := "その他"
 	prefInfo, ok := pref.FindByCode(prefCode)
 	if ok {
@@ -16,7 +16,7 @@ func PrefCodeToPrefKanji(prefCode int) string {
 	return location
 }
 
-func CalcAge(birthday time.Time) (int, error) {
+func calcAge(birthday time.Time) (int, error) {
 	// タイムゾーンをJSTに設定
 	now := time.Now()
 	nowUTC := now.UTC()

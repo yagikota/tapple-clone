@@ -3,8 +3,6 @@ package model
 import (
 	"time"
 
-	constfun "github.com/CyberAgentHack/2208-ace-go-server/pkg"
-
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
@@ -51,14 +49,14 @@ func UserDetailFromDomainModel(m *model.User) *UserDetail {
 		Name: m.Name,
 	}
 
-	age, err := constfun.CalcAge(m.Birthday)
+	age, err := calcAge(m.Birthday)
 	if err != nil {
 		return nil
 	}
 	ud.Age = age
 
 	// 都道府県コードを県名に変換
-	ud.Location = constfun.PrefCodeToPrefKanji(m.Location)
+	ud.Location = prefCodeToPrefKanji(m.Location)
 
 	uSlice := make(UserProfileImageSlice, 0, len(m.R.UserProfileImages))
 	for _, profileImage := range m.R.UserProfileImages {
