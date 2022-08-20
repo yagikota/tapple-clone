@@ -6,6 +6,7 @@ VALUES (
         0,
         '2000-08-18',
         34,
+        1,
         default,
         default,
         default
@@ -16,6 +17,7 @@ VALUES (
         1,
         '1998-08-18',
         12,
+        1,
         default,
         default,
         default
@@ -26,6 +28,7 @@ VALUES (
         1,
         '1996-12-11',
         23,
+        1,
         default,
         default,
         default
@@ -36,6 +39,7 @@ VALUES (
         1,
         '1997-06-19',
         11,
+        0,
         default,
         default,
         default
@@ -46,6 +50,7 @@ VALUES (
         1,
         '1997-05-25',
         35,
+        0,
         default,
         default,
         default
