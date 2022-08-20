@@ -1,3 +1,6 @@
 package constant
 
-const LimitMessageRecord = 100
+const (
+	LimitMessageRecord = 100
+	AmountDisplayTags  = 6
+)

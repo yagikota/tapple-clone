@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
@@ -67,12 +68,14 @@ func UserDetailFromDomainModel(m *model.User) *UserDetail {
 	}
 	ud.ProfileImages = uSlice
 
-	numberOfHobbyTag := len(m.R.Hobbies)
-	ud.TagCount = numberOfHobbyTag
-	hSlice := make(HobbySlice, 0, numberOfHobbyTag)
-	for _, hobby := range m.R.Hobbies {
-		hSlice = append(hSlice, HobbyFromDomainModel(hobby))
+	ud.TagCount = len(m.R.Hobbies)
+	// 表示する数
+	limit := constant.AmountDisplayTags
+	hSlice := make(HobbySlice, 0, limit)
+	for i := 0; i < len(m.R.Hobbies) && i < limit; i++ {
+		hSlice = append(hSlice, HobbyFromDomainModel(m.R.Hobbies[i]))
 	}
+
 	ud.Hobbies = hSlice
 
 	return ud
