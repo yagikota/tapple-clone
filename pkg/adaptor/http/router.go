@@ -12,10 +12,10 @@ import (
 const (
 	apiVersion      = "/v1"
 	healthCheckRoot = "/health_check"
-
+	// user系
 	usersAPIRoot = apiVersion + "/users"
 	userIDParam  = "user_id"
-
+	// room系
 	roomsAPIRoot = apiVersion + "/users/:" + userIDParam + "/rooms"
 	roomIDParam  = "room_id"
 )
