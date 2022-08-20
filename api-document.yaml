@@ -5,38 +5,11 @@ info:
     <b>CA Tapple API仕様</b><br>
   version: 1.0.0
 servers:
-  - url: http://localhost:8080/
+  - url: http://localhost:8080/v1/
 tags:
   - name: user
     description: ユーザー関連API
 paths:
-  /users/{user_id}/profile_images:
-    post:
-      tags:
-        - user
-      summary: プロフィール写真保存API
-      description: |
-        指定したユーザーのプロフィール写真を保存します。
-      requestBody:
-        description: Request Body
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserProfileImageCreateResponse"
-        required: true
-      responses:
-        400:
-          description: リクエストが不正
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseBadRequest"
-        500:
-          description: サーバーエラー
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseInternalServerError"
   /users/{user_id}/rooms:
     get:
       tags:
@@ -124,6 +97,82 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseInternalServerError"
+  /users/{user_id}/rooms/{room_id}/messages/{message_id}:
+    delete:
+      tags:
+        - user
+      summary: メッセージ削除API
+      description: |
+        メッセージを削除します。
+      responses:
+        200:
+          description: A successful response.
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+  /users/{user_id}/profile:
+    get:
+      tags:
+        - user
+      summary: ユーザー詳細表示API（メッセージ詳細内）
+      description: |
+        指定したユーザー詳細内容を取得します。
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileGetResponse"
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+      x-codegen-request-body-name: body
+  /users/{user_id}/profile_images:
+    post:
+      tags:
+        - user
+      summary: プロフィール写真保存API
+      description: |
+        指定したユーザーのプロフィール写真を保存します。
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileImageCreateResponse"
+        required: true
+      responses:
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
 components:
   schemas:
     UserRoomGetResponse:
@@ -151,6 +200,45 @@ components:
           items:
             $ref: "#/components/schemas/MessageGetResponse"
           description: チャットルーム内のメッセージの一覧
+        is_last:
+          type: boolean
+          example: false
+          description: 最後のメッセージリスト
+    UserProfileGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        name:
+          type: string
+          example: かな
+          description: ユーザーの名前
+        age:
+          type: integer
+          example: 24
+          description: 年齢
+        location:
+          type: string
+          example: 神奈川
+          description: 所在地
+        is_principal:
+          type: boolean
+          example: true
+          description: 本人認証
+        tags_count:
+          type: integer
+          example: 10
+          description: 設定しているタグの数
+        profile_images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProfileImageInfo"
+        hobbies:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserHobbyInfo"
     MessageGetResponse:
       type: object
       properties:
@@ -191,6 +279,28 @@ components:
           example: "2020-01-31T23:59:59+09:00"
           format: date-time
           description: 最後のメッセージの送信日時
+    ProfileImageInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: プロフィール写真ID
+        image_path:
+          type: string
+          example: "female/n000009/main_0001_01.jpg"
+          description: 写真URL
+    UserHobbyInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: 趣味ID
+        tag:
+          type: string
+          example: 韓国ドラマ
+          description: 趣味タグの名前
     RoomUserInfo:
       type: object
       properties:
@@ -216,9 +326,9 @@ components:
           format: date
           description: 最後のメッセージの送信日時
         location:
-          type: integer
-          example: 34
-          description: 都道府県コード(その他:0, 北海道:1~沖縄:47)
+          type: string
+          example: 神奈川
+          description: 都道府県名
     RoomInfo:
       type: object
       properties:
@@ -242,6 +352,10 @@ components:
           type: string
           example: "female/n000009/main_0001_01.jpg"
           description: アイコン（2人の場合、相手のアイコン）
+        sub_name:
+          type: string
+          example: "23歳・神奈川"
+          description: 相手の年齢・所在地
         latest_message:
           $ref: "#/components/schemas/LatestMessageInfo"
     RoomListResponse:
@@ -279,6 +393,31 @@ components:
           example: "2020-01-31T23:59:59+09:00"
           format: date-time
           description: 最後のメッセージの送信日時
+    MessageDeleteResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: メッセージID
+        user_id:
+          type: integer
+          example: 1
+          description: ユーザーID
+        room_id:
+          type: integer
+          example: 1
+        deleted_at:
+          type: string
+          example: "2020-01-31T23:59:59+09:00"
+          description: メッセージが削除された日時
+    MessageDeleteRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: メッセージID
     UserProfileImageCreateResponse:
       type: object
       properties:

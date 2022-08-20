@@ -14,6 +14,7 @@ type IUserUsecase interface {
 	FindAllRooms(ctx context.Context, userID int) (*model.Rooms, error)
 	FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.RoomDetail, error)
 	SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error)
+	FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error)
 }
 
 type userUsecase struct {
@@ -31,6 +32,7 @@ func (uu *userUsecase) FindUserByUserID(ctx context.Context, userID int) (*model
 	if err != nil {
 		return nil, err
 	}
+
 	return model.UserFromDomainModel(mu), err
 }
 
@@ -40,7 +42,6 @@ func (uu *userUsecase) FindAllUsers(ctx context.Context) (model.UserSlice, error
 		return nil, err
 	}
 
-	// メモリ確保
 	uSlice := make(model.UserSlice, 0, len(muSlice))
 	for _, mu := range muSlice {
 		uSlice = append(uSlice, model.UserFromDomainModel(mu))
@@ -55,7 +56,6 @@ func (uu *userUsecase) FindAllRooms(ctx context.Context, userID int) (*model.Roo
 		return nil, err
 	}
 
-	// メモリ確保
 	rSlice := make(model.RoomSlice, 0, len(mrSlice))
 	for _, mr := range mrSlice {
 		rSlice = append(rSlice, model.RoomFromDomainModel(mr))
@@ -92,4 +92,13 @@ func (uu *userUsecase) SendMessage(ctx context.Context, userID, roomID int, m *m
 	}
 
 	return model.MessageFromDomainModel(mm), nil
+}
+
+func (uu *userUsecase) FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error) {
+	mu, err := uu.userService.FindUserDetailByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return model.UserDetailFromDomainModel(mu), nil
 }

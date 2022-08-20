@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 	domain "github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/repository"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -63,7 +64,6 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (model.R
 // TODO: 例えば、localhost:8080/v1/users/2/rooms/３でもアクセスできてしまうので、改善が必要
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
 func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error) {
-	boil.DebugMode = true
 	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -75,14 +75,12 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	orderByMessage := fmt.Sprintf("%s DESC", model.MessageColumns.CreatedAt)
 	whereMessageCreatedAt := fmt.Sprintf("%s <= ?", model.MessageColumns.CreatedAt)
 
-	limitRecord := 100
-
 	if messageID == 0 {
 		return model.Rooms(
 			qm.Where(whereRoomID, roomID),
 			qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 			qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
-			qm.Load(model.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+			qm.Load(model.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LimitMessageRecord)),
 		).One(ctx, tx)
 	}
 
@@ -95,7 +93,7 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 		qm.Where(whereRoomID, roomID),
 		qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 		qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
-		qm.Load(model.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(limitRecord)),
+		qm.Load(model.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(constant.LimitMessageRecord)),
 	).One(ctx, tx)
 }
 
@@ -112,4 +110,19 @@ func (ur *userRepository) SendMessage(ctx context.Context, m *model.Message) (*m
 		return nil, err
 	}
 	return m, nil
+}
+
+func (ur *userRepository) FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error) {
+	tx, err := txFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	whereID := fmt.Sprintf("%s = ?", model.UserColumns.ID)
+
+	return model.Users(
+		qm.Where(whereID, userID),
+		qm.Load(model.UserRels.Hobbies),
+		qm.Load(model.UserRels.UserProfileImages),
+	).One(ctx, tx)
 }

@@ -2,7 +2,9 @@ package model
 
 import (
 	"sort"
+	"strconv"
 
+	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
 
@@ -16,6 +18,7 @@ type Room struct {
 	Unread        int      `json:"unread"`
 	IsPinned      bool     `json:"is_pinned"`
 	Name          string   `json:"name"`
+	SubName       string   `json:"sub_name"`
 	Icon          string   `json:"icon"`
 	LatestMessage *Message `json:"latest_message"`
 }
@@ -32,17 +35,30 @@ type RoomDetail struct {
 	Icon     string       `json:"icon"`
 	Users    UserSlice    `json:"users"`
 	Messages MessageSlice `json:"messages"`
+	IsLast   bool         `json:"is_last"`
 }
 
 // ルーム一覧で使用
 func RoomFromDomainModel(m *model.Room) *Room {
-	return &Room{
+	u := UserFromDomainModel(m.R.RoomUsers[0].R.User)
+	r := &Room{
 		ID:            RoomID(m.ID),
 		IsPinned:      m.R.RoomUsers[0].IsPinned,
-		Name:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Name,
-		Icon:          UserFromDomainModel(m.R.RoomUsers[0].R.User).Icon,
+		Name:          u.Name,
+		Icon:          u.Icon,
 		LatestMessage: MessageFromDomainModel(m.R.Messages[0]),
 	}
+
+	age, err := calcAge(u.BirthDay)
+	if err != nil {
+		return nil
+	}
+
+	// 都道府県コードを県名に変換
+	location := prefCodeToPrefKanji(u.Location)
+	r.SubName = strconv.Itoa(age) + "歳・" + location
+
+	return r
 }
 
 // ルーム詳細で使用
@@ -69,6 +85,11 @@ func RoomDetailFromDomainModel(m *model.Room) *RoomDetail {
 		return mSlice[i].CreatedAt.Before(mSlice[j].CreatedAt)
 	})
 	rm.Messages = mSlice
+
+	// 取得したメッセージの数がLIMIT_RECORDより少なくなったらフラグをtureに変更
+	if len(mSlice) < constant.LimitMessageRecord {
+		rm.IsLast = true
+	}
 
 	return rm
 }
