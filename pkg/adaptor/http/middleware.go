@@ -25,7 +25,7 @@ func beginTxAndSetToContext(c *gin.Context, conn *sql.DB) (*sql.Tx, error) {
 }
 
 // トランザクション用のmiddleware
-func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
+func transactMiddleware(conn *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tx, err := beginTxAndSetToContext(c, conn)
 		if err != nil {
@@ -37,46 +37,57 @@ func TransactMiddleware(conn *sql.DB) gin.HandlerFunc {
 		// Rollbackのあとエラーハンドリングするのか？
 		// panic起こしていいのか
 		defer func() {
-
-			httpStatus := c.Writer.Status()
-			if httpStatus == http.StatusOK || httpStatus == http.StatusCreated {
-				log.Println("committing transactions")
-				if commitErr := tx.Commit(); commitErr != nil {
-					log.Println("transactions commit error: ", commitErr)
-					panic(commitErr)
-				}
-				log.Println("transactions successful committed")
-			} else {
-				var responseCode int
-				if httpStatus == http.StatusBadRequest {
-					responseCode = http.StatusBadRequest
-				} else {
-					responseCode = http.StatusInternalServerError
-				}
-				c.JSON(responseCode, CreateErrorResponse(responseCode))
-				if rbErr := tx.Rollback(); rbErr != nil {
-					log.Println("rollback error: ", rbErr)
-				}
-				log.Println("successful rollback")
-			}
-
-			// panicした場合
+			// panicした場合(優先度がerror handlingよりも高い)
 			if r := recover(); r != nil {
 				if rbErr := tx.Rollback(); rbErr != nil {
-					log.Println("rollback error: ", rbErr)
+					log.Println("rollback error: ", rbErr) // DB接続が切れた時など
+					c.Error(rbErr)
+					return
+				} else {
+					log.Println("successful rollback")
+					return
+				}
+			}
+			// エラーが発生した場合(こちらを先にした場合、panicがハンドリンングされない)
+			if err := c.Errors.Last(); err != nil {
+				log.Println(err)
+				if rbErr := tx.Rollback(); rbErr != nil {
+					log.Println("rollback error: ", rbErr) // DB接続が切れた時など
+					c.Error(rbErr)
+					return
 				} else {
 					log.Println("successful rollback")
 				}
+				code := (c.Writer.Status())
+				c.JSON(code, createErrorResponse(code))
+				return
 			}
+			// コミット
+			if cErr := tx.Commit(); cErr != nil {
+				log.Println("commit error: ", cErr)
+				c.Error(cErr)
+				return
+			}
+			log.Println("successful committed")
 		}()
 
 		// TODO; 依存関係が怪しい
 		if err := mysql.SetTxToContext(c, tx); err != nil {
 			log.Println("can not set transaction to gin context")
-			panic(err)
 		}
-
 		c.Next() // ハンドラーが実行される
+	}
+}
 
+// Status Code チェック用のmiddleware
+func checkStatusMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+		// エラーが発生した場合
+		if err := c.Errors.Last(); err != nil {
+			code := (c.Writer.Status())
+			c.JSON(code, createErrorResponse(code))
+			return
+		}
 	}
 }

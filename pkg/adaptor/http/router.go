@@ -39,7 +39,8 @@ func InitRouter() *gin.Engine {
 
 	usersGroup := router.Group(usersAPIRoot)
 	// TODO: 引数が正しく無い気がする
-	usersGroup.Use(TransactMiddleware(mySQLConn.Conn))
+	usersGroup.Use(transactMiddleware(mySQLConn.Conn))
+	usersGroup.Use(checkStatusMiddleware())
 	{
 		relativePath := ""
 		userHandler := NewUserHandler(userUsecase)

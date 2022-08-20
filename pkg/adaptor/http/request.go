@@ -6,7 +6,7 @@ type errorResponse struct {
 	Message string `json:"message"`
 }
 
-func CreateErrorResponse(status int) *errorResponse {
+func createErrorResponse(status int) *errorResponse {
 	var msg string
 	switch status {
 	case http.StatusBadRequest:
