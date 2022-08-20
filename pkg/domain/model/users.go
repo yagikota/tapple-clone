@@ -35,6 +35,8 @@ type User struct { // ユーザーID
 	Birthday time.Time `boil:"birthday" json:"birthday" toml:"birthday" yaml:"birthday"`
 	// 所在地(0: その他, 北海道:1~沖縄: 47)
 	Location int `boil:"location" json:"location" toml:"location" yaml:"location"`
+	// 本人認証(0: されていない, 1: されている)
+	IsPinned bool `boil:"is_pinned" json:"is_pinned" toml:"is_pinned" yaml:"is_pinned"`
 	// ユーザー作成日時
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	// ユーザー更新日時
@@ -53,6 +55,7 @@ var UserColumns = struct {
 	Gender    string
 	Birthday  string
 	Location  string
+	IsPinned  string
 	CreatedAt string
 	UpdatedAt string
 	DeteledAt string
@@ -63,6 +66,7 @@ var UserColumns = struct {
 	Gender:    "gender",
 	Birthday:  "birthday",
 	Location:  "location",
+	IsPinned:  "is_pinned",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
 	DeteledAt: "deteled_at",
@@ -75,6 +79,7 @@ var UserTableColumns = struct {
 	Gender    string
 	Birthday  string
 	Location  string
+	IsPinned  string
 	CreatedAt string
 	UpdatedAt string
 	DeteledAt string
@@ -85,6 +90,7 @@ var UserTableColumns = struct {
 	Gender:    "users.gender",
 	Birthday:  "users.birthday",
 	Location:  "users.location",
+	IsPinned:  "users.is_pinned",
 	CreatedAt: "users.created_at",
 	UpdatedAt: "users.updated_at",
 	DeteledAt: "users.deteled_at",
@@ -99,6 +105,7 @@ var UserWhere = struct {
 	Gender    whereHelperint
 	Birthday  whereHelpertime_Time
 	Location  whereHelperint
+	IsPinned  whereHelperbool
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 	DeteledAt whereHelpernull_Time
@@ -109,6 +116,7 @@ var UserWhere = struct {
 	Gender:    whereHelperint{field: "`users`.`gender`"},
 	Birthday:  whereHelpertime_Time{field: "`users`.`birthday`"},
 	Location:  whereHelperint{field: "`users`.`location`"},
+	IsPinned:  whereHelperbool{field: "`users`.`is_pinned`"},
 	CreatedAt: whereHelpertime_Time{field: "`users`.`created_at`"},
 	UpdatedAt: whereHelpertime_Time{field: "`users`.`updated_at`"},
 	DeteledAt: whereHelpernull_Time{field: "`users`.`deteled_at`"},
@@ -172,9 +180,9 @@ func (r *userR) GetUserProfileImages() UserProfileImageSlice {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"id", "name", "icon", "gender", "birthday", "location", "created_at", "updated_at", "deteled_at"}
+	userAllColumns            = []string{"id", "name", "icon", "gender", "birthday", "location", "is_pinned", "created_at", "updated_at", "deteled_at"}
 	userColumnsWithoutDefault = []string{"name", "icon", "gender", "birthday", "location", "deteled_at"}
-	userColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
+	userColumnsWithDefault    = []string{"id", "is_pinned", "created_at", "updated_at"}
 	userPrimaryKeyColumns     = []string{"id"}
 	userGeneratedColumns      = []string{}
 )
