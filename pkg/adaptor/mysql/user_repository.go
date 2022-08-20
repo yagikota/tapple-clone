@@ -75,6 +75,10 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 	orderByMessage := fmt.Sprintf("%s DESC", model.MessageColumns.CreatedAt)
 	whereMessageCreatedAt := fmt.Sprintf("%s <= ?", model.MessageColumns.CreatedAt)
 
+	// 既読処理
+	messages, _ := model.Messages().All(ctx, tx)
+	messages.UpdateAll(ctx, tx, model.M{"is_read": 1})
+
 	if messageID == 0 {
 		return model.Rooms(
 			qm.Where(whereRoomID, roomID),
