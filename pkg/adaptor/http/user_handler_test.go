@@ -17,47 +17,22 @@ import (
 
 // テストデータ
 var (
-	userID = 1
-	user1  = &model.User{
-		ID:       model.UserID(userID),
-		Name:     "name1",
-		Icon:     "/icon1",
-		Gender:   1,
-		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
-		Location: 1,
-	}
-	userSlice1 = model.UserSlice{user1}
+	userID     int
+	user1      *model.User
+	userSlice1 model.UserSlice
 
-	message1 = &model.Message{
-		ID:        1,
-		UserID:    1,
-		Content:   "content1",
-		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.Local),
-	}
-	messageSlice1 = model.MessageSlice{message1}
+	message1      *model.Message
+	messageSlice1 model.MessageSlice
 
-	roomID = 1
-	room1  = &model.Room{
-		ID:            model.RoomID(roomID),
-		Unread:        1,
-		IsPinned:      true,
-		Name:          "name1",
-		Icon:          "/icon1",
-		LatestMessage: message1,
-	}
-	roomSlice  = model.RoomSlice{room1}
-	rooms1     = &model.Rooms{Rooms: roomSlice}
-	roomDetail = &model.RoomDetail{
-		ID:       model.RoomID(roomID),
-		Name:     "name1",
-		Icon:     "/icon1",
-		Users:    userSlice1,
-		Messages: messageSlice1,
-	}
+	roomID     int
+	room1      *model.Room
+	roomSlice  model.RoomSlice
+	rooms1     *model.Rooms
+	roomDetail *model.RoomDetail
 
-	newMessage1 = &model.NewMessage{
-		Content: "content1",
-	}
+	newMessage1 *model.NewMessage
+
+	messageID int
 )
 
 //  1.SetupSuite
@@ -89,8 +64,9 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 
 	suite.router.Use(
 		func(ctx *gin.Context) {
-			ctx.Set("user_id", userID)
-			ctx.Set("room_id", roomID)
+			ctx.Set("user_id", "1")
+			ctx.Set("room_id", "1")
+			ctx.Set("message_id", "1")
 		},
 	)
 	// ハンドラー登録
@@ -112,6 +88,51 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 
 func (suite *UserHandlerTestSuite) SetupTest() {
 	suite.rec = httptest.NewRecorder()
+	userID = 1
+	user1 = &model.User{
+		ID:       model.UserID(userID),
+		Name:     "name1",
+		Icon:     "/icon1",
+		Gender:   1,
+		BirthDay: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
+		Location: 1,
+	}
+	userSlice1 = model.UserSlice{user1}
+
+	message1 = &model.Message{
+		ID:        1,
+		UserID:    1,
+		Content:   "content1",
+		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
+	}
+	messageSlice1 = model.MessageSlice{message1}
+
+	roomID = 1
+	room1 = &model.Room{
+		ID:            model.RoomID(roomID),
+		Unread:        1,
+		IsPinned:      true,
+		Name:          "name1",
+		SubName:       "sub_name1",
+		Icon:          "/icon1",
+		LatestMessage: message1,
+	}
+	roomSlice = model.RoomSlice{room1}
+	rooms1 = &model.Rooms{Rooms: roomSlice}
+	roomDetail = &model.RoomDetail{
+		ID:       model.RoomID(roomID),
+		Name:     "name1",
+		Icon:     "/icon1",
+		Users:    userSlice1,
+		Messages: messageSlice1,
+		IsLast: true,
+	}
+
+	newMessage1 = &model.NewMessage{
+		Content: "content1",
+	}
+
+	messageID = 1
 }
 
 // テストを実行するのに必要
@@ -120,6 +141,7 @@ func TestUserHandlerSuite(t *testing.T) {
 }
 
 func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
+	// TODO: gomock.Any()を貼るべく使わないようにする https://stackoverflow.com/questions/66952761/how-to-unit-test-a-go-gin-handler-function
 	suite.mock.EXPECT().FindUserByUserID(gomock.Any(), userID).Return(user1, nil)
 	// レスポンスを受け止める*httptest.ResponseRecorder
 	rec := suite.rec
@@ -135,7 +157,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
 			"name":"name1",
 			"icon":"/icon1",
 			"gender":1,
-			"birthday":"2022-01-01T00:00:00+09:00",
+			"birthday":"2022-01-01T00:00:00Z",
 			"location":1
 		}`,
 		rec.Body.String(),
@@ -155,7 +177,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_200() {
 				"name":"name1",
 				"icon":"/icon1",
 				"gender":1,
-				"birthday":"2022-01-01T00:00:00+09:00",
+				"birthday":"2022-01-01T00:00:00Z",
 				"location":1
 			}
 		]`,
@@ -178,12 +200,13 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRooms_200() {
 					"unread": 1,
 					"is_pinned": true,
 					"name": "name1",
+					"sub_name": "sub_name1",
 					"icon": "/icon1",
 					"latest_message": {
 						"id": 1,
 						"user_id": 1,
 						"content": "content1",
-						"created_at": "2022-01-01T00:00:00+09:00"
+						"created_at": "2022-01-01T00:00:00Z"
 					}
 				}
 			]
@@ -193,9 +216,9 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRooms_200() {
 }
 
 func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200() {
-	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID).Return(roomDetail, nil)
+	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID, messageID).Return(roomDetail, nil)
 	rec := suite.rec
-	path := fmt.Sprintf("%s/%d/rooms/%d", usersAPIRoot, userID, roomID)
+	path := fmt.Sprintf("%s/%d/rooms/%d?message_id=1", usersAPIRoot, userID, roomID)
 	req := httptest.NewRequest(http.MethodGet, path, nil)
 	suite.router.ServeHTTP(rec, req)
 	suite.Equal(http.StatusOK, rec.Code)
@@ -210,7 +233,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200()
 					"name": "name1",
 					"icon": "/icon1",
 					"gender": 1,
-					"birthday": "2022-01-01T00:00:00+09:00",
+					"birthday": "2022-01-01T00:00:00Z",
 					"location": 1
 				}
 			],
@@ -219,9 +242,10 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findRoomDetailByRoomID_200()
 					"id": 1,
 					"user_id": 1,
 					"content": "content1",
-					"created_at": "2022-01-01T00:00:00+09:00"
+					"created_at": "2022-01-01T00:00:00Z"
 				}
-			]
+			],
+			"is_last": true
 		}`,
 		rec.Body.String(),
 	)
@@ -244,7 +268,7 @@ func (suite *UserHandlerTestSuite) Test_userHandler_sendMessage_200() {
 			"id": 1,
 			"user_id": 1,
 			"content": "content1",
-			"created_at": "2022-01-01T00:00:00+09:00"
+			"created_at": "2022-01-01T00:00:00Z"
 		}`,
 		rec.Body.String(),
 	)

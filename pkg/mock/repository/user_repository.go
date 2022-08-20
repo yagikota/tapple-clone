@@ -95,6 +95,21 @@ func (mr *MockIUserRepositoryMockRecorder) FindUserByUserID(ctx, userID interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserByUserID", reflect.TypeOf((*MockIUserRepository)(nil).FindUserByUserID), ctx, userID)
 }
 
+// FindUserDetailByUserID mocks base method.
+func (m *MockIUserRepository) FindUserDetailByUserID(ctx context.Context, userID int) (*model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindUserDetailByUserID", ctx, userID)
+	ret0, _ := ret[0].(*model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindUserDetailByUserID indicates an expected call of FindUserDetailByUserID.
+func (mr *MockIUserRepositoryMockRecorder) FindUserDetailByUserID(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserDetailByUserID", reflect.TypeOf((*MockIUserRepository)(nil).FindUserDetailByUserID), ctx, userID)
+}
+
 // SendMessage mocks base method.
 func (m_2 *MockIUserRepository) SendMessage(ctx context.Context, m *model.Message) (*model.Message, error) {
 	m_2.ctrl.T.Helper()

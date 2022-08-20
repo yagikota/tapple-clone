@@ -95,6 +95,21 @@ func (mr *MockIUserUsecaseMockRecorder) FindUserByUserID(ctx, userID interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserByUserID", reflect.TypeOf((*MockIUserUsecase)(nil).FindUserByUserID), ctx, userID)
 }
 
+// FindUserDetailByUserID mocks base method.
+func (m *MockIUserUsecase) FindUserDetailByUserID(ctx context.Context, userID int) (*model.UserDetail, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindUserDetailByUserID", ctx, userID)
+	ret0, _ := ret[0].(*model.UserDetail)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindUserDetailByUserID indicates an expected call of FindUserDetailByUserID.
+func (mr *MockIUserUsecaseMockRecorder) FindUserDetailByUserID(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserDetailByUserID", reflect.TypeOf((*MockIUserUsecase)(nil).FindUserDetailByUserID), ctx, userID)
+}
+
 // SendMessage mocks base method.
 func (m_2 *MockIUserUsecase) SendMessage(ctx context.Context, userID, roomID int, m *model.NewMessage) (*model.Message, error) {
 	m_2.ctrl.T.Helper()
