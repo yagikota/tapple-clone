@@ -9,116 +9,10 @@ servers:
 tags:
   - name: user
     description: ユーザー関連API
+  - name: room
+    description: ルーム関連API
+
 paths:
-  /users/{user_id}/rooms:
-    get:
-      tags:
-        - user
-      summary: チャットルーム一覧表示API
-      description: |
-        指定したユーザーのチャットルームの一覧を取得します。
-      responses:
-        200:
-          description: A successful response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RoomListResponse"
-        400:
-          description: リクエストが不正
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseBadRequest"
-        500:
-          description: サーバーエラー
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseInternalServerError"
-      x-codegen-request-body-name: body
-  /users/{user_id}/rooms/{room_id}:
-    get:
-      tags:
-        - user
-      summary: チャットルーム詳細表示API
-      description: |
-        指定したチャットルームのメッセージ内容を取得します。
-      responses:
-        200:
-          description: A successful response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserRoomGetResponse"
-        400:
-          description: リクエストが不正
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseBadRequest"
-        500:
-          description: サーバーエラー
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseInternalServerError"
-      x-codegen-request-body-name: body
-  /users/{user_id}/rooms/{room_id}/messages:
-    post:
-      tags:
-        - user
-      summary: メッセージ保存API
-      description: |
-        送信メッセージを保存します。
-      requestBody:
-        description: Request Body
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MessageCreateRequest"
-        required: true
-      responses:
-        200:
-          description: A successful response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageCreateResponse"
-        400:
-          description: リクエストが不正
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseBadRequest"
-        500:
-          description: サーバーエラー
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseInternalServerError"
-  /users/{user_id}/rooms/{room_id}/messages/{message_id}:
-    delete:
-      tags:
-        - user
-      summary: メッセージ削除API
-      description: |
-        メッセージを削除します。
-      responses:
-        200:
-          description: A successful response.
-        400:
-          description: リクエストが不正
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseBadRequest"
-        500:
-          description: サーバーエラー
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseInternalServerError"
   /users/{user_id}/profile:
     get:
       tags:
@@ -161,6 +55,115 @@ paths:
               $ref: "#/components/schemas/UserProfileImageCreateResponse"
         required: true
       responses:
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+  /users/{user_id}/rooms:
+    get:
+      tags:
+        - room
+      summary: チャットルーム一覧表示API
+      description: |
+        指定したユーザーのチャットルームの一覧を取得します。
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomListResponse"
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+      x-codegen-request-body-name: body
+  /users/{user_id}/rooms/{room_id}:
+    get:
+      tags:
+        - room
+      summary: チャットルーム詳細表示API
+      description: |
+        指定したチャットルームのメッセージ内容を取得します。
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRoomGetResponse"
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+      x-codegen-request-body-name: body
+  /users/{user_id}/rooms/{room_id}/messages:
+    post:
+      tags:
+        - room
+      summary: メッセージ保存API
+      description: |
+        送信メッセージを保存します。
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageCreateRequest"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageCreateResponse"
+        400:
+          description: リクエストが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseBadRequest"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseInternalServerError"
+  /users/{user_id}/rooms/{room_id}/messages/{message_id}:
+    delete:
+      tags:
+        - room
+      summary: メッセージ削除API
+      description: |
+        メッセージを削除します。
+      responses:
+        200:
+          description: A successful response.
         400:
           description: リクエストが不正
           content:
