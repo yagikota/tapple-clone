@@ -47,8 +47,9 @@ func UserFromDomainModel(m *model.User) *User {
 
 func UserDetailFromDomainModel(m *model.User) *UserDetail {
 	ud := &UserDetail{
-		ID:   UserID(m.ID),
-		Name: m.Name,
+		ID:          UserID(m.ID),
+		Name:        m.Name,
+		IsPrincipal: m.IsPrincipal,
 	}
 
 	age, err := calcAge(m.Birthday)
