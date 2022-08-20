@@ -81,7 +81,7 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 			qm.Where(whereRoomID, roomID),
 			qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 			qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
-			qm.Load(model.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LimitRecord)),
+			qm.Load(model.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LimitMessageRecord)),
 		).One(ctx, tx)
 	}
 
@@ -94,7 +94,7 @@ func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 		qm.Where(whereRoomID, roomID),
 		qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
 		qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
-		qm.Load(model.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(constant.LimitRecord)),
+		qm.Load(model.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(constant.LimitMessageRecord)),
 	).One(ctx, tx)
 }
 

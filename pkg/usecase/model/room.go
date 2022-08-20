@@ -73,7 +73,7 @@ func RoomDetailFromDomainModel(m *model.Room) *RoomDetail {
 	rm.Messages = mSlice
 
 	// 取得したメッセージの数がLIMIT_RECORDより少なくなったらフラグをtureに変更
-	if len(mSlice) < constant.LimitRecord {
+	if len(mSlice) < constant.LimitMessageRecord {
 		rm.IsLast = true
 	}
 
