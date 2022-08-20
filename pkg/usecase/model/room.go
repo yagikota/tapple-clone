@@ -50,6 +50,18 @@ func RoomFromDomainModel(m *model.Room) *Room {
 		LatestMessage: MessageFromDomainModel(m.R.Messages[0]),
 	}
 
+	unread := 0
+	partnerID := UserFromDomainModel(m.R.RoomUsers[0].R.User).ID
+	for _, message := range m.R.Messages {
+		if message.UserID == int(partnerID) && message.IsRead {
+			break
+		}
+		if message.UserID == int(partnerID) && !message.IsRead {
+			unread += 1
+		}
+	}
+	r.Unread = unread
+
 	age, err := calcAge(u.BirthDay)
 	if err != nil {
 		return nil
