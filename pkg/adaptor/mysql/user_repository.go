@@ -64,20 +64,26 @@ func (ur *userRepository) FindAllRooms(ctx context.Context, userID int) (model.R
 // TODO: 例えば、localhost:8080/v1/users/2/rooms/３でもアクセスできてしまうので、改善が必要
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
 func (ur *userRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error) {
+	boil.DebugMode = true
 	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	whereRoomID := fmt.Sprintf("%s = ?", model.RoomColumns.ID)
+	whereMessageRoomID := fmt.Sprintf("%s = ?", model.MessageColumns.RoomID)
 	// 自分が2番目にくるようにsort←チャットルームのNameとIconを[0]で取得するため
 	orderBy := fmt.Sprintf("%s = ?", model.RoomUserColumns.UserID)
 	orderByMessage := fmt.Sprintf("%s DESC", model.MessageColumns.CreatedAt)
 	whereMessageCreatedAt := fmt.Sprintf("%s <= ?", model.MessageColumns.CreatedAt)
+	wherePartnerID := fmt.Sprintf("%s <> ?", model.RoomUserColumns.UserID)
 
 	// 既読処理
-	messages, _ := model.Messages().All(ctx, tx)
-	messages.UpdateAll(ctx, tx, model.M{"is_read": 1})
+	messages, _ := model.Messages(
+		qm.Where(whereMessageRoomID, roomID),
+		qm.Where(wherePartnerID, userID),
+	).All(ctx, tx)
+	messages.UpdateAll(ctx, tx, model.M{"is_read": true})
 
 	if messageID == 0 {
 		return model.Rooms(
