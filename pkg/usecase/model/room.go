@@ -56,7 +56,7 @@ func RoomFromDomainModel(m *model.Room) *Room {
 	}
 
 	// 都道府県コードを県名に変換
-	location := prefCodeToPrefKanji(u.Location)
+	location := u.Location
 	r.SubName = strconv.Itoa(age) + "歳・" + location
 
 	r.IsPrincipal = u.IsPrincipal

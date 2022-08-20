@@ -18,7 +18,7 @@ type User struct {
 	Icon        string    `json:"icon"`
 	Gender      int       `json:"gender"`
 	BirthDay    time.Time `json:"birthday"`
-	Location    int       `json:"location"`
+	Location    string    `json:"location"`
 	IsPrincipal bool      `json:"is_principal"`
 }
 
@@ -40,7 +40,7 @@ func UserFromDomainModel(m *model.User) *User {
 		Icon:        m.Icon,
 		Gender:      m.Gender,
 		BirthDay:    m.Birthday,
-		Location:    m.Location,
+		Location:    prefCodeToPrefKanji(m.Location),
 		IsPrincipal: m.IsPrincipal,
 	}
 }
