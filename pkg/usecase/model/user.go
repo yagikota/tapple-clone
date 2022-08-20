@@ -72,11 +72,10 @@ func UserDetailFromDomainModel(m *model.User) *UserDetail {
 	// 表示する数
 	limit := constant.AmountDisplayTags
 	hSlice := make(HobbySlice, 0, limit)
-	for i, hobby := range m.R.Hobbies {
-		if i <= limit-1 {
-			hSlice = append(hSlice, HobbyFromDomainModel(hobby))
-		}
+	for i := 0; i < len(m.R.Hobbies) && i < limit; i++ {
+		hSlice = append(hSlice, HobbyFromDomainModel(m.R.Hobbies[i]))
 	}
+
 	ud.Hobbies = hSlice
 
 	return ud
