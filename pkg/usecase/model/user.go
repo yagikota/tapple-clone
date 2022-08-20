@@ -35,12 +35,13 @@ type UserDetail struct {
 
 func UserFromDomainModel(m *model.User) *User {
 	return &User{
-		ID:       UserID(m.ID),
-		Name:     m.Name,
-		Icon:     m.Icon,
-		Gender:   m.Gender,
-		BirthDay: m.Birthday,
-		Location: m.Location,
+		ID:          UserID(m.ID),
+		Name:        m.Name,
+		Icon:        m.Icon,
+		Gender:      m.Gender,
+		BirthDay:    m.Birthday,
+		Location:    m.Location,
+		IsPrincipal: m.IsPrincipal,
 	}
 }
 

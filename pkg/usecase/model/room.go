@@ -59,6 +59,8 @@ func RoomFromDomainModel(m *model.Room) *Room {
 	location := prefCodeToPrefKanji(u.Location)
 	r.SubName = strconv.Itoa(age) + "歳・" + location
 
+	r.IsPrincipal = u.IsPrincipal
+
 	return r
 }
 
