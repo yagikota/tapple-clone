@@ -43,11 +43,11 @@ func transactMiddleware(conn *sql.DB) gin.HandlerFunc {
 					log.Println("rollback error: ", rbErr) // DB接続が切れた時など
 					c.Error(rbErr)
 					return
-				} else {
-					log.Println("successful rollback")
-					return
 				}
+				log.Println("successful rollback")
+				return
 			}
+
 			// エラーが発生した場合(こちらを先にした場合、panicがハンドリンングされない)
 			if err := c.Errors.Last(); err != nil {
 				log.Println(err)
@@ -55,13 +55,11 @@ func transactMiddleware(conn *sql.DB) gin.HandlerFunc {
 					log.Println("rollback error: ", rbErr) // DB接続が切れた時など
 					c.Error(rbErr)
 					return
-				} else {
-					log.Println("successful rollback")
 				}
-				code := (c.Writer.Status())
-				c.JSON(code, createErrorResponse(code))
+				log.Println("successful rollback")
 				return
 			}
+
 			// コミット
 			if cErr := tx.Commit(); cErr != nil {
 				log.Println("commit error: ", cErr)
