@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	pref "github.com/diverse-inc/jp_prefecture"
+	constfun "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
 )
@@ -51,14 +51,14 @@ func UserDetailFromDomainModel(m *model.User) *UserDetail {
 		Name: m.Name,
 	}
 
-	age, err := calcAge(m.Birthday)
+	age, err := constfun.CalcAge(m.Birthday)
 	if err != nil {
 		return nil
 	}
 	ud.Age = age
 
 	// 都道府県コードを県名に変換
-	ud.Location = prefCodeToPrefKanji(m.Location)
+	ud.Location = constfun.PrefCodeToPrefKanji(m.Location)
 
 	uSlice := make(UserProfileImageSlice, 0, len(m.R.UserProfileImages))
 	for _, profileImage := range m.R.UserProfileImages {
@@ -75,33 +75,4 @@ func UserDetailFromDomainModel(m *model.User) *UserDetail {
 	ud.Hobbies = hSlice
 
 	return ud
-}
-
-func prefCodeToPrefKanji(prefCode int) string {
-	location := "その他"
-	prefInfo, ok := pref.FindByCode(prefCode)
-	if ok {
-		location = prefInfo.KanjiShort()
-	}
-
-	return location
-}
-
-func calcAge(birthday time.Time) (int, error) {
-	// タイムゾーンをJSTに設定
-	now := time.Now()
-	nowUTC := now.UTC()
-	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-
-	nowJST := nowUTC.In(jst)
-
-	thisYear, thisMonth, thisDay := nowJST.Date()
-	age := thisYear - birthday.Year()
-
-	// 誕生日を迎えていない時の処理
-	if thisMonth < birthday.Month() && thisDay < birthday.Day() {
-		age -= 1
-	}
-
-	return age, nil
 }
