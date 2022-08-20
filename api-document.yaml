@@ -91,7 +91,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseInternalServerError"
       x-codegen-request-body-name: body
-  /users/{user_id}/profiles:
+  /users/{user_id}/profile:
     get:
       tags:
         - user
