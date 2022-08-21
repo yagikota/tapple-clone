@@ -12,7 +12,6 @@ var (
 	birthday1 time.Time
 	birthday2 time.Time
 	birthday3 time.Time
-	birthday4 time.Time
 	prefCode1 int
 	prefCode2 int
 	prefCode3 int
