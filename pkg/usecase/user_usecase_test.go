@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"testing"
 	"time"
@@ -117,6 +118,13 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserByUserID() {
 	suite.Equal(res, prepareUser(1, 0, "その他"))
 }
 
+func (suite *UserUsecaseTestSuite) Test_userUsecase_Err_FindUserByUserID() {
+	suite.mock.EXPECT().FindUserByUserID(context.Background(), 100).Return(nil, errors.New("do not exit user"))
+	res, err := suite.usecase.FindUserByUserID(context.Background(), 100)
+	suite.Nil(res)
+	suite.Equal(err, errors.New("do not exit user"))
+}
+
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
 	suite.mock.EXPECT().FindAllUsers(context.Background()).Return(
 		dmodel.UserSlice{prepareUserDomainModel(1, 0, 0), prepareUserDomainModel(2, 1, 1)},
@@ -130,9 +138,23 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
 	)
 }
 
+func (suite *UserUsecaseTestSuite) Test_userUsecase_Err_FindAllUsers() {
+	suite.mock.EXPECT().FindAllUsers(context.Background()).Return(nil, errors.New("could not find users"))
+	res, err := suite.usecase.FindAllUsers(context.Background())
+	suite.Nil(res)
+	suite.Equal(err, errors.New("could not find users"))
+}
+
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserDetailByUserID() {
 	suite.mock.EXPECT().FindUserDetailByUserID(context.Background(), 1).Return(prepareUserDomainModel(1, 0, 0), nil)
 	res, err := suite.usecase.FindUserDetailByUserID(context.Background(), 1)
 	suite.Equal(err, nil)
 	suite.Equal(res, prepareUserDetail(1, 0, "その他"))
+}
+
+func (suite *UserUsecaseTestSuite) Test_userUsecase_Err_FindUserDetailByUserID() {
+	suite.mock.EXPECT().FindUserDetailByUserID(context.Background(), 1).Return(nil, errors.New("could not find user detail"))
+	res, err := suite.usecase.FindUserDetailByUserID(context.Background(), 1)
+	suite.Nil(res, nil)
+	suite.Equal(err, errors.New("could not find user detail"))
 }
