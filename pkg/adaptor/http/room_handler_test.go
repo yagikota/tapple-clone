@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -39,6 +40,7 @@ func (suite *RoomHandlerTestSuite) SetupSuite() {
 			ctx.Set("room_id", "1")
 			ctx.Set("message_id", "1")
 		},
+		checkStatusMiddleware(),
 	)
 
 	// v1/users/{user_id}/rooms
@@ -138,6 +140,35 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_findRooms_200() {
 	)
 }
 
+func (suite *RoomHandlerTestSuite) Test_roomHandler_findRooms_400() {
+	rec := suite.rec
+	path := fmt.Sprintf("%s/dummy_user_id/rooms", usersAPIRoot)
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_findRooms_500() {
+	suite.mock.EXPECT().FindAllRooms(gomock.Any(), userID).Return(nil, errors.New("dummy_error"))
+	rec := suite.rec
+	path := fmt.Sprintf("%s/%d/rooms", usersAPIRoot, userID)
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusInternalServerError, rec.Code)
+	suite.JSONEq(
+		`{
+			"message":"Internal Server Error"
+		}`,
+		rec.Body.String(),
+	)
+}
+
 func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_200() {
 	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID, messageID).Return(roomDetail, nil)
 	rec := suite.rec
@@ -175,6 +206,64 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_200()
 	)
 }
 
+func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_userID_400() {
+	rec := suite.rec
+	path := fmt.Sprintf("%s/dummy_user_id/rooms/%d?message_id=1", usersAPIRoot, roomID)
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_roomID_400() {
+	rec := suite.rec
+	path := fmt.Sprintf("%s/%d/rooms/dummy_room_id?message_id=1", usersAPIRoot, userID)
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_messageID_400() {
+	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID, messageID).Return(roomDetail, nil)
+	rec := suite.rec
+	path := fmt.Sprintf("%s/%d/rooms/%d?message_id=-1", usersAPIRoot, userID, roomID)
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_500() {
+	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID, messageID).Return(nil, errors.New("dummy_error"))
+	rec := suite.rec
+	path := fmt.Sprintf("%s/%d/rooms/%d?message_id=1", usersAPIRoot, userID, roomID)
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusInternalServerError, rec.Code)
+	suite.JSONEq(
+		`{
+			"message":"Internal Server Error"
+		}`,
+		rec.Body.String(),
+	)
+}
+
 func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_200() {
 	suite.mock.EXPECT().SendMessage(gomock.Any(), userID, roomID, newMessage1).Return(message1, nil)
 	rec := suite.rec
@@ -193,6 +282,83 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_200() {
 			"user_id": 1,
 			"content": "content1",
 			"created_at": "2022-01-01T00:00:00Z"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_userID_400() {
+	rec := suite.rec
+	path := fmt.Sprintf("%s/dummy_user_id/rooms/%d/messages", usersAPIRoot, roomID)
+	jsonStr := []byte(
+		`{
+			"content": "content1"
+		}`,
+	)
+	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(jsonStr))
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_roomID_400() {
+	rec := suite.rec
+	path := fmt.Sprintf("%s/%d/rooms/dummy_room_id/messages", usersAPIRoot, userID)
+	jsonStr := []byte(
+		`{
+			"content": "content1"
+		}`,
+	)
+	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(jsonStr))
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_requestBody_400() {
+	rec := suite.rec
+	path := fmt.Sprintf("%s/%d/rooms/%d/messages", usersAPIRoot, userID, roomID)
+	jsonStr := []byte(
+		`{
+			"content_dummy": "content1"
+		}`,
+	)
+	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(jsonStr))
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_500() {
+	suite.mock.EXPECT().SendMessage(gomock.Any(), userID, roomID, newMessage1).Return(nil, errors.New("dummy_error"))
+	rec := suite.rec
+	path := fmt.Sprintf("%s/%d/rooms/%d/messages", usersAPIRoot, userID, roomID)
+	jsonStr := []byte(
+		`{
+			"content": "content1"
+		}`,
+	)
+	req := httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer(jsonStr))
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusInternalServerError, rec.Code)
+	suite.JSONEq(
+		`{
+			"message":"Internal Server Error"
 		}`,
 		rec.Body.String(),
 	)

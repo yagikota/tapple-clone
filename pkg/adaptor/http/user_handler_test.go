@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -67,6 +68,7 @@ func (suite *UserHandlerTestSuite) SetupSuite() {
 		func(ctx *gin.Context) {
 			ctx.Set("user_id", "1")
 		},
+		checkStatusMiddleware(),
 	)
 	// ハンドラー登録
 	// v1/users
@@ -180,6 +182,33 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_200() {
 	)
 }
 
+func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_400() {
+	rec := suite.rec
+	req := httptest.NewRequest(http.MethodGet, usersAPIRoot+"/dummy", nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *UserHandlerTestSuite) Test_userHandler_findUserByUserID_500() {
+	suite.mock.EXPECT().FindUserByUserID(gomock.Any(), userID).Return(nil, errors.New("dummy_error")).Times(1)
+	rec := suite.rec
+	req := httptest.NewRequest(http.MethodGet, usersAPIRoot+"/1", nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusInternalServerError, rec.Code)
+	suite.JSONEq(
+		`{
+			"message":"Internal Server Error"
+		}`,
+		rec.Body.String(),
+	)
+}
+
 func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_200() {
 	suite.mock.EXPECT().FindAllUsers(gomock.Any()).Return(userSlice1, nil)
 	rec := suite.rec
@@ -198,6 +227,20 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_200() {
 				"is_principal": false
 			}
 		]`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *UserHandlerTestSuite) Test_userHandler_findUsers_500() {
+	suite.mock.EXPECT().FindAllUsers(gomock.Any()).Return(nil, errors.New("dummy_error"))
+	rec := suite.rec
+	req := httptest.NewRequest(http.MethodGet, usersAPIRoot, nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusInternalServerError, rec.Code)
+	suite.JSONEq(
+		`{
+			"message":"Internal Server Error"
+		}`,
 		rec.Body.String(),
 	)
 }
@@ -229,6 +272,33 @@ func (suite *UserHandlerTestSuite) Test_userHandler_findUserDetailByUserID_200()
 					"tag": "tag"
 				}
 			]
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *UserHandlerTestSuite) Test_userHandler_findUserDetailByUserID_400() {
+	rec := suite.rec
+	req := httptest.NewRequest(http.MethodGet, usersAPIRoot+"/dummy/profile", nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusBadRequest, rec.Code)
+	suite.JSONEq(
+		`{
+			"message": "Bad Request"
+		}`,
+		rec.Body.String(),
+	)
+}
+
+func (suite *UserHandlerTestSuite) Test_userHandler_findUserDetailByUserID_500() {
+	suite.mock.EXPECT().FindUserDetailByUserID(gomock.Any(), userID).Return(nil, errors.New("dummy_error"))
+	rec := suite.rec
+	req := httptest.NewRequest(http.MethodGet, usersAPIRoot+"/1/profile", nil)
+	suite.router.ServeHTTP(rec, req)
+	suite.Equal(http.StatusInternalServerError, rec.Code)
+	suite.JSONEq(
+		`{
+			"message":"Internal Server Error"
 		}`,
 		rec.Body.String(),
 	)
