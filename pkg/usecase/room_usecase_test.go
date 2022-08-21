@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 
 // ----- BEGIN デフォルトのテストデータ -----
 
-func prepareRoomDomainModel(id int) *dmodel.Room {
+func prepareRoomDomainModel(id int, ispinned bool, day int) *dmodel.Room {
 	room := new(dmodel.Room)
 	room.ID = id
 	room.R = room.R.NewStruct()
@@ -23,7 +24,7 @@ func prepareRoomDomainModel(id int) *dmodel.Room {
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: defaultTime,
+			CreatedAt: defaultTime.AddDate(0, 0, day),
 		},
 	}
 	room.R.RoomUsers = dmodel.RoomUserSlice{
@@ -32,14 +33,14 @@ func prepareRoomDomainModel(id int) *dmodel.Room {
 			ID:       1,
 			UserID:   1,
 			RoomID:   1,
-			IsPinned: false,
+			IsPinned: ispinned,
 		},
 		// 相手側のユーザー
 		{
 			ID:       2,
 			UserID:   2,
 			RoomID:   1,
-			IsPinned: false,
+			IsPinned: ispinned,
 		},
 	}
 	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
@@ -54,11 +55,11 @@ func prepareRoomDomainModel(id int) *dmodel.Room {
 	return room
 }
 
-func prepareRoom(id int) *model.Room {
+func prepareRoom(id int, day int, ispinned bool) *model.Room {
 	return &model.Room{
 		ID:          model.RoomID(id),
 		Unread:      0,
-		IsPinned:    false,
+		IsPinned:    ispinned,
 		IsPrincipal: true,
 		// 相手側のユーザーの名前とアイコン
 		Name:    "name2",
@@ -68,7 +69,7 @@ func prepareRoom(id int) *model.Room {
 			ID:        1,
 			UserID:    1,
 			Content:   "content",
-			CreatedAt: defaultTime,
+			CreatedAt: defaultTime.AddDate(0, 0, day),
 		},
 	}
 }
@@ -205,15 +206,35 @@ func TestRoomHandlerSuite(t *testing.T) {
 
 func (suite *RoomUsecaseTestSuite) Test_roomUsecase_FindAllRooms() {
 	suite.mock.EXPECT().FindAllRooms(context.Background(), userID).Return(
-		dmodel.RoomSlice{prepareRoomDomainModel(1)},
+		dmodel.RoomSlice{
+			prepareRoomDomainModel(1, false, 1),
+			prepareRoomDomainModel(2, false, -1),
+			prepareRoomDomainModel(3, true, 4),
+			prepareRoomDomainModel(4, true, 1),
+			prepareRoomDomainModel(5, false, 5),
+		},
 		nil,
 	)
 	res, err := suite.usecase.FindAllRooms(context.Background(), userID)
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
-		&model.Rooms{Rooms: []*model.Room{prepareRoom(1)}},
+		&model.Rooms{
+			Rooms: []*model.Room{
+				prepareRoom(3, 4, true),
+				prepareRoom(4, 1, true),
+				prepareRoom(5, 5, false),
+				prepareRoom(1, 1, false),
+				prepareRoom(2, -1, false),
+			}},
 	)
+}
+
+func (suite *RoomUsecaseTestSuite) Test_roomUsecase_Err_FindAllRooms() {
+	suite.mock.EXPECT().FindAllRooms(context.Background(), userID).Return(nil, errors.New("could not find rooms"))
+	res, err := suite.usecase.FindAllRooms(context.Background(), userID)
+	suite.Nil(res)
+	suite.Equal(err, errors.New("could not find rooms"))
 }
 
 func (suite *RoomUsecaseTestSuite) Test_roomUsecase_FindRoomDetailByRoomID() {
@@ -229,6 +250,13 @@ func (suite *RoomUsecaseTestSuite) Test_roomUsecase_FindRoomDetailByRoomID() {
 	)
 }
 
+func (suite *RoomUsecaseTestSuite) Test_roomUsecase_Err_FindRoomDetailByRoomID() {
+	suite.mock.EXPECT().FindRoomDetailByRoomID(context.Background(), userID, roomID, messageID).Return(nil, errors.New("could not find room detail"))
+	res, err := suite.usecase.FindRoomDetailByRoomID(context.Background(), userID, roomID, messageID)
+	suite.Nil(res)
+	suite.Equal(err, errors.New("could not find room detail"))
+}
+
 func (suite *RoomUsecaseTestSuite) Test_roomUsecase_SendMessage() {
 	suite.mock.EXPECT().SendMessage(context.Background(), preparePostMessageDomainModel()).Return(
 		prepareCreatedMessageDomainModel(1),
@@ -240,4 +268,11 @@ func (suite *RoomUsecaseTestSuite) Test_roomUsecase_SendMessage() {
 		res,
 		prepareMessage(1),
 	)
+}
+
+func (suite *RoomUsecaseTestSuite) Test_roomUsecase_Err_SendMessage() {
+	suite.mock.EXPECT().SendMessage(context.Background(), preparePostMessageDomainModel()).Return(nil, errors.New("could not send messae"))
+	res, err := suite.usecase.SendMessage(context.Background(), userID, roomID, prepareNewMessage())
+	suite.Nil(res)
+	suite.Equal(err, errors.New("could not send messae"))
 }
