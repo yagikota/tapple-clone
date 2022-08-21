@@ -235,9 +235,8 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_roomI
 }
 
 func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_messageID_400() {
-	suite.mock.EXPECT().FindRoomDetailByRoomID(gomock.Any(), userID, roomID, messageID).Return(roomDetail, nil)
 	rec := suite.rec
-	path := fmt.Sprintf("%s/%d/rooms/%d?message_id=-1", usersAPIRoot, userID, roomID)
+	path := fmt.Sprintf("%s/%d/rooms/%d?message_id=dummy", usersAPIRoot, userID, roomID)
 	req := httptest.NewRequest(http.MethodGet, path, nil)
 	suite.router.ServeHTTP(rec, req)
 	suite.Equal(http.StatusBadRequest, rec.Code)
