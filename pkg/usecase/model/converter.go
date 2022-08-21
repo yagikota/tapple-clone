@@ -16,6 +16,7 @@ func prefCodeToPrefKanji(prefCode int) string {
 	return location
 }
 
+// TODO: テストしやすいように引数にtime.Now()渡す
 func calcAge(birthday time.Time) (int, error) {
 	// タイムゾーンをJSTに設定
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
