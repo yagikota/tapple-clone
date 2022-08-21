@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"testing"
 	"time"
@@ -15,188 +16,74 @@ import (
 
 // ----- BEGIN デフォルトのテストデータ -----
 var (
-	defaultTime time.Time
-	userID      int
-	roomID      int
-	messageID   int
+	defaultTime        time.Time
+	userID             int
+	roomID             int
+	messageID          int
+	UserProfileImageID int
 )
 
 func prepareUserDomainModel(id, gender, location int) *dmodel.User {
-	return &dmodel.User{
-		ID:       id,
-		Name:     "name" + strconv.Itoa(id),
-		Icon:     "icon" + strconv.Itoa(id),
-		Gender:   gender,
-		Birthday: defaultTime,
-		Location: location,
+	user := new(dmodel.User)
+	user.ID = id
+	user.Name = "name" + strconv.Itoa(id)
+	user.Icon = "icon" + strconv.Itoa(id)
+	user.Gender = gender
+	user.Birthday = defaultTime
+	user.Location = location
+	user.IsPrincipal = true
+	user.R = user.R.NewStruct()
+	user.R.Hobbies = dmodel.HobbySlice{
+		{
+			ID:     1,
+			UserID: 1,
+			Tag:    "tag1",
+		},
 	}
+	user.R.UserProfileImages = dmodel.UserProfileImageSlice{
+		{
+			ID:        1,
+			UserID:    1,
+			ImagePath: "image1",
+		},
+	}
+
+	return user
 }
 
-func prepareUser(id, gender, location int) *model.User {
+func prepareUser(id, gender int, location string) *model.User {
 	return &model.User{
-		ID:       model.UserID(id),
-		Name:     "name" + strconv.Itoa(id),
-		Icon:     "icon" + strconv.Itoa(id),
-		Gender:   gender,
-		BirthDay: defaultTime,
-		Location: location,
+		ID:          model.UserID(id),
+		Name:        "name" + strconv.Itoa(id),
+		Icon:        "icon" + strconv.Itoa(id),
+		Gender:      gender,
+		BirthDay:    defaultTime,
+		Location:    location,
+		IsPrincipal: true,
 	}
 }
 
-func prepareRoomDomainModel(id int) *dmodel.Room {
-	room := new(dmodel.Room)
-	room.ID = id
-	room.R = room.R.NewStruct()
-	room.R.Messages = dmodel.MessageSlice{
-		{
-			ID:        1,
-			UserID:    1,
-			Content:   "content",
-			CreatedAt: defaultTime,
-		},
-	}
-	room.R.RoomUsers = dmodel.RoomUserSlice{
-		// 自分自身
-		{
-			ID:       1,
-			UserID:   1,
-			RoomID:   1,
-			IsPinned: false,
-		},
-		// 相手側のユーザー
-		{
-			ID:       2,
-			UserID:   2,
-			RoomID:   1,
-			IsPinned: false,
-		},
-	}
-	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
-	// 相手側のユーザー
-	room.R.RoomUsers[0].R.User = &dmodel.User{
-		ID:   2,
-		Name: "name2",
-		Icon: "icon2",
-	}
-	return room
-}
-
-func prepareRoom(id int) *model.Room {
-	return &model.Room{
-		ID:       model.RoomID(id),
-		Unread:   0,
-		IsPinned: false,
-		// 相手側のユーザーの名前とアイコン
-		Name: "name2",
-		Icon: "icon2",
-		LatestMessage: &model.Message{
-			ID:        1,
-			UserID:    1,
-			Content:   "content",
-			CreatedAt: defaultTime,
-		},
-	}
-}
-
-func prepareRoomDetailDomainModel(id int) *dmodel.Room {
-	room := new(dmodel.Room)
-	room.ID = id
-	room.R = room.R.NewStruct()
-	room.R.RoomUsers = dmodel.RoomUserSlice{
-		// 相手側のユーザー
-		{
-			ID:       1,
-			UserID:   1,
-			RoomID:   1,
-			IsPinned: false,
-		},
-		// 相手側のユーザー
-		{
-			ID:       2,
-			UserID:   2,
-			RoomID:   1,
-			IsPinned: false,
-		},
-	}
-	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
-	room.R.RoomUsers[1].R = room.R.RoomUsers[0].R.NewStruct()
-	room.R.RoomUsers[0].R.User = &dmodel.User{
-		// 相手側のユーザー
-		ID:       2,
-		Name:     "name2",
-		Icon:     "icon2",
-		Gender:   1,
-		Birthday: defaultTime,
-		Location: 1,
-	}
-	room.R.RoomUsers[1].R.User = &dmodel.User{
-		// 自分自身
-		ID:       1,
-		Name:     "name1",
-		Icon:     "icon1",
-		Gender:   0,
-		Birthday: defaultTime,
-		Location: 0,
-	}
-	room.R.Messages = dmodel.MessageSlice{
-		{
-			ID:        1,
-			UserID:    1,
-			Content:   "content",
-			CreatedAt: defaultTime,
-		},
-	}
-	return room
-}
-
-func prepareRoomDetail(id int) *model.RoomDetail {
-	return &model.RoomDetail{
-		ID: model.RoomID(id),
-		// 相手側のユーザーの名前とアイコン
-		Name:  "name2",
-		Icon:  "icon2",
-		Users: []*model.User{prepareUser(2, 1, 1), prepareUser(1, 0, 0)},
-		Messages: []*model.Message{
+func prepareUserDetail(id, gender int, location string) *model.UserDetail {
+	return &model.UserDetail{
+		ID:          model.UserID(id),
+		Name:        "name" + strconv.Itoa(id),
+		Age:         0,
+		Location:    location,
+		IsPrincipal: true,
+		TagCount:    1,
+		ProfileImages: []*model.UserProfileImage{
 			{
 				ID:        1,
 				UserID:    1,
-				Content:   "content",
-				CreatedAt: defaultTime,
+				ImagePath: "image1",
 			},
 		},
-	}
-}
-
-func prepareMessage(id int) *model.Message {
-	return &model.Message{
-		ID:        model.MessageID(id),
-		UserID:    userID,
-		Content:   "content",
-		CreatedAt: defaultTime,
-	}
-}
-
-func prepareNewMessage() *model.NewMessage {
-	return &model.NewMessage{
-		Content: "content",
-	}
-}
-
-func preparePostMessageDomainModel() *dmodel.Message {
-	return &dmodel.Message{
-		UserID:  userID,
-		RoomID:  roomID,
-		Content: "content",
-	}
-}
-
-func prepareCreatedMessageDomainModel(id int) *dmodel.Message {
-	return &dmodel.Message{
-		ID:        int64(id),
-		UserID:    userID,
-		RoomID:    roomID,
-		Content:   "content",
-		CreatedAt: defaultTime,
+		Hobbies: []*model.Hobby{
+			{
+				ID:  1,
+				Tag: "tag1",
+			},
+		},
 	}
 }
 
@@ -228,7 +115,14 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserByUserID() {
 	suite.mock.EXPECT().FindUserByUserID(context.Background(), 1).Return(prepareUserDomainModel(1, 0, 0), nil)
 	res, err := suite.usecase.FindUserByUserID(context.Background(), 1)
 	suite.Equal(err, nil)
-	suite.Equal(res, prepareUser(1, 0, 0))
+	suite.Equal(res, prepareUser(1, 0, "その他"))
+}
+
+func (suite *UserUsecaseTestSuite) Test_userUsecase_Err_FindUserByUserID() {
+	suite.mock.EXPECT().FindUserByUserID(context.Background(), 100).Return(nil, errors.New("do not exit user"))
+	res, err := suite.usecase.FindUserByUserID(context.Background(), 100)
+	suite.Nil(res)
+	suite.Equal(err, errors.New("do not exit user"))
 }
 
 func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
@@ -240,45 +134,27 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
 	suite.Equal(err, nil)
 	suite.Equal(
 		res,
-		model.UserSlice{prepareUser(1, 0, 0), prepareUser(2, 1, 1)},
+		model.UserSlice{prepareUser(1, 0, "その他"), prepareUser(2, 1, "北海道")},
 	)
 }
 
-func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllRooms() {
-	suite.mock.EXPECT().FindAllRooms(context.Background(), userID).Return(
-		dmodel.RoomSlice{prepareRoomDomainModel(1)},
-		nil,
-	)
-	res, err := suite.usecase.FindAllRooms(context.Background(), userID)
-	suite.Equal(err, nil)
-	suite.Equal(
-		res,
-		&model.Rooms{Rooms: []*model.Room{prepareRoom(1)}},
-	)
+func (suite *UserUsecaseTestSuite) Test_userUsecase_Err_FindAllUsers() {
+	suite.mock.EXPECT().FindAllUsers(context.Background()).Return(nil, errors.New("could not find users"))
+	res, err := suite.usecase.FindAllUsers(context.Background())
+	suite.Nil(res)
+	suite.Equal(err, errors.New("could not find users"))
 }
 
-func (suite *UserUsecaseTestSuite) Test_userUsecase_FindRoomDetailByRoomID() {
-	suite.mock.EXPECT().FindRoomDetailByRoomID(context.Background(), userID, roomID, messageID).Return(
-		prepareRoomDetailDomainModel(1),
-		nil,
-	)
-	res, err := suite.usecase.FindRoomDetailByRoomID(context.Background(), userID, roomID, messageID)
+func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserDetailByUserID() {
+	suite.mock.EXPECT().FindUserDetailByUserID(context.Background(), 1).Return(prepareUserDomainModel(1, 0, 0), nil)
+	res, err := suite.usecase.FindUserDetailByUserID(context.Background(), 1)
 	suite.Equal(err, nil)
-	suite.Equal(
-		res,
-		prepareRoomDetail(1),
-	)
+	suite.Equal(res, prepareUserDetail(1, 0, "その他"))
 }
 
-func (suite *UserUsecaseTestSuite) Test_userUsecase_SendMessage() {
-	suite.mock.EXPECT().SendMessage(context.Background(), preparePostMessageDomainModel()).Return(
-		prepareCreatedMessageDomainModel(1),
-		nil,
-	)
-	res, err := suite.usecase.SendMessage(context.Background(), userID, roomID, prepareNewMessage())
-	suite.Equal(err, nil)
-	suite.Equal(
-		res,
-		prepareMessage(1),
-	)
+func (suite *UserUsecaseTestSuite) Test_userUsecase_Err_FindUserDetailByUserID() {
+	suite.mock.EXPECT().FindUserDetailByUserID(context.Background(), 1).Return(nil, errors.New("could not find user detail"))
+	res, err := suite.usecase.FindUserDetailByUserID(context.Background(), 1)
+	suite.Nil(res, nil)
+	suite.Equal(err, errors.New("could not find user detail"))
 }

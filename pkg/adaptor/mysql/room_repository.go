@@ -43,7 +43,6 @@ func (rr *roomRepository) FindAllRooms(ctx context.Context, userID int) (model.R
 // TODO: 例えば、localhost:8080/v1/users/2/rooms/３でもアクセスできてしまうので、改善が必要
 // 認証機能を導入すれば改善できそう(アクセストークンをヘッダーに乗せるとか)
 func (ur *roomRepository) FindRoomDetailByRoomID(ctx context.Context, userID, roomID, messageID int) (*model.Room, error) {
-	boil.DebugMode = true
 	tx, err := txFromContext(ctx)
 	if err != nil {
 		return nil, err

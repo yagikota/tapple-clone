@@ -66,3 +66,6 @@ generate-mock:
 	@$(GO_BIN)/mockgen -source pkg/usecase/user_usecase.go -destination pkg/mock/usecase/user_usecase.go -package mock
 	@$(GO_BIN)/mockgen -source pkg/domain/service/user_service.go -destination pkg/mock/service/user_service.go -package mock
 	@$(GO_BIN)/mockgen -source pkg/domain/repository/user_repository.go -destination pkg/mock/repository/user_repository.go -package mock
+	@$(GO_BIN)/mockgen -source pkg/usecase/room_usecase.go -destination pkg/mock/usecase/room_usecase.go -package mock
+	@$(GO_BIN)/mockgen -source pkg/domain/service/room_service.go -destination pkg/mock/service/room_service.go -package mock
+	@$(GO_BIN)/mockgen -source pkg/domain/repository/room_repository.go -destination pkg/mock/repository/room_repository.go -package mock

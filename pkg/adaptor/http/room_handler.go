@@ -52,9 +52,7 @@ func (rh *roomHandler) findRoomDetailByRoomID() gin.HandlerFunc {
 			return
 		}
 
-		queryMessageID := c.Query("message_id")
-		queryMessageID = c.DefaultQuery("message_id", "0")
-
+		queryMessageID := c.DefaultQuery("message_id", "0")
 		messageID, err := strconv.Atoi(queryMessageID)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
