@@ -25,7 +25,7 @@ func calcAge(birthday time.Time) (int, error) {
 	age := thisYear - birthday.Year()
 
 	// 誕生日を迎えていない時の処理
-	if thisMonth < birthday.Month() && thisDay < birthday.Day() {
+	if thisMonth < birthday.Month() || thisMonth == birthday.Month() && thisDay < birthday.Day() {
 		age -= 1
 	}
 
