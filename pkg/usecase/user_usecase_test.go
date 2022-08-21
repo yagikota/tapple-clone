@@ -15,31 +15,74 @@ import (
 
 // ----- BEGIN デフォルトのテストデータ -----
 var (
-	defaultTime time.Time
-	userID      int
-	roomID      int
-	messageID   int
+	defaultTime        time.Time
+	userID             int
+	roomID             int
+	messageID          int
+	UserProfileImageID int
 )
 
 func prepareUserDomainModel(id, gender, location int) *dmodel.User {
-	return &dmodel.User{
-		ID:       id,
-		Name:     "name" + strconv.Itoa(id),
-		Icon:     "icon" + strconv.Itoa(id),
-		Gender:   gender,
-		Birthday: defaultTime,
-		Location: location,
+	user := new(dmodel.User)
+	user.ID = id
+	user.Name = "name" + strconv.Itoa(id)
+	user.Icon = "icon" + strconv.Itoa(id)
+	user.Gender = gender
+	user.Birthday = defaultTime
+	user.Location = location
+	user.IsPrincipal = true
+	user.R = user.R.NewStruct()
+	user.R.Hobbies = dmodel.HobbySlice{
+		{
+			ID:     1,
+			UserID: 1,
+			Tag:    "tag1",
+		},
 	}
+	user.R.UserProfileImages = dmodel.UserProfileImageSlice{
+		{
+			ID:        1,
+			UserID:    1,
+			ImagePath: "image1",
+		},
+	}
+
+	return user
 }
 
 func prepareUser(id, gender int, location string) *model.User {
 	return &model.User{
-		ID:       model.UserID(id),
-		Name:     "name" + strconv.Itoa(id),
-		Icon:     "icon" + strconv.Itoa(id),
-		Gender:   gender,
-		BirthDay: defaultTime,
-		Location: location,
+		ID:          model.UserID(id),
+		Name:        "name" + strconv.Itoa(id),
+		Icon:        "icon" + strconv.Itoa(id),
+		Gender:      gender,
+		BirthDay:    defaultTime,
+		Location:    location,
+		IsPrincipal: true,
+	}
+}
+
+func prepareUserDetail(id, gender int, location string) *model.UserDetail {
+	return &model.UserDetail{
+		ID:          model.UserID(id),
+		Name:        "name" + strconv.Itoa(id),
+		Age:         0,
+		Location:    location,
+		IsPrincipal: true,
+		TagCount:    1,
+		ProfileImages: []*model.UserProfileImage{
+			{
+				ID:        1,
+				UserID:    1,
+				ImagePath: "image1",
+			},
+		},
+		Hobbies: []*model.Hobby{
+			{
+				ID:  1,
+				Tag: "tag1",
+			},
+		},
 	}
 }
 
@@ -85,4 +128,11 @@ func (suite *UserUsecaseTestSuite) Test_userUsecase_FindAllUsers() {
 		res,
 		model.UserSlice{prepareUser(1, 0, "その他"), prepareUser(2, 1, "北海道")},
 	)
+}
+
+func (suite *UserUsecaseTestSuite) Test_userUsecase_FindUserDetailByUserID() {
+	suite.mock.EXPECT().FindUserDetailByUserID(context.Background(), 1).Return(prepareUserDomainModel(1, 0, 0), nil)
+	res, err := suite.usecase.FindUserDetailByUserID(context.Background(), 1)
+	suite.Equal(err, nil)
+	suite.Equal(res, prepareUserDetail(1, 0, "その他"))
 }

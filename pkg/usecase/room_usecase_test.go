@@ -45,21 +45,25 @@ func prepareRoomDomainModel(id int) *dmodel.Room {
 	room.R.RoomUsers[0].R = room.R.RoomUsers[0].R.NewStruct()
 	// 相手側のユーザー
 	room.R.RoomUsers[0].R.User = &dmodel.User{
-		ID:   2,
-		Name: "name2",
-		Icon: "icon2",
+		ID:          2,
+		Name:        "name2",
+		Icon:        "icon2",
+		Birthday:    time.Date(2000, 5, 9, 23, 59, 59, 0, time.Local),
+		IsPrincipal: true,
 	}
 	return room
 }
 
 func prepareRoom(id int) *model.Room {
 	return &model.Room{
-		ID:       model.RoomID(id),
-		Unread:   0,
-		IsPinned: false,
+		ID:          model.RoomID(id),
+		Unread:      0,
+		IsPinned:    false,
+		IsPrincipal: true,
 		// 相手側のユーザーの名前とアイコン
-		Name: "name2",
-		Icon: "icon2",
+		Name:    "name2",
+		Icon:    "icon2",
+		SubName: "22歳・その他",
 		LatestMessage: &model.Message{
 			ID:        1,
 			UserID:    1,
@@ -93,21 +97,23 @@ func prepareRoomDetailDomainModel(id int) *dmodel.Room {
 	room.R.RoomUsers[1].R = room.R.RoomUsers[0].R.NewStruct()
 	room.R.RoomUsers[0].R.User = &dmodel.User{
 		// 相手側のユーザー
-		ID:       2,
-		Name:     "name2",
-		Icon:     "icon2",
-		Gender:   1,
-		Birthday: defaultTime,
-		Location: 1,
+		ID:          2,
+		Name:        "name2",
+		Icon:        "icon2",
+		Gender:      1,
+		Birthday:    defaultTime,
+		Location:    1,
+		IsPrincipal: true,
 	}
 	room.R.RoomUsers[1].R.User = &dmodel.User{
 		// 自分自身
-		ID:       1,
-		Name:     "name1",
-		Icon:     "icon1",
-		Gender:   0,
-		Birthday: defaultTime,
-		Location: 0,
+		ID:          1,
+		Name:        "name1",
+		Icon:        "icon1",
+		Gender:      0,
+		Birthday:    defaultTime,
+		Location:    0,
+		IsPrincipal: true,
 	}
 	room.R.Messages = dmodel.MessageSlice{
 		{
@@ -117,6 +123,7 @@ func prepareRoomDetailDomainModel(id int) *dmodel.Room {
 			CreatedAt: defaultTime,
 		},
 	}
+
 	return room
 }
 
@@ -135,6 +142,7 @@ func prepareRoomDetail(id int) *model.RoomDetail {
 				CreatedAt: defaultTime,
 			},
 		},
+		IsLast: true,
 	}
 }
 
