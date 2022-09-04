@@ -31,9 +31,6 @@ func NewMySQLConnector() *MySQLConnector {
 		panic(err)
 	}
 
-	// 確認用
-	// log.Println(dsn)
-
 	return &MySQLConnector{
 		Conn: conn,
 	}
