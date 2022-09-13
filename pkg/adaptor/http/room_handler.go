@@ -99,41 +99,32 @@ func (rh *roomHandler) sendMessage() gin.HandlerFunc {
 	}
 }
 
-func (rh *roomHandler) sendImage() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		userID, err := strconv.Atoi(c.Param("user_id"))
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-		roomID, err := strconv.Atoi(c.Param("room_id"))
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
+// func (rh *roomHandler) sendImage() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		userID, err := strconv.Atoi(c.Param("user_id"))
+// 		if err != nil {
+// 			c.AbortWithError(http.StatusBadRequest, err)
+// 			return
+// 		}
+// 		roomID, err := strconv.Atoi(c.Param("room_id"))
+// 		if err != nil {
+// 			c.AbortWithError(http.StatusBadRequest, err)
+// 			return
+// 		}
 
-		// 画像ファイルを取り出す
-		fileHeader, err := c.FormFile("file")
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
+// 		// 画像ファイルを取り出す
+// 		fileHeader, err := c.FormFile("file")
+// 		if err != nil {
+// 			c.AbortWithError(http.StatusBadRequest, err)
+// 			return
+// 		}
 
-		file, err := fileHeader.Open()
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-		defer file.Close()
+// 		file, err := fileHeader.Open()
+// 		if err != nil {
+// 			c.AbortWithError(http.StatusInternalServerError, err)
+// 			return
+// 		}
+// 		defer file.Close()
 
-
-
-		message, err := rh.rUsecase.SendMessage(c, userID, roomID, &newMessage)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-
-		c.JSON(http.StatusOK, message)
-	}
-}
+// 	}
+// }

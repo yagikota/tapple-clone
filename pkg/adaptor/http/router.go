@@ -75,8 +75,8 @@ func InitRouter() *gin.Engine {
 		relativePath = fmt.Sprintf("/:%s/rooms/:%s/messages", userIDParam, roomIDParam)
 		usersGroup.POST(relativePath, roomHandler.sendMessage())
 		// v1/users/{user_id}/rooms/{room_id}/images
-		relativePath = fmt.Sprintf("/:%s/rooms/:%s/images", userIDParam, roomIDParam)
-		usersGroup.POST(relativePath, roomHandler.sendImage())
+		// relativePath = fmt.Sprintf("/:%s/rooms/:%s/images", userIDParam, roomIDParam)
+		// usersGroup.POST(relativePath, roomHandler.sendImage())
 	}
 
 	return router

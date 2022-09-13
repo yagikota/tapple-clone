@@ -10,11 +10,29 @@ import (
 
 	adaptorHTTP "github.com/CyberAgentHack/2208-ace-go-server/pkg/adaptor/http"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/configs"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // TODO: contextの理解が必要
 func main() {
+
+	sess, _ := session.NewSession(&aws.Config{
+		Region: aws.String("ap-northeast-1")},
+	)
+
+	svc := s3.New(sess)
+
+	req, _ := svc.PutObjectRequest(&s3.PutObjectInput{
+		Bucket: aws.String("2208-ace-c"),
+		Key:    aws.String("myKey"),
+		// Body:   strings.NewReader("EXPECTED CONTENTS"),
+	})
+	str, err := req.Presign(15 * time.Minute)
+	log.Println("The URL is:", str, " err:", err)
+
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
