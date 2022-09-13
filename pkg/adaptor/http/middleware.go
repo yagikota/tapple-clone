@@ -9,11 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO:
-// トランザクションのベストプラクティス聞く。
-// commit rollbackのタイミングあっているか
-// panicはいつするのか
-
 // トランザクション開始
 func beginTxAndSetToContext(c *gin.Context, conn *sql.DB) (*sql.Tx, error) {
 	tx, err := conn.Begin()
@@ -33,9 +28,6 @@ func transactMiddleware(conn *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		// TODO: 処理が汚いので整理する
-		// Rollbackのあとエラーハンドリングするのか？
-		// panic起こしていいのか
 		defer func() {
 			// panicした場合(優先度がerror handlingよりも高い)
 			if r := recover(); r != nil {
