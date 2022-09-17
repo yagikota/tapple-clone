@@ -1,8 +1,8 @@
+//go:generate mockgen -source $GOFILE -package=mock -destination ../../mock/service/$GOFILE
 package service
 
 // サービス層の必要性について
 // https://christina04.hatenablog.com/entry/go-clean-architecture
-
 import (
 	"context"
 
