@@ -21,8 +21,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.mysql
-    # M1 Mac User, TODO: Makefileで設定できるようにする
-    platform: linux/x86_64
+    # # M1 Mac User, TODO: Makefileで設定できるようにする
+    # platform: linux/x86_64
     ports:
       - ${MYSQL_PORT}:${MYSQL_PORT}
     environment:
