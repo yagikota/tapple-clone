@@ -34,18 +34,18 @@ func TestMain(m *testing.M) {
 }
 
 func TestCalcAge_1(t *testing.T) {
-	age, err := calcAge(birthday1)
+	age, err := calcAge(birthday1, time.Now())
 	assert.Equal(t, age, 22)
 	assert.Equal(t, err, nil)
 }
 
 func TestCalcAge_2(t *testing.T) {
-	age, err := calcAge(birthday2)
+	age, err := calcAge(birthday2, time.Now())
 	assert.Equal(t, age, 25)
 	assert.Equal(t, err, nil)
 }
 func TestCalcAge_3(t *testing.T) {
-	age, err := calcAge(birthday3)
+	age, err := calcAge(birthday3, time.Now())
 	assert.Equal(t, age, 22)
 	assert.Equal(t, err, nil)
 }

@@ -53,7 +53,7 @@ func UserDetailFromDomainModel(m *model.User) *UserDetail {
 		IsPrincipal: m.IsPrincipal,
 	}
 
-	age, err := calcAge(m.Birthday)
+	age, err := calcAge(m.Birthday, time.Now())
 	if err != nil {
 		return nil
 	}

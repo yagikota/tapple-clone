@@ -3,6 +3,7 @@ package model
 import (
 	"sort"
 	"strconv"
+	"time"
 
 	constant "github.com/CyberAgentHack/2208-ace-go-server/pkg"
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/domain/model"
@@ -62,7 +63,7 @@ func RoomFromDomainModel(m *model.Room) *Room {
 	}
 	r.Unread = unread
 
-	age, err := calcAge(u.BirthDay)
+	age, err := calcAge(u.BirthDay, time.Now())
 	if err != nil {
 		return nil
 	}
