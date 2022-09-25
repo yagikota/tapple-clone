@@ -282,7 +282,15 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_200() {
 	suite.JSONEq(
 		`{
 			"id": 1,
-			"user_id": 1,
+			"user": {
+				"id": 1,
+				"name": "name1",
+				"icon": "/icon1",
+				"gender": 1,
+				"birthday": "2022-01-01T00:00:00Z",
+				"location": "その他",
+				"is_principal": false
+			},
 			"content": "content1",
 			"created_at": "2022-01-01T00:00:00Z"
 		}`,
