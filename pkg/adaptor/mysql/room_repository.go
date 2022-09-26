@@ -34,6 +34,7 @@ func (rr *roomRepository) FindAllRooms(ctx context.Context, userID int) (model.R
 
 	return model.Rooms(
 		qm.Where(whereRoomID, userID),
+		qm.Load(qm.Rels(model.RoomRels.Messages, model.MessageRels.User)),
 		qm.Load(model.RoomRels.Messages, qm.OrderBy(orderBy)),
 		qm.Load(model.RoomRels.RoomUsers, qm.Where(wherePartnerID, userID)),
 		qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
