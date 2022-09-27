@@ -35,7 +35,6 @@ type RoomDetail struct {
 	ID       RoomID       `json:"id"`
 	Name     string       `json:"name"`
 	Icon     string       `json:"icon"`
-	Users    UserSlice    `json:"users"`
 	Messages MessageSlice `json:"messages"`
 	IsLast   bool         `json:"is_last"`
 }
@@ -84,12 +83,6 @@ func RoomDetailFromDomainModel(m *model.Room) *RoomDetail {
 		Name: m.R.RoomUsers[0].R.User.Name,
 		Icon: m.R.RoomUsers[0].R.User.Icon,
 	}
-
-	uSlice := make(UserSlice, 0, len(m.R.RoomUsers))
-	for _, roomUser := range m.R.RoomUsers {
-		uSlice = append(uSlice, UserFromDomainModel(roomUser.R.User))
-	}
-	rm.Users = uSlice
 
 	mSlice := make(MessageSlice, 0, len(m.R.Messages))
 	for _, message := range m.R.Messages {

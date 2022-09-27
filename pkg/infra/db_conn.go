@@ -2,9 +2,10 @@ package infra
 
 import (
 	"database/sql"
-	"fmt"
+	"time"
 
 	"github.com/CyberAgentHack/2208-ace-go-server/pkg/configs"
+	"github.com/go-sql-driver/mysql"
 )
 
 const driverName = "mysql"
@@ -37,11 +38,14 @@ func NewMySQLConnector() *MySQLConnector {
 }
 
 func mysqlConnInfo(mysqlInfo configs.MysqlInfo) string {
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&loc=Local",
-		mysqlInfo.MySQLUser,
-		mysqlInfo.MySQLPassWord,
-		mysqlInfo.MySQLAddr,
-		mysqlInfo.MySQLDBName)
-
-	return dataSourceName
+	cfg := mysql.Config{
+		User:                 mysqlInfo.MySQLUser,
+		Passwd:               mysqlInfo.MySQLPassWord,
+		Addr:                 mysqlInfo.MySQLAddr,
+		DBName:               mysqlInfo.MySQLDBName,
+		ParseTime:            true,
+		Loc:                  time.Local,
+		AllowNativePasswords: true,
+	}
+	return cfg.FormatDSN()
 }

@@ -14,7 +14,7 @@ type MessageSlice []*Message
 
 type Message struct {
 	ID        MessageID `json:"id,omitempty"`
-	UserID    int       `json:"user_id"`
+	User      *User     `json:"user"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
 }
@@ -22,7 +22,7 @@ type Message struct {
 func MessageFromDomainModel(m *model.Message) *Message {
 	return &Message{
 		ID:        MessageID(m.ID),
-		UserID:    m.UserID,
+		User:      UserFromDomainModel(m.R.User),
 		Content:   m.Content,
 		CreatedAt: m.CreatedAt,
 	}

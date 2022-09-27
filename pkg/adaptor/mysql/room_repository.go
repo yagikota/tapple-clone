@@ -34,6 +34,7 @@ func (rr *roomRepository) FindAllRooms(ctx context.Context, userID int) (model.R
 
 	return model.Rooms(
 		qm.Where(whereRoomID, userID),
+		qm.Load(qm.Rels(model.RoomRels.Messages, model.MessageRels.User)),
 		qm.Load(model.RoomRels.Messages, qm.OrderBy(orderBy)),
 		qm.Load(model.RoomRels.RoomUsers, qm.Where(wherePartnerID, userID)),
 		qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
@@ -73,12 +74,24 @@ func (ur *roomRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 		return nil, err
 	}
 
+	mods := []qm.QueryMod{
+		qm.Where(whereRoomID, roomID),
+		qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
+		qm.Load(qm.Rels(model.RoomRels.Messages, model.MessageRels.User)),
+		qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
+		qm.Load(model.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LimitMessageRecord)),
+	}
+
 	if messageID == 0 {
+		mods = append(
+			mods, qm.Load(
+				model.RoomRels.Messages,
+				qm.OrderBy(orderByMessage),
+				qm.Limit(constant.LimitMessageRecord),
+			),
+		)
 		return model.Rooms(
-			qm.Where(whereRoomID, roomID),
-			qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
-			qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
-			qm.Load(model.RoomRels.Messages, qm.OrderBy(orderByMessage), qm.Limit(constant.LimitMessageRecord)),
+			mods...,
 		).One(ctx, tx)
 	}
 
@@ -87,11 +100,16 @@ func (ur *roomRepository) FindRoomDetailByRoomID(ctx context.Context, userID, ro
 		return nil, err
 	}
 	messageCreatedAt := message.CreatedAt
+	mods = append(
+		mods, qm.Load(
+			model.RoomRels.Messages,
+			qm.Where(whereMessageCreatedAt, messageCreatedAt),
+			qm.OrderBy(orderByMessage),
+			qm.Limit(constant.LimitMessageRecord),
+		),
+	)
 	return model.Rooms(
-		qm.Where(whereRoomID, roomID),
-		qm.Load(model.RoomRels.RoomUsers, qm.OrderBy(orderBy, userID)),
-		qm.Load(qm.Rels(model.RoomRels.RoomUsers, model.RoomUserRels.User)),
-		qm.Load(model.RoomRels.Messages, qm.Where(whereMessageCreatedAt, messageCreatedAt), qm.OrderBy(orderByMessage), qm.Limit(constant.LimitMessageRecord)),
+		mods...,
 	).One(ctx, tx)
 }
 
@@ -107,5 +125,9 @@ func (rr *roomRepository) SendMessage(ctx context.Context, m *model.Message) (*m
 	if err != nil {
 		return nil, err
 	}
-	return m, nil
+	whereID := fmt.Sprintf("%s = ?", model.MessageColumns.ID)
+	return model.Messages(
+		qm.Where(whereID, m.ID),
+		qm.Load(model.MessageRels.User),
+	).One(ctx, tx)
 }
