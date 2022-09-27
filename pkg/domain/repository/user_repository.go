@@ -1,6 +1,4 @@
-// TODO: 下記コマンド動作しないので、動作するようにする
-//
-//go:generate mockgen -source pkg/domain/repository/$GOFILE -package=mock -destination pkg/mock/repository/$GOFILE
+//go:generate mockgen -source $GOFILE -package=mock -destination ../../mock/repository/$GOFILE
 package domain
 
 import (

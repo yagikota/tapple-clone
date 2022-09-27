@@ -14,7 +14,7 @@ type MySQLConnector struct {
 	Conn *sql.DB
 }
 
-// TODO: 返り値をinterfaceにする?
+// TODO: 返り値をinterfaceにする?(configの書き方調査)
 func NewMySQLConnector() *MySQLConnector {
 	conf := configs.LoadConfig()
 
