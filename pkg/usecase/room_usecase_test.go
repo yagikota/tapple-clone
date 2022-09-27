@@ -66,8 +66,16 @@ func prepareRoom(id int, day int, ispinned bool) *model.Room {
 		Icon:    "icon2",
 		SubName: "22歳・その他",
 		LatestMessage: &model.Message{
-			ID:        1,
-			UserID:    1,
+			ID: 1,
+			User: &model.User{
+				ID:          1,
+				Name:        "name1",
+				Icon:        "icon1",
+				Gender:      0,
+				BirthDay:    time.Date(2000, 5, 9, 23, 59, 59, 0, time.Local),
+				Location:    "その他",
+				IsPrincipal: false,
+			},
 			Content:   "content",
 			CreatedAt: defaultTime.AddDate(0, 0, day),
 		},
@@ -132,13 +140,21 @@ func prepareRoomDetail(id int) *model.RoomDetail {
 	return &model.RoomDetail{
 		ID: model.RoomID(id),
 		// 相手側のユーザーの名前とアイコン
-		Name:  "name2",
-		Icon:  "icon2",
-		Users: []*model.User{prepareUser(2, 1, "北海道"), prepareUser(1, 0, "その他")},
+		Name: "name2",
+		Icon: "icon2",
+		// Users: []*model.User{prepareUser(2, 1, "北海道"), prepareUser(1, 0, "その他")},
 		Messages: []*model.Message{
 			{
-				ID:        1,
-				UserID:    1,
+				ID: 1,
+				User: &model.User{
+					ID:          1,
+					Name:        "name1",
+					Icon:        "icon1",
+					Gender:      0,
+					BirthDay:    time.Date(2000, 5, 9, 23, 59, 59, 0, time.Local),
+					Location:    "その他",
+					IsPrincipal: false,
+				},
 				Content:   "content",
 				CreatedAt: defaultTime,
 			},
@@ -149,8 +165,16 @@ func prepareRoomDetail(id int) *model.RoomDetail {
 
 func prepareMessage(id int) *model.Message {
 	return &model.Message{
-		ID:        model.MessageID(id),
-		UserID:    userID,
+		ID: model.MessageID(id),
+		User: &model.User{
+			ID:          1,
+			Name:        "name1",
+			Icon:        "icon1",
+			Gender:      0,
+			BirthDay:    time.Date(2000, 5, 9, 23, 59, 59, 0, time.Local),
+			Location:    "その他",
+			IsPrincipal: false,
+		},
 		Content:   "content",
 		CreatedAt: defaultTime,
 	}
@@ -274,5 +298,5 @@ func (suite *RoomUsecaseTestSuite) Test_roomUsecase_Err_SendMessage() {
 	suite.mock.EXPECT().SendMessage(context.Background(), preparePostMessageDomainModel()).Return(nil, errors.New("could not send messae"))
 	res, err := suite.usecase.SendMessage(context.Background(), userID, roomID, prepareNewMessage())
 	suite.Nil(res)
-	suite.Equal(err, errors.New("could not send messae"))
+	suite.Equal(err, errors.New("could not send messaege"))
 }
