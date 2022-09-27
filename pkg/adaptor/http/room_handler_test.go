@@ -70,7 +70,7 @@ func (suite *RoomHandlerTestSuite) SetupTest() {
 
 	message1 = &model.Message{
 		ID:        1,
-		UserID:    1,
+		User:      user1,
 		Content:   "content1",
 		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
@@ -92,7 +92,6 @@ func (suite *RoomHandlerTestSuite) SetupTest() {
 		ID:       model.RoomID(roomID),
 		Name:     "name1",
 		Icon:     "/icon1",
-		Users:    userSlice1,
 		Messages: messageSlice1,
 		IsLast:   true,
 	}
@@ -129,7 +128,15 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_findRooms_200() {
 					"icon": "/icon1",
 					"latest_message": {
 						"id": 1,
-						"user_id": 1,
+						"user": {
+							"id": 1,
+							"name": "name1",
+							"icon": "/icon1",
+							"gender": 1,
+							"birthday": "2022-01-01T00:00:00Z",
+							"location": "その他",
+							"is_principal": false
+						},
 						"content": "content1",
 						"created_at": "2022-01-01T00:00:00Z"
 					}
@@ -181,21 +188,18 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_findRoomDetailByRoomID_200()
 			"id": 1,
 			"name": "name1",
 			"icon": "/icon1",
-			"users": [
-				{
-					"id": 1,
-					"name": "name1",
-					"icon": "/icon1",
-					"gender": 1,
-					"birthday": "2022-01-01T00:00:00Z",
-					"location": "その他",
-					"is_principal": false
-				}
-			],
 			"messages": [
 				{
 					"id": 1,
-					"user_id": 1,
+					"user": {
+						"id": 1,
+						"name": "name1",
+						"icon": "/icon1",
+						"gender": 1,
+						"birthday": "2022-01-01T00:00:00Z",
+						"location": "その他",
+						"is_principal": false
+					},
 					"content": "content1",
 					"created_at": "2022-01-01T00:00:00Z"
 				}
@@ -278,7 +282,15 @@ func (suite *RoomHandlerTestSuite) Test_roomHandler_sendMessage_200() {
 	suite.JSONEq(
 		`{
 			"id": 1,
-			"user_id": 1,
+			"user": {
+				"id": 1,
+				"name": "name1",
+				"icon": "/icon1",
+				"gender": 1,
+				"birthday": "2022-01-01T00:00:00Z",
+				"location": "その他",
+				"is_principal": false
+			},
 			"content": "content1",
 			"created_at": "2022-01-01T00:00:00Z"
 		}`,

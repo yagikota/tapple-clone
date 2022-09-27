@@ -96,7 +96,7 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 
 	message1 = &model.Message{
 		ID:        1,
-		UserID:    1,
+		User:      user1,
 		Content:   "content1",
 		CreatedAt: time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
@@ -118,7 +118,6 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 		ID:       model.RoomID(roomID),
 		Name:     "name1",
 		Icon:     "/icon1",
-		Users:    userSlice1,
 		Messages: messageSlice1,
 		IsLast:   true,
 	}

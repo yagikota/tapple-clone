@@ -125,5 +125,9 @@ func (rr *roomRepository) SendMessage(ctx context.Context, m *model.Message) (*m
 	if err != nil {
 		return nil, err
 	}
-	return m, nil
+	whereID := fmt.Sprintf("%s = ?", model.MessageColumns.ID)
+	return model.Messages(
+		qm.Where(whereID, m.ID),
+		qm.Load(model.MessageRels.User),
+	).One(ctx, tx)
 }
