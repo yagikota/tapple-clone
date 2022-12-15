@@ -5,7 +5,7 @@ on:
     types:
       - opened
       - reopened
-      # - ready_for_review
+      - ready_for_review
       - synchronize
 
 jobs:
