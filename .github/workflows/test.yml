@@ -7,23 +7,23 @@ on:
 
 jobs:
   test:
+    # if: github.event.pull_request.draft == false
     name: Test
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.19
-        cache: true # https://docs.github.com/ja/actions/automating-builds-and-tests/building-and-testing-go#caching-dependencies
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+          cache: true # https://docs.github.com/ja/actions/automating-builds-and-tests/building-and-testing-go#caching-dependencies
 
-    - name: Install dependencies
-      working-directory: .
-      run: go get -v -t -d ./...
+      - name: Install dependencies
+        working-directory: .
+        run: go get -v -t -d ./...
 
-    - name: Run Test
-      working-directory: .
-      run: go test -v ./...
+      - name: Run Test
+        working-directory: .
+        run: go test -v ./...
